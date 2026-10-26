@@ -634,6 +634,16 @@ details.tuck[open]>summary{margin-bottom:12px}
               </label>
             </div>
             <p class="sub" id="storeNote" style="margin-top:10px"></p>
+            <div class="hr"></div>
+            <div class="eyebrow">Sauvegarde</div>
+            <p class="sub">À faire de temps en temps, et pour emporter ton suivi d’un appareil à l’autre.</p>
+            <div class="row" style="margin-top:10px">
+              <button class="btn sm" id="bkDl">Exporter un fichier</button>
+              <button class="btn sm ghost" id="bkCopy">Copier</button>
+              <label class="btn sm ghost" for="bkFile">Importer…</label>
+              <input type="file" id="bkFile" accept="application/json,.json" hidden>
+            </div>
+            <div class="sub" id="bkMsg" style="margin-top:8px" aria-live="polite"></div>
           </div>
         </div>
       </div>
@@ -2016,6 +2026,52 @@ function addPast(){
 }
 
 /* =========================================================
+   15 bis. Sauvegarde : exporter, copier, importer
+   ========================================================= */
+function bkMsg(t){var e=$('#bkMsg');if(e)e.textContent=t;}
+function backupText(){
+  return JSON.stringify({app:'studio88',format:1,exportedAt:new Date().toISOString(),state:S},null,1);
+}
+function doExport(){
+  var txt=backupText();
+  try{
+    var url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
+    var a=document.createElement('a');
+    a.href=url;a.download='studio88-'+today()+'.json';
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1500);
+    bkMsg('Fichier studio88-'+today()+'.json proposé au téléchargement.');
+  }catch(e){bkMsg('Téléchargement impossible ici : utilise « Copier ».');}
+}
+function doCopy(){
+  var txt=backupText();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(
+      function(){bkMsg('Sauvegarde copiée : colle-la dans une note ou un fichier .json.');},
+      function(){bkMsg('Le navigateur a refusé la copie.');});
+  }else bkMsg('Presse-papier indisponible dans ce navigateur.');
+}
+function doImport(file){
+  var r=new FileReader();
+  r.onerror=function(){bkMsg('Fichier illisible.');};
+  r.onload=function(){
+    try{
+      var o=JSON.parse(String(r.result));
+      var st=(o&&o.state)?o.state:o;
+      if(!st||typeof st!=='object'||!(st.pieces||st.sessions||st.settings))throw new Error('format');
+      if(st.settings)S.settings=Object.assign(S.settings,st.settings);
+      if(!S.settings.routine||!S.settings.routine.length)S.settings.routine=cloneRoutine(DEF_ROUTINE);
+      S.pieces=st.pieces||[];S.sessions=st.sessions||[];S.drills=st.drills||{};
+      S.learn=(st.learn&&st.learn.done)?st.learn:{done:{}};
+      saveLocal();pushAll();renderAll();
+      bkMsg('Restauré : '+S.pieces.length+' morceau(x), '+S.sessions.length+' séance(s), '+
+        Object.keys(S.learn.done).length+' leçon(s) acquise(s).');
+    }catch(e){bkMsg('Ce fichier n’est pas une sauvegarde Studio 88.');}
+  };
+  r.readAsText(file);
+}
+
+/* =========================================================
    16. Thème + câblage
    ========================================================= */
 function applyTheme(){
@@ -2099,6 +2155,11 @@ function wire(){
   $('#jAdd').onclick=addPast;
   $('#sGoal').onchange=function(){S.settings.goal=clamp(+this.value||20,5,300);saveSettings();renderToday();renderJournal();};
   $('#sNames').onchange=function(){S.settings.names=this.value;saveSettings();renderAll();};
+  /* sauvegarde */
+  $('#bkDl').onclick=doExport;
+  $('#bkCopy').onclick=doCopy;
+  $('#bkFile').onchange=function(){if(this.files&&this.files[0])doImport(this.files[0]);this.value='';};
+  if(window.claude&&window.claude.use)$('#bkDl').hidden=true; /* les téléchargements sont bloqués dans un artifact */
 }
 function playCad(degs){
   var notes=keyScaleNotes(KEYS[curKey].pc);
