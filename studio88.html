@@ -55,8 +55,10 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;
   -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;font-optical-sizing:auto}
-/* Pas de zoom au double tap sur iPad : on tape vite sur les boutons ; le pincement reste possible. */
-html{touch-action:manipulation}
+/* Pas de zoom au double tap sur iPad ni iPhone : on tape vite sur les boutons,
+   et le pincement, lui, reste possible. touch-action ne s'hérite pas — d'où le
+   sélecteur universel, dont la spécificité nulle laisse .kb passer devant. */
+*{touch-action:manipulation}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 .wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{margin:0;text-wrap:balance}
