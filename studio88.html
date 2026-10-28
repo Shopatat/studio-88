@@ -385,6 +385,8 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
 
       <div class="tiles" id="tiles"></div>
 
+      <div class="card" id="tipsToday" hidden></div>
+
       <div class="card" id="learnTeaser"></div>
 
       <div class="grid g2">
@@ -427,6 +429,14 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
   <!-- =============== SÉANCE =============== -->
   <section id="t-seance" role="tabpanel" aria-label="Séance" hidden>
     <div class="grid g2">
+      <div class="card span" id="tipsCard">
+        <div class="row" style="justify-content:space-between">
+          <div class="eyebrow" style="margin:0">À revoir aujourd’hui</div>
+          <button class="btn sm ghost" id="tipsEdit" aria-pressed="false">Modifier</button>
+        </div>
+        <div id="tipsBody" style="margin-top:10px"></div>
+      </div>
+
       <div class="card span">
         <div class="eyebrow">Au programme</div>
         <div class="row" style="align-items:flex-end">
@@ -500,6 +510,9 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         </div>
         <label class="fld" style="margin-top:10px">Notes de séance
           <textarea id="logNotes" placeholder="Ce qui a marché, ce qui coince, le tempo atteint…"></textarea>
+        </label>
+        <label class="fld" style="margin-top:10px">À revoir la prochaine séance — ça t’attendra en haut de l’onglet
+          <textarea id="logTips" placeholder="Mes. 17-24 main gauche à 60, l’armure de ré, le doigté du trait final…"></textarea>
         </label>
         <div class="row" style="margin-top:10px">
           <button class="btn primary" id="logSave">Enregistrer la séance</button>
@@ -1072,7 +1085,7 @@ var RECIPES={
 };
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
-            focus:{piece:'',len:30,mode:'guide'},
+            focus:{piece:'',len:30,mode:'guide'},nextTips:'',
             metro:{bpm:92,beats:4,sub:1,accent:true}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
@@ -1474,7 +1487,7 @@ function go(id){
   });
   if(id==='today')renderToday();
   if(id==='journal')renderJournal();
-  if(id==='seance')renderRoutine();
+  if(id==='seance'){renderRoutine();renderTips();}
   if(id==='repertoire')renderPieces();
   if(id==='apprentissage')renderLearn();
   try{location.hash=id;}catch(e){}
@@ -1643,7 +1656,7 @@ function markReviewed(id){
 /* =========================================================
    9. Vue : Séance guidée
    ========================================================= */
-var T={on:false,bi:0,left:0,tick:null,played:0,lock:null,end:0,last:0};
+var T={on:false,bi:0,left:0,tick:null,played:0,lock:null,end:0,last:0,over:false,extra:0};
 
 /* --- La séance se construit à partir du morceau au programme --------- */
 var FREE_RECIPE=[
@@ -1655,7 +1668,7 @@ var FREE_RECIPE=[
 ];
 function pieceById(id){for(var i=0;i<S.pieces.length;i++){if(S.pieces[i].id===id)return S.pieces[i];}return null;}
 function focusPiece(){return S.settings.focus?pieceById(S.settings.focus.piece):null;}
-function sessionBusy(){return T.on||T.bi>0||T.left>0;}
+function sessionBusy(){return T.on||T.bi>0||T.left>0||T.over;}
 /* Deux façons de s'en servir : la séance guidée découpe le temps en blocs avec
    des consignes ; la séance simple ne réserve que le temps, et c'est tout. */
 function simpleMode(){return !!(S.settings.focus&&S.settings.focus.mode==='simple');}
@@ -1787,6 +1800,37 @@ function renderFocus(){
     if(t){if(t.scrollIntoView)t.scrollIntoView({block:'center'});t.focus();}
   };
 }
+/* La consigne qu'on s'est laissée la dernière fois : premier chose lue en
+   arrivant, et on la réécrit pour la prochaine depuis le bilan. */
+var tipsEditing=false;
+function tipsText(){return (S.settings.nextTips||'').trim();}
+function renderTips(){
+  var t=tipsText(),b=$('#tipsBody'),e=$('#tipsEdit');
+  if(!b)return;
+  e.textContent=tipsEditing?'Enregistrer':(t?'Modifier':'Écrire');
+  e.setAttribute('aria-pressed',tipsEditing?'true':'false');
+  if(tipsEditing){
+    b.innerHTML='<textarea id="tipsArea" placeholder="Mes. 17-24 main gauche à 60, l’armure de ré, le doigté du trait final…"></textarea>';
+    $('#tipsArea').value=S.settings.nextTips||'';
+    $('#tipsArea').focus();
+  } else {
+    b.innerHTML=t?'<div class="task"><div class="tb">'+esc(t).replace(/\n/g,'<br>')+'</div></div>'
+      :'<div class="sub">Rien de noté. À la fin de la séance, écris ce que tu veux revoir la prochaine fois : c’est là que tu le reliras.</div>';
+  }
+  var td=$('#tipsToday');
+  if(td){
+    td.hidden=!t;
+    if(t)td.innerHTML='<div class="eyebrow">À revoir aujourd’hui</div>'+
+      '<div class="task" style="margin-top:10px"><div class="tb">'+esc(t).replace(/\n/g,'<br>')+'</div></div>'+
+      '<div class="row" style="margin-top:12px"><button class="btn sm" id="tipsGo">▶ Séance</button></div>';
+    var g=$('#tipsGo');
+    if(g)g.onclick=function(){go('seance');};   /* reconstruit à chaque rendu : on le relie ici */
+  }
+}
+function saveTips(v){
+  S.settings.nextTips=(v||'').slice(0,2000);
+  saveSettings();renderTips();
+}
 function paintMode(){
   var sim=simpleMode();
   $$('#focusMode button').forEach(function(b){
@@ -1905,9 +1949,15 @@ function tickTimer(){
   var r=S.settings.routine,now=Date.now(),moved=false,guard=0;
   T.played+=Math.max(0,now-T.last)/60000;
   T.last=now;
+  if(T.over){T.extra=Math.max(0,Math.round((now-T.end)/1000));paintTimer();return;}
   while(T.end<=now&&guard++<400){
     if(T.bi<r.length-1){T.bi++;T.end+=(+r[T.bi].m)*60000;moved=true;}
-    else{chime();stopTimer(true);return;}
+    else{
+      /* La durée prévue est atteinte : on ne coupe pas, on compte le temps en
+         plus. C'est toi qui arrêtes, quand l'envie retombe. */
+      T.over=true;T.left=0;T.extra=Math.max(0,Math.round((now-T.end)/1000));
+      chime();renderBlocks();paintTimer();setSessionControls();return;
+    }
   }
   if(moved){chime();renderBlocks();}
   T.left=Math.max(0,Math.round((T.end-now)/1000));
@@ -1924,7 +1974,7 @@ function startTimer(){
     clearInterval(T.tick);T.on=false;
     var n=Date.now();
     T.played+=Math.max(0,n-T.last)/60000;
-    T.left=Math.max(0,Math.round((T.end-n)/1000));
+    if(!T.over)T.left=Math.max(0,Math.round((T.end-n)/1000));
     releaseLock();
     $('#btnStart').textContent='Reprendre';
     paintTimer();renderBlocks();
@@ -1932,6 +1982,14 @@ function startTimer(){
   }
   var r=S.settings.routine;
   T.bi=clamp(T.bi||0,0,r.length-1);
+  if(T.over){ /* reprise en prolongation : le chrono repart où il en était */
+    T.on=true;T.last=Date.now();T.end=T.last-T.extra*1000;
+    $('#btnStart').textContent='Pause';
+    ac();requestLock();
+    T.tick=setInterval(tickTimer,500);
+    setSessionControls();renderBlocks();paintTimer();
+    return;
+  }
   if(T.left<=0)T.left=(+r[T.bi].m)*60;
   T.on=true;T.last=Date.now();T.end=T.last+T.left*1000;
   $('#btnStart').textContent='Pause';
@@ -1942,6 +2000,14 @@ function startTimer(){
 function paintTimer(){
   var r=S.settings.routine,b=r[T.bi]||r[0];
   if(!b)return;
+  if(T.over){
+    $('#clock').textContent='+'+fmtClock(T.extra);
+    $('#nowBlock').textContent=(T.on?'':'En pause · ')+'Prolongation — arrête quand tu veux';
+    setRing(1);
+    var sg=$('#ribbon .now');if(sg)sg.style.setProperty('--p','100%');
+    paintMini();
+    return;
+  }
   var frac=clamp(1-(T.left/Math.max(1,(+b.m)*60)),0,1);
   $('#clock').textContent=fmtClock(T.left);
   $('#nowBlock').textContent=(T.on?'':'En pause · ')+(simpleMode()?(b.n+' · '+(+b.m)+' min'):b.n);
@@ -1955,10 +2021,12 @@ function paintMini(){
   var busy=sessionBusy(),r=S.settings.routine,b=r[T.bi]||r[0];
   t.hidden=!busy||!b;
   if(!t.hidden){
-    $('#miniTName').textContent=b.n;$('#miniTClock').textContent=fmtClock(T.left);
+    $('#miniTName').textContent=b.n;
+    $('#miniTClock').textContent=T.over?('+'+fmtClock(T.extra)):fmtClock(T.left);
     var p=$('#miniTPlay');p.textContent=T.on?'❚❚':'▶';
     p.setAttribute('aria-label',T.on?'Mettre la séance en pause':'Reprendre la séance');
-    $('#miniTGo').setAttribute('aria-label','Séance : '+b.n+', '+fmtClock(T.left)+(T.on?'':', en pause'));
+    $('#miniTGo').setAttribute('aria-label','Séance : '+b.n+', '+
+      (T.over?('prolongation de '+fmtClock(T.extra)):fmtClock(T.left))+(T.on?'':', en pause'));
     t.classList.toggle('on',T.on);
   }
   var m=$('#miniMPlay');m.textContent=M.on?'■':'▶';
@@ -1992,7 +2060,7 @@ function stopTimer(finished){
   clearInterval(T.tick);T.on=false;releaseLock();
   $('#btnStart').textContent='Démarrer';
   var mins=Math.round(T.played);
-  T.played=0;T.left=0;T.bi=0;T.end=0;T.last=0;
+  T.played=0;T.left=0;T.bi=0;T.end=0;T.last=0;T.over=false;T.extra=0;
   $('#clock').textContent='00:00';$('#nowBlock').textContent=finished?'Séance terminée. Bravo.':'Prête à démarrer';
   setRing(0);setSessionControls();renderBlocks();renderFocus();
   if(mins>=1||finished){if(cur!=='seance')go('seance');openLog(mins);}
@@ -2007,6 +2075,7 @@ function openLog(mins){
     return '<label class="pill" style="cursor:pointer"><input type="checkbox" value="'+p.id+'"'+
       (fp&&fp.id===p.id?' checked':'')+' style="width:auto;margin-right:4px">'+esc(p.title)+'</label>';
   }).join(''):'<span class="sub">Aucun morceau dans le répertoire.</span>';
+  $('#logTips').value=S.settings.nextTips||'';
   var w=$('#logBpmWrap');
   w.hidden=!fp;
   if(fp){$('#logBpmLbl').textContent='Tempo atteint — '+fp.title;$('#logBpm').value=+fp.currentBpm||'';}
@@ -2028,6 +2097,8 @@ function saveSession(){
     if(nb>0&&nb!==(+fp.currentBpm||0)){fp.currentBpm=nb;put('pieces/'+fp.id,stripId(fp));refreshFocusIfPiece(fp.id);}
   }
   ids.forEach(function(id){markReviewed(id);});
+  S.settings.nextTips=($('#logTips').value||'').slice(0,2000);
+  saveSettings();renderTips();
   $('#logCard').hidden=true;$('#logNotes').value='';
   renderToday();renderJournal();renderPieces();
   go('today');
@@ -2978,7 +3049,7 @@ function applyTheme(){
   }
 }
 function renderAll(){
-  applyTheme();renderChips();renderToday();renderRoutine();setSessionControls();metSetup();
+  applyTheme();renderChips();renderToday();renderTips();renderRoutine();setSessionControls();metSetup();
   renderClavier();drawCof();paintKey();renderPieces();renderJournal();renderLearn();
 }
 function wire(){
@@ -3004,6 +3075,10 @@ function wire(){
   $('#focusLen').onchange=focusChanged;
   $('#focusBuild').onclick=function(){if(buildSession())renderFocus();};
   $$('#focusMode button').forEach(function(b){b.onclick=function(){setMode(b.dataset.mode);};});
+  $('#tipsEdit').onclick=function(){
+    if(tipsEditing){var a=$('#tipsArea');tipsEditing=false;saveTips(a?a.value:'');}
+    else{tipsEditing=true;renderTips();}
+  };
   $$('#logMood button').forEach(function(b){b.onclick=function(){logMood=+b.dataset.m;paintMood();};});
   $('#logSave').onclick=saveSession;
   $('#logCancel').onclick=function(){$('#logCard').hidden=true;$('#logNotes').value='';};
