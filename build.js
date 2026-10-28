@@ -28,7 +28,7 @@ var head = '<!doctype html>\n' +
 '<meta name="theme-color" content="#141316" media="(prefers-color-scheme: dark)">\n' +
 '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
 '<meta name="mobile-web-app-capable" content="yes">\n' +
-'<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n' +
+'<meta name="apple-mobile-web-app-status-bar-style" content="black">\n' +
 '<meta name="apple-mobile-web-app-title" content="Studio 88">\n' +
 '<link rel="manifest" href="manifest.webmanifest">\n' +
 '<link rel="apple-touch-icon" href="icon-180.png">\n' +
