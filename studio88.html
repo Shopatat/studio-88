@@ -2138,6 +2138,7 @@ function keyOptions(sel){
   KEYS.forEach(function(k){var v=k.min+' mineur';o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>';});
   return o;
 }
+var editPieceId=null;
 function renderPieces(){
   if(!$('#pStatus').options.length){
     $('#pStatus').innerHTML=STATUS.map(function(s){return '<option value="'+s.id+'">'+s.n+'</option>';}).join('');
@@ -2149,6 +2150,7 @@ function renderPieces(){
   var list=S.pieces.filter(function(p){return !f||p.status===f;})
     .sort(function(a,b){return dueIn(a)-dueIn(b);});
   $('#pList').innerHTML=list.length?list.map(function(p){
+    if(p.id===editPieceId)return pieceForm(p);
     var d=dueIn(p),st=statusOf(p.status);
     var pill=d<=0?'<span class="pill due">à réviser</span>':'<span class="pill ok">dans '+d+' j</span>';
     var prog=(p.targetBpm&&p.currentBpm)?Math.round(clamp(p.currentBpm/p.targetBpm,0,1)*100):0;
@@ -2162,6 +2164,7 @@ function renderPieces(){
       '<div class="row tight">'+
         '<button class="btn sm" data-rev2="'+p.id+'">Révisé</button>'+
         '<button class="btn sm ghost" data-focus="'+p.id+'">Séance sur ce morceau</button>'+
+        '<button class="btn sm ghost" data-edit="'+p.id+'">Modifier</button>'+
         '<select data-st="'+p.id+'" style="width:auto;padding:5px 8px;font-size:12.5px">'+
           STATUS.map(function(s){return '<option value="'+s.id+'"'+(s.id===p.status?' selected':'')+'>'+s.n+'</option>';}).join('')+'</select>'+
         '<select data-key="'+p.id+'" aria-label="Tonalité" style="width:auto;padding:5px 8px;font-size:12.5px">'+keyOptions(p.key||'')+'</select>'+
@@ -2186,7 +2189,51 @@ function renderPieces(){
     if(!S.settings.focus)S.settings.focus={piece:'',len:30};
     S.settings.focus.piece=b.dataset.focus;saveSettings();
     buildSession();renderFocus();go('seance');};});
+  $$('#pList [data-edit]').forEach(function(b){b.onclick=function(){
+    editPieceId=b.dataset.edit;renderPieces();
+    var t=$('#pList [data-ef="title"]');if(t)t.focus();};});
+  $$('#pList [data-ecancel]').forEach(function(b){b.onclick=function(){editPieceId=null;renderPieces();};});
+  $$('#pList [data-esave]').forEach(function(b){b.onclick=function(){savePieceEdit(b.dataset.esave);};});
   renderFocus();
+}
+/* Fiche modifiable : tout ce qui nourrit la séance se corrige ici. */
+function pieceForm(p){
+  return '<div class="item" style="flex-direction:column;align-items:stretch;gap:9px;border-color:var(--brass)">'+
+    '<div class="eyebrow" style="margin:0">Modifier la fiche</div>'+
+    '<div class="row">'+
+      '<label class="fld" style="flex:1 1 200px">Titre<input type="text" data-ef="title" value="'+esc(p.title)+'"></label>'+
+      '<label class="fld" style="flex:1 1 150px">Compositeur<input type="text" data-ef="composer" value="'+esc(p.composer||'')+'"></label>'+
+    '</div>'+
+    '<div class="row">'+
+      '<label class="fld">État<select data-ef="status">'+
+        STATUS.map(function(s){return '<option value="'+s.id+'"'+(s.id===p.status?' selected':'')+'>'+s.n+'</option>';}).join('')+'</select></label>'+
+      '<label class="fld">Tonalité<select data-ef="key">'+keyOptions(p.key||'')+'</select></label>'+
+      '<label class="fld">Tempo actuel<input type="number" data-ef="currentBpm" min="20" max="300" value="'+(+p.currentBpm||'')+'"></label>'+
+      '<label class="fld">Tempo cible<input type="number" data-ef="targetBpm" min="20" max="300" value="'+(+p.targetBpm||'')+'"></label>'+
+    '</div>'+
+    '<label class="fld">Passages à surveiller<textarea data-ef="notes">'+esc(p.notes||'')+'</textarea></label>'+
+    '<div class="row tight">'+
+      '<button class="btn sm primary" data-esave="'+p.id+'">Enregistrer</button>'+
+      '<button class="btn sm ghost" data-ecancel="1">Annuler</button>'+
+    '</div></div>';
+}
+function savePieceEdit(id){
+  var p=pieceById(id);
+  if(!p){editPieceId=null;renderPieces();return;}
+  var v=function(k){var el=$('#pList [data-ef="'+k+'"]');return el?el.value:'';};
+  var t=v('title').trim();
+  if(!t){var el=$('#pList [data-ef="title"]');if(el)el.focus();return;}
+  p.title=t;
+  p.composer=v('composer').trim();
+  p.status=v('status');
+  p.key=v('key');
+  p.currentBpm=clamp(+v('currentBpm')||0,0,300);
+  p.targetBpm=clamp(+v('targetBpm')||0,0,300);
+  p.notes=v('notes').trim();
+  put('pieces/'+p.id,stripId(p));
+  editPieceId=null;
+  refreshFocusIfPiece(p.id);
+  renderPieces();renderToday();
 }
 function addPiece(){
   var t=$('#pTitle').value.trim();

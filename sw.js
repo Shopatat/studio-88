@@ -10,7 +10,7 @@
  * renouvellement chez tous les appareils.
  */
 'use strict';
-var CACHE = 'studio88-v3';
+var CACHE = 'studio88-v4';
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {
