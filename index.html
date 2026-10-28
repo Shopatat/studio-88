@@ -99,6 +99,8 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 .chip{display:inline-flex;align-items:center;gap:5px;background:var(--inset);border:1px solid transparent;
   border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--fg2)}
 .chip b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600}
+button.chip{cursor:pointer;transition:color .15s,border-color .15s}
+button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .chip.flame{color:var(--brass);background:var(--brass-w)}
 .chip.flame b{color:var(--brass)}
 .iconbtn{background:var(--inset);border:1px solid transparent;border-radius:999px;width:32px;height:32px;
@@ -215,7 +217,7 @@ input[type=checkbox]{accent-color:var(--brass)}
   transition:color .15s,border-color .15s}
 .qtop:hover{color:var(--fg);border-left-color:var(--brass)}
 .qtop cite{font-family:var(--f-body);font-style:normal;font-size:11px;font-weight:600;letter-spacing:.02em;
-  text-transform:none;opacity:.85;line-height:1.35}
+  text-transform:none;line-height:1.35}
 @media(max-width:640px){.qtop{order:3;flex-basis:100%;border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}
 /* parcours d'apprentissage */
 .lesson{border:1px solid var(--line);border-radius:var(--r3);background:var(--bg);overflow:hidden;transition:border-color .15s}
@@ -281,7 +283,7 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .kb.sm{height:112px}
 .key{position:absolute;top:0;border:1px solid var(--kb-line);cursor:pointer;padding:0;display:flex;align-items:flex-end;justify-content:center}
 .key.w{bottom:0;background:linear-gradient(#FEFDFB,#E9E5DC);border-radius:0 0 6px 6px;
-  box-shadow:inset 0 -4px 6px -4px rgba(0,0,0,.3);z-index:1;font-size:9.5px;font-weight:700;color:#8A857B;padding-bottom:6px}
+  box-shadow:inset 0 -4px 6px -4px rgba(0,0,0,.3);z-index:1;font-size:9.5px;font-weight:700;color:#625D53;padding-bottom:6px}
 .key.b{height:62%;background:linear-gradient(#484650,#121119);border-radius:0 0 4px 4px;border-color:#09090C;z-index:3;
   font-size:8px;color:#B9B4AA;padding-bottom:5px;box-shadow:0 2px 3px rgba(0,0,0,.4)}
 .key.w.hit{background:linear-gradient(#F2E6CD,#DCC89D)}
@@ -345,10 +347,10 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
       <div class="brand">Studio 88 <small>atelier de piano</small></div>
       <div class="hspace"></div>
       <div class="chips">
-        <span class="chip flame" id="chipStreak" title="Jours d'affilée">🔥 <b>0</b> j</span>
-        <span class="chip" id="chipToday" title="Minutes jouées aujourd'hui">⏱ <b>0</b>/20 min</span>
+        <button type="button" class="chip flame" id="chipStreak" data-goto="today">🔥 <b>0</b> j</button>
+        <button type="button" class="chip" id="chipToday" data-goto="today">⏱ <b>0</b>/20 min</button>
         <span class="chip" id="chipMidi" title="Clavier MIDI" hidden>🎛 <b>MIDI</b></span>
-        <span class="chip" id="chipSync" title="Stockage">● local</span>
+        <button type="button" class="chip" id="chipSync">● local</button>
         <button class="iconbtn" id="themeBtn" title="Thème clair / sombre" aria-label="Changer de thème">◐</button>
       </div>
     </div>
@@ -1068,14 +1070,18 @@ function saveLocal(){
 function loadLocal(){
   try{var raw=localStorage.getItem(LS);if(!raw)return false;var o=JSON.parse(raw);
     if(o.settings)S.settings=Object.assign(S.settings,o.settings);
-    if(!S.settings.routine||!S.settings.routine.length)S.settings.routine=cloneRoutine(DEF_ROUTINE);
+    S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
     if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
     if(!S.settings.focus)S.settings.focus={piece:'',len:30};
     S.pieces=o.pieces||[];S.sessions=o.sessions||[];S.drills=o.drills||{};
     S.learn=(o.learn&&o.learn.done)?o.learn:{done:{}};return true;
   }catch(e){return false;}
 }
-function setSync(txt,cls){var c=$('#chipSync');c.textContent='● '+txt;c.style.color=cls||'';}
+function setSync(txt,cls){
+  var c=$('#chipSync');c.textContent='● '+txt;c.style.color=cls||'';
+  c.title='Où sont enregistrées tes données : '+txt;
+  c.setAttribute('aria-label','Enregistrement : '+txt+' — voir le détail');
+}
 function stripId(o){var c=Object.assign({},o);delete c.id;return c;}
 
 /* ---- File d'attente ---------------------------------------------------
@@ -1083,7 +1089,12 @@ function stripId(o){var c=Object.assign({},o);delete c.id;return c;}
    ouverte) est consignée ici, relue au prochain démarrage et rejouée. Sans
    ça, la lecture de la base écrasait purement et simplement ce qui n'avait
    pas été envoyé. */
-function loadPending(){try{pending=JSON.parse(localStorage.getItem(PEND)||'{}')||{};}catch(e){pending={};}}
+/* Hors artifact (GitHub Pages), il n'y a aucune base : rien à mettre en attente. */
+var CLOUD=!!(window.claude&&window.claude.use);
+function loadPending(){
+  if(!CLOUD){pending={};try{localStorage.removeItem(PEND);}catch(e){}return;}
+  try{pending=JSON.parse(localStorage.getItem(PEND)||'{}')||{};}catch(e){pending={};}
+}
 function savePending(){try{localStorage.setItem(PEND,JSON.stringify(pending));}catch(e){}}
 function queue(path,obj){pending[path]=obj;savePending();syncChip();}
 function unqueue(path){if(pending.hasOwnProperty(path)){delete pending[path];savePending();}}
@@ -1104,13 +1115,13 @@ function flushPending(){
 }
 function put(path,obj){
   saveLocal();
-  if(!DB){queue(path,obj);return Promise.resolve();}
+  if(!DB){if(CLOUD)queue(path,obj);return Promise.resolve();}
   return DB.doc(path).set(obj).then(function(){unqueue(path);syncChip();},
     function(){queue(path,obj);});
 }
 function drop(path){
   saveLocal();
-  if(!DB){queue(path,null);return Promise.resolve();}
+  if(!DB){if(CLOUD)queue(path,null);return Promise.resolve();}
   return DB.doc(path).delete().then(function(){unqueue(path);syncChip();},
     function(){queue(path,null);});
 }
@@ -1163,7 +1174,12 @@ function initStore(){
       db.collection('drills').get(),
       db.doc('progress/learn').get()
     ]).then(function(r){
-      if(r[0].exists&&!pending['settings/app'])S.settings=Object.assign(S.settings,r[0].data());
+      if(r[0].exists&&!pending['settings/app']){
+        S.settings=Object.assign(S.settings,r[0].data());
+        S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
+        if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
+        if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+      }
       S.pieces=mergeList('pieces/',S.pieces,r[1].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
       S.sessions=mergeList('sessions/',S.sessions,r[2].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
       var rd={};r[3].docs.forEach(function(d){rd[d.id]=d.data();});
@@ -1198,6 +1214,19 @@ function ac(){
   if(AC&&AC.state==='suspended')AC.resume();
   return AC;
 }
+/* Tout le son passe par un compresseur doux : un accord joué pendant que le
+   métronome tourne ne fait plus saturer la sortie. */
+var OUT=null;
+function out(){
+  var c=ac();if(!c)return null;
+  if(!OUT){
+    OUT=c.createDynamicsCompressor();
+    OUT.threshold.value=-14;OUT.knee.value=12;OUT.ratio.value=4;
+    OUT.attack.value=0.003;OUT.release.value=0.2;
+    OUT.connect(c.destination);
+  }
+  return OUT;
+}
 function hz(m){return 440*Math.pow(2,(m-69)/12);}
 function playNote(m,dur,when,vel){
   var c=ac();if(!c)return;
@@ -1205,7 +1234,7 @@ function playNote(m,dur,when,vel){
   var f=hz(m);
   var g=c.createGain();
   var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=Math.min(6500,f*7+900);
-  g.connect(lp);lp.connect(c.destination);
+  g.connect(lp);lp.connect(out());
   g.gain.setValueAtTime(0.0001,when);
   g.gain.exponentialRampToValueAtTime(vel*0.3,when+0.008);
   g.gain.exponentialRampToValueAtTime(vel*0.10,when+0.18);
@@ -1234,8 +1263,12 @@ function click(when,kind){
   g.gain.setValueAtTime(0.0001,when);
   g.gain.exponentialRampToValueAtTime(kind===0?0.07:0.2,when+0.002);
   g.gain.exponentialRampToValueAtTime(0.0001,when+0.055);
-  o.connect(g);g.connect(c.destination);o.start(when);o.stop(when+0.08);
+  o.connect(g);g.connect(out());o.start(when);o.stop(when+0.08);
+  CLK.push(o);
+  o.onended=function(){var i=CLK.indexOf(o);if(i>=0)CLK.splice(i,1);};
 }
+var CLK=[];   /* clics programmés à l'avance, qu'on doit pouvoir faire taire */
+function hushClicks(){CLK.forEach(function(o){try{o.stop();}catch(e){}});CLK=[];}
 function chime(){var c=ac();if(!c)return;var t=c.currentTime+0.02;[72,76,79,84].forEach(function(m,i){playNote(m,1.6,t+i*0.13,0.5);});}
 
 /* =========================================================
@@ -1292,7 +1325,7 @@ function startVoice(m,vel){
   var f=hz(m),t=c.currentTime;
   var g=c.createGain(),lp=c.createBiquadFilter();
   lp.type='lowpass';lp.frequency.value=Math.min(7000,f*7+900);
-  g.connect(lp);lp.connect(c.destination);
+  g.connect(lp);lp.connect(out());
   g.gain.setValueAtTime(0.0001,t);
   g.gain.exponentialRampToValueAtTime(Math.max(0.02,vel*0.34),t+0.007);
   g.gain.exponentialRampToValueAtTime(Math.max(0.008,vel*0.12),t+0.4);
@@ -1532,7 +1565,11 @@ function greetWord(){
 function renderChips(){
   var st=streak(),tm=minutesOn(today());
   $('#chipStreak').innerHTML='🔥 <b>'+st+'</b> j';
+  $('#chipStreak').setAttribute('aria-label','Série : '+st+' jour'+(st>1?'s':'')+' d’affilée');
+  $('#chipStreak').title='Série de jours joués d’affilée';
   $('#chipToday').innerHTML='⏱ <b>'+tm+'</b>/'+S.settings.goal+' min';
+  $('#chipToday').setAttribute('aria-label','Aujourd’hui : '+tm+' minutes sur '+S.settings.goal);
+  $('#chipToday').title='Minutes jouées aujourd’hui, sur ton objectif';
 }
 function renderToday(){
   renderChips();
@@ -1761,7 +1798,17 @@ function renderRoutine(){
       '<span class="num sub" style="white-space:nowrap">'+(+b.m)+' min</span></div>';
   }).join('');
   $$('#routineEdit [data-rn]').forEach(function(el){el.onchange=function(){S.settings.routine[+el.dataset.rn].n=el.value;saveSettings();};});
-  $$('#routineEdit [data-rm]').forEach(function(el){el.onchange=function(){S.settings.routine[+el.dataset.rm].m=clamp(+el.value||1,1,120);saveSettings();renderRoutine();};});
+  $$('#routineEdit [data-rm]').forEach(function(el){el.onchange=function(){
+    var i=+el.dataset.rm,b=S.settings.routine[i],old=+b.m||1;
+    b.m=clamp(+el.value||1,1,120);
+    if(i===T.bi&&sessionBusy()){
+      /* le bloc en cours : le chrono suit la nouvelle durée */
+      var left=T.on?Math.round((T.end-Date.now())/1000):T.left;
+      T.left=Math.max(1,left+(b.m-old)*60);
+      if(T.on)T.end=Date.now()+T.left*1000;
+      paintTimer();
+    }
+    saveSettings();renderRoutine();};});
   $$('#routineEdit [data-rd]').forEach(function(el){el.onclick=function(){
     S.settings.routine.splice(+el.dataset.rd,1);
     if(!S.settings.routine.length)S.settings.routine=[{n:'Travail',m:20,d:'',bpm:0}];
@@ -1895,7 +1942,7 @@ function saveSession(){
   var fp=focusPiece();
   if(fp&&!$('#logBpmWrap').hidden){
     var nb=clamp(+$('#logBpm').value||0,0,300);
-    if(nb>0&&nb!==(+fp.currentBpm||0)){fp.currentBpm=nb;put('pieces/'+fp.id,stripId(fp));}
+    if(nb>0&&nb!==(+fp.currentBpm||0)){fp.currentBpm=nb;put('pieces/'+fp.id,stripId(fp));refreshFocusIfPiece(fp.id);}
   }
   ids.forEach(function(id){markReviewed(id);});
   $('#logCard').hidden=true;$('#logNotes').value='';
@@ -1951,7 +1998,7 @@ function metStart(){
   M.timer=setInterval(metSched,25);
 }
 function metStop(){
-  M.on=false;M.gen++;clearInterval(M.timer);
+  M.on=false;M.gen++;clearInterval(M.timer);hushClicks();
   $('#metBtn').textContent='▶ Démarrer';$('#metBtn').classList.add('primary');
   $$('#lamps .lamp').forEach(function(l){l.classList.remove('on');});
   releaseLock();
@@ -2089,9 +2136,9 @@ function drawCof(){
     out+='<text x="'+(cx+Math.cos(am)*(r1+(R-r1)/2)).toFixed(1)+'" y="'+(cy+Math.sin(am)*(r1+(R-r1)/2)+5).toFixed(1)+
       '" text-anchor="middle" font-size="17" fill="'+(i===curKey?'var(--on-brass)':'var(--fg)')+'" pointer-events="none">'+nm+'</text>';
     out+='<text x="'+(cx+Math.cos(am)*(r2+(r1-r2)/2)).toFixed(1)+'" y="'+(cy+Math.sin(am)*(r2+(r1-r2)/2)+4).toFixed(1)+
-      '" text-anchor="middle" font-size="12.5" fill="var(--fg2)" pointer-events="none">'+nmi+'</text>';
+      '" text-anchor="middle" font-size="14" fill="var(--fg2)" pointer-events="none">'+nmi+'</text>';
     out+='<text x="'+(cx+Math.cos(am)*(r2-22)).toFixed(1)+'" y="'+(cy+Math.sin(am)*(r2-22)+4).toFixed(1)+
-      '" text-anchor="middle" font-size="10.5" fill="var(--fg2)" pointer-events="none">'+(k.alt?k.alt+k.sign:'—')+'</text>';
+      '" text-anchor="middle" font-size="12" fill="var(--fg2)" pointer-events="none">'+(k.alt?k.alt+k.sign:'—')+'</text>';
   });
   out+='<circle cx="200" cy="200" r="48" fill="var(--inset)" stroke="var(--line)"/>'+
     '<text x="200" y="196" text-anchor="middle" font-size="11" fill="var(--fg2)">quintes</text>'+
@@ -2351,7 +2398,7 @@ function qEcho(){
     '<div class="kbwrap"><div class="kbfelt"></div><div class="kb sm" id="echoKB"></div></div>';
   buildKB($('#echoKB'),60,2,function(m){
     if(pos>=seq.length)return;
-    if(((m%12)+12)%12===((seq[pos]%12)+12)%12){
+    if(m===seq[pos]){
       pos++;$('#echoPos').textContent=pos+'/'+seq.length;
       if(pos===seq.length){
         fb(missed?'Phrase complète.':'Phrase complète. Bravo.',true);
@@ -2360,7 +2407,8 @@ function qEcho(){
       }
       else fb('',true);
     }else{
-      fb('Pas cette note — on réécoute.',false);
+      var sameName=((m%12)+12)%12===((seq[pos]%12)+12)%12;
+      fb(sameName?'Bonne note, mais pas à la bonne octave — on réécoute.':'Pas cette note — on réécoute.',false);
       if(!missed){missed=true;bumpDrill(false);}   /* une phrase ratée compte pour une, pas pour chaque doigt */
       D.q.play();pos=0;$('#echoPos').textContent='0/'+seq.length;
     }
@@ -2710,8 +2758,11 @@ function renderJournal(){
       '<div class="bar"><i style="width:'+p+'%"></i></div></div><span class="num sub">'+p+'% · '+t[k].n+'</span></div>';
   }).join(''):'<div class="empty">Fais quelques exercices : la réussite par type s’affiche ici.</div>';
   $('#sGoal').value=S.settings.goal;$('#sNames').value=S.settings.names;
-  $('#storeNote').textContent=DB?'Tes données sont enregistrées en ligne dans cette page : elles te suivent d’un appareil à l’autre.'
-    :'Tes données sont enregistrées dans ce navigateur. Ouvre la page connecté pour les synchroniser.';
+  var n=pendingCount();
+  $('#storeNote').textContent=(!localOk?'Ce navigateur refuse d’enregistrer (stockage plein ou navigation privée) : exporte une sauvegarde avant de fermer. ':'')+
+    (DB?'Tes données sont enregistrées en ligne dans cette page : elles te suivent d’un appareil à l’autre.'
+    :'Tes données sont enregistrées dans ce navigateur, sur cet appareil seulement.')+
+    (n?' '+n+' modification'+(n>1?'s attendent':' attend')+' le réseau : elle'+(n>1?'s':'')+' partir'+(n>1?'ont':'a')+' dès que la connexion revient.':'');
 }
 /* Un 31 février ou une date à venir donnerait une séance qu'aucun jour ne peut
    égaler : invisible dans le graphe, mais comptée dans les totaux. */
@@ -2852,6 +2903,10 @@ function wire(){
     applyTheme();saveSettings();drawCof();
   };
   $$('[data-goto]').forEach(function(b){b.onclick=function(){go(b.dataset.goto);};});
+  $('#chipSync').onclick=function(){
+    go('journal');
+    var n=$('#storeNote');if(n&&n.scrollIntoView)n.scrollIntoView({block:'center'});
+  };
   $('#cardNew').onclick=function(){cardIndex=(cardIndex+1+Math.floor(Math.random()*3))%CARDS.length;renderToday();};
   $('#quoteNew').onclick=function(){quoteIndex=(quoteIndex+1+Math.floor(Math.random()*5))%QUOTES.length;renderQuote();};
   /* séance */
