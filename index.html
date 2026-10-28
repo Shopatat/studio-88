@@ -228,15 +228,6 @@ input[type=checkbox]{accent-color:var(--brass)}
   color:var(--fg2);font-size:13.5px}
 .empty b{display:block;font-family:var(--f-disp);font-size:18px;color:var(--fg);margin-bottom:5px;font-weight:600}
 .rail{border-left:2px solid var(--brass);padding-left:14px}
-/* citation du jour, discrète, dans la ligne de titre */
-.qtop{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:4px;text-align:left;
-  background:none;border:0;border-left:1px solid var(--line);padding:3px 0 3px 15px;
-  font-family:var(--f-disp);font-style:italic;font-size:15px;line-height:1.4;color:var(--fg2);
-  transition:color .15s,border-color .15s}
-.qtop:hover{color:var(--fg);border-left-color:var(--brass)}
-.qtop cite{font-family:var(--f-body);font-style:normal;font-size:11px;font-weight:600;letter-spacing:.02em;
-  text-transform:none;line-height:1.35}
-@media(max-width:640px){.qtop{order:3;flex-basis:100%;border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}
 /* parcours d'apprentissage */
 .lesson{border:1px solid var(--line);border-radius:var(--r3);background:var(--bg);overflow:hidden;transition:border-color .15s}
 .lesson.done{border-color:color-mix(in srgb,var(--good) 32%,var(--line))}
@@ -399,10 +390,6 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <div class="eyebrow" id="todayDate">—</div>
           <h1 class="ttl" style="font-size:26px" id="greeting">Au clavier</h1>
         </div>
-        <button class="qtop" id="quoteNew" title="Une autre citation">
-          <span id="qText"></span>
-          <cite id="qWho"></cite>
-        </button>
         <button class="btn primary" data-goto="seance">▶ Séance</button>
       </div>
 
@@ -995,40 +982,6 @@ var CARDS=[
 ];
 
 /* Citations : [texte, auteur, étiquette, attribution incertaine ?] */
-var QUOTES=[
- ['Je crois que je fais des progrès.','Pablo Casals, à 90 ans, sur ses trois heures de travail quotidiennes','Humilité',0],
- ['Les notes, je ne les joue pas mieux que bien d’autres. Mais les silences entre les notes — ah, c’est là qu’est l’art.','Artur Schnabel','Écoute',0],
- ['Le piano n’a pas de fausses notes.','Thelonious Monk','Liberté',0],
- ['Quand tu joues une note fausse, c’est la note suivante qui la rend juste ou fausse.','Miles Davis','Rebond',0],
- ['N’aie pas peur des erreurs : il n’y en a pas.','Miles Davis','Audace',1],
- ['Il y a deux sortes de musique : la bonne, et l’autre.','Duke Ellington','Franchise',0],
- ['Si tu ne le vis pas, ça ne sortira pas de ton instrument.','Charlie Parker','Sincérité',0],
- ['Monsieur Wagner a de beaux moments, mais de mauvais quarts d’heure.','Gioachino Rossini','Griffe',1],
- ['Donnez-moi une liste de blanchisserie, et je la mettrai en musique.','Gioachino Rossini','Métier',1],
- ['Je suis venu au monde très jeune, dans un temps très vieux.','Erik Satie','Sourire',0],
- ['Avant d’écrire une œuvre, j’en fais le tour plusieurs fois, accompagné de moi-même.','Erik Satie','Sourire',0],
- ['Si je ne travaille pas un jour, je le sais. Deux jours, les critiques le savent. Trois jours, le public le sait.','Arthur Rubinstein','Régularité',1],
- ['Je suis un général : mes soldats, ce sont les touches.','Vladimir Horowitz','Caractère',0],
- ['Je déteste le public. Pas les gens un par un : le public en masse.','Glenn Gould','Sourire',0],
- ['Il faut chercher la discipline dans la liberté.','Claude Debussy','Cadre',0],
- ['Jouer une fausse note est insignifiant ; jouer sans passion est impardonnable.','Ludwig van Beethoven','Engagement',1],
- ['Il n’y a rien de remarquable : il suffit de toucher la bonne touche au bon moment.','Jean-Sébastien Bach','Modestie',1],
- ['Rien n’est plus beau qu’une guitare — sauf peut-être deux.','Frédéric Chopin','Sourire',1],
- ['Le rire est la distance la plus courte entre deux personnes.','Victor Borge, pianiste et clown de scène','Sourire',0],
- ['J’ai pleuré tout le long du chemin jusqu’à la banque.','Liberace, à propos de ses mauvaises critiques','Aplomb',0],
- ['Je ne suis attiré que par la musique meilleure que ce qu’on peut en jouer.','Artur Schnabel','Exigence',0],
- ['Les musiciens ne prennent pas leur retraite : ils s’arrêtent quand il n’y a plus de musique en eux.','Louis Armstrong','Au long cours',0],
- ['Madame, si vous avez besoin de demander ce qu’est le jazz, vous ne le saurez jamais.','Fats Waller','Sourire',1],
- ['Si tu joues un morceau et que personne ne tape du pied, ne joue pas ce morceau.','Count Basie','Groove',1],
- ['Le jazz n’est pas un quoi, c’est un comment.','Bill Evans','Manière',0],
- ['Composer me donne un grand plaisir : rien ne dépasse la joie de créer.','Clara Schumann','Joie',0],
- ['Je suis né avec la musique en moi.','Ray Charles','Évidence',0],
- ['Le devoir d’un artiste est de refléter son époque.','Nina Simone','Sens',0],
- ['La vie ressemble beaucoup au jazz : elle est meilleure quand on improvise.','George Gershwin','Souplesse',1],
- ['Tout ce que tu fais doit avoir pour conditions le choix, l’amour, la passion.','Nadia Boulanger','Exigence',0],
- ['La musique commence là où s’arrête le pouvoir des mots.','Richard Wagner','Au-delà',1],
- ['Si l’on aime la vie, la vie vous aime en retour.','Arthur Rubinstein','Élan',0]
-];
 
 var BADGE_DEFS=[
  {id:'first',i:'🎹',n:'Première séance',t:function(x){return x.sessions>=1;}},
@@ -1637,7 +1590,6 @@ function renderToday(){
   renderLearnTeaser();
   var c=CARDS[cardIndex%CARDS.length];
   $('#cardText').textContent=c[0];$('#cardKind').textContent=c[1];
-  renderQuote();
   var due=duePieces();
   $('#dueList').innerHTML=due.length?'<div class="list">'+due.slice(0,5).map(function(p){
     var d=dueIn(p);
@@ -1662,12 +1614,6 @@ function tile(k,v,s,extra){
   return '<div class="tile"><div class="k">'+k+'</div><div class="v">'+v+' <small>'+(s||'')+'</small></div>'+(extra||'')+'</div>';
 }
 var cardIndex=(function(){var d=new Date();return (d.getFullYear()*372+d.getMonth()*31+d.getDate())%CARDS.length;})();
-var quoteIndex=(function(){var d=new Date();return ((d.getFullYear()*372+d.getMonth()*31+d.getDate())*7+3)%QUOTES.length;})();
-function renderQuote(){
-  var q=QUOTES[quoteIndex%QUOTES.length];
-  $('#qText').textContent='« '+q[0]+' »';
-  $('#qWho').textContent=q[1];
-}
 
 function markReviewed(id){
   S.pieces.forEach(function(p){
@@ -3095,7 +3041,6 @@ function wire(){
     var n=$('#storeNote');if(n&&n.scrollIntoView)n.scrollIntoView({block:'center'});
   };
   $('#cardNew').onclick=function(){cardIndex=(cardIndex+1+Math.floor(Math.random()*3))%CARDS.length;renderToday();};
-  $('#quoteNew').onclick=function(){quoteIndex=(quoteIndex+1+Math.floor(Math.random()*5))%QUOTES.length;renderQuote();};
   /* séance */
   $('#btnStart').onclick=startTimer;
   $('#btnNext').onclick=nextBlock;

@@ -11,7 +11,7 @@ le son, et tes données enregistrées sur ton appareil.
 
 | Onglet | À quoi ça sert |
 | --- | --- |
-| **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours, jalons, et la citation du jour. |
+| **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
 | **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
 | **Apprentissage** | 18 leçons en 4 niveaux : un paragraphe, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. |
