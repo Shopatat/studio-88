@@ -1853,6 +1853,7 @@ function renderTips(){
 function saveTips(v){
   S.settings.nextTips=(v||'').slice(0,2000);
   saveSettings();renderTips();
+  if(sessionBusy())paintTask();   /* corrigée en pleine séance : elle se met à jour sous le minuteur */
 }
 function paintMode(){
   var sim=simpleMode();
@@ -1893,6 +1894,13 @@ function setMetroBpm(b){
 /* Pendant la séance seulement : le programme complet est déjà lisible à côté. */
 function paintTask(){
   var r=S.settings.routine,b=r[T.bi]||r[0],el=$('#nowTask');
+  /* Séance simple : pas de consigne de bloc à cet endroit, on y met ce qu'on
+     s'est laissé à revoir — sous les yeux pendant qu'on joue. */
+  if(simpleMode()&&sessionBusy()&&tipsText()){
+    el.hidden=false;
+    el.innerHTML='<div class="tk">À revoir</div><div class="tb">'+esc(tipsText()).replace(/\n/g,'<br>')+'</div>';
+    return;
+  }
   if(!b||!b.d||!sessionBusy()){el.hidden=true;return;}
   el.hidden=false;
   el.innerHTML='<div class="tk">'+(T.on?'Maintenant — ':'')+esc(b.n)+'</div><div class="tb">'+esc(b.d)+'</div>'+
