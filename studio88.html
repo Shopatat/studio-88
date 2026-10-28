@@ -85,6 +85,22 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .iconbtn{background:var(--inset);border:1px solid transparent;border-radius:999px;width:32px;height:32px;
   display:grid;place-items:center;font-size:14px;color:var(--fg2);transition:color .15s,background .15s}
 .iconbtn:hover{color:var(--brass);background:var(--brass-w)}
+/* Mini-lecteur : la séance et le métronome restent à portée de doigt depuis tous les onglets. */
+.mini{display:flex;gap:6px;align-items:center}
+.mgrp{display:inline-flex;align-items:center;gap:1px;background:var(--inset);border:1px solid transparent;
+  border-radius:999px;padding:2px;transition:border-color .15s,background .15s}
+.mgrp.on{border-color:color-mix(in srgb,var(--brass) 45%,transparent);background:var(--brass-w)}
+.mgrp button{background:none;border:0;padding:0}
+.mbtn{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;font-size:10px;
+  background:linear-gradient(var(--brass2),var(--brass))!important;color:var(--on-brass);transition:filter .15s}
+.mbtn:hover{filter:brightness(1.08)}
+.mlbl{padding:0 8px!important;height:28px;font-size:12px;font-weight:600;color:var(--fg2);white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;transition:color .15s}
+.mlbl b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600}
+.mlbl:hover,.mstep:hover{color:var(--brass)}
+.mname{max-width:13ch;overflow:hidden;text-overflow:ellipsis}
+.mstep{width:24px;height:28px;border-radius:999px;font-size:15px;line-height:1;color:var(--fg2)}
+@media (max-width:600px){.mname,.mstep{display:none}}
 /* le dégradé local révèle une ombre au bord dès qu'il reste des onglets à faire défiler */
 .tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   background:
@@ -311,6 +327,8 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
 @media (pointer:coarse){
   .btn.sm{padding:10px 14px;font-size:13px}
   .iconbtn{width:40px;height:40px}
+  .mbtn,.mlbl{height:36px}.mbtn{width:36px}
+  .mstep{width:32px;height:36px}
   .tabs button{padding:13px 15px 14px}
   .seg button{padding:10px 14px}
   .dot{padding:9px 11px}
@@ -331,6 +349,18 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <span class="chip" id="chipMidi" title="Clavier MIDI" hidden>🎛 <b>MIDI</b></span>
         <button type="button" class="chip" id="chipSync">● local</button>
         <button class="iconbtn" id="themeBtn" title="Thème clair / sombre" aria-label="Changer de thème">◐</button>
+        <div class="mini">
+          <div class="mgrp" id="miniT" hidden>
+            <button type="button" class="mbtn" id="miniTPlay">❚❚</button>
+            <button type="button" class="mlbl" id="miniTGo" title="Ouvrir la séance"><span class="mname" id="miniTName"></span><b id="miniTClock">00:00</b></button>
+          </div>
+          <div class="mgrp" id="miniM">
+            <button type="button" class="mbtn" id="miniMPlay">▶</button>
+            <button type="button" class="mstep" data-mstep="-1" aria-label="Ralentir le métronome" title="Ralentir">−</button>
+            <button type="button" class="mlbl" id="miniMGo" title="Ouvrir le métronome">♩ <b id="miniMBpm">92</b></button>
+            <button type="button" class="mstep" data-mstep="1" aria-label="Accélérer le métronome" title="Accélérer">+</button>
+          </div>
+        </div>
       </div>
     </div>
     <nav class="tabs" role="tablist" id="tabs"></nav>
@@ -1838,6 +1868,7 @@ function setSessionControls(){
   var busy=sessionBusy();
   $('#btnNext').disabled=!busy;
   $('#btnStop').disabled=!busy;
+  paintMini();
 }
 function startTimer(){
   if(T.on){ /* pause */
@@ -1868,6 +1899,24 @@ function paintTimer(){
   setRing(frac);
   var seg=$('#ribbon .now');
   if(seg)seg.style.setProperty('--p',Math.round(frac*100)+'%');
+  paintMini();
+}
+function paintMini(){
+  var t=$('#miniT');if(!t)return;
+  var busy=sessionBusy(),r=S.settings.routine,b=r[T.bi]||r[0];
+  t.hidden=!busy||!b;
+  if(!t.hidden){
+    $('#miniTName').textContent=b.n;$('#miniTClock').textContent=fmtClock(T.left);
+    var p=$('#miniTPlay');p.textContent=T.on?'❚❚':'▶';
+    p.setAttribute('aria-label',T.on?'Mettre la séance en pause':'Reprendre la séance');
+    $('#miniTGo').setAttribute('aria-label','Séance : '+b.n+', '+fmtClock(T.left)+(T.on?'':', en pause'));
+    t.classList.toggle('on',T.on);
+  }
+  var m=$('#miniMPlay');m.textContent=M.on?'■':'▶';
+  m.setAttribute('aria-label',M.on?'Arrêter le métronome':'Lancer le métronome');
+  $('#miniMBpm').textContent=M.bpm;
+  $('#miniMGo').setAttribute('aria-label','Métronome : '+M.bpm+' battements par minute');
+  $('#miniM').classList.toggle('on',M.on);
 }
 function nextBlock(){
   var r=S.settings.routine;
@@ -1962,6 +2011,7 @@ function paintMet(){
     var on=l.children[i].classList.contains('on');
     l.children[i].className='lamp'+(i===0&&M.accent?' acc':'')+(on?' on':'');
   }
+  paintMini();
 }
 function setBpm(v){
   M.bpm=clamp(Math.round(v),30,240);$('#bpmRange').value=M.bpm;
@@ -1989,6 +2039,7 @@ function metStop(){
   releaseLock();
   var saved=+(S.settings.metro&&S.settings.metro.bpm)||M.bpm;
   if(saved!==M.bpm)setBpmLive(saved); /* le tempo progressif ne confisque pas ton réglage */
+  paintMini();
 }
 /* Remet le planificateur à l'heure après une mise en veille ou une interruption
    audio : on repart au début d'une mesure au lieu de rattraper les temps manqués. */
@@ -2908,6 +2959,11 @@ function wire(){
   $('#logCancel').onclick=function(){$('#logCard').hidden=true;$('#logNotes').value='';};
   /* métronome */
   $('#metBtn').onclick=function(){M.on?metStop():metStart();};
+  $('#miniTPlay').onclick=startTimer;
+  $('#miniTGo').onclick=function(){go('seance');};
+  $('#miniMPlay').onclick=function(){M.on?metStop():metStart();};
+  $('#miniMGo').onclick=function(){go('metronome');};
+  $$('[data-mstep]').forEach(function(b){b.onclick=function(){setBpm(M.bpm+(+b.dataset.mstep));};});
   $('#bpmRange').oninput=function(){setBpm(+this.value);};
   $$('[data-bpm]').forEach(function(b){b.onclick=function(){setBpm(M.bpm+(+b.dataset.bpm));};});
   $('#tapBtn').onclick=function(){
