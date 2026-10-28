@@ -160,6 +160,10 @@ input[type=range]{width:100%;accent-color:var(--brass)}
 @media(min-width:560px){.lbody{padding-left:46px}}
 .lbody p{font-size:14px;line-height:1.55;max-width:62ch}
 .todo{border-left:3px solid var(--brass);padding-left:11px;font-size:13px;color:var(--fg2)}
+.task{margin-top:13px;padding:11px 13px;border-radius:12px;background:var(--inset);border-left:3px solid var(--brass)}
+.task .tk{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg2);font-weight:700}
+.task .tb{font-size:14px;line-height:1.55;margin-top:5px}
+.task .row{margin-top:9px}
 .todo b{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
 details.tuck{border:1px dashed var(--line);border-radius:12px;padding:11px 14px}
 details.tuck>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--fg2);list-style:none}
@@ -301,6 +305,19 @@ details.tuck[open]>summary{margin-bottom:12px}
   <!-- =============== SÉANCE =============== -->
   <section id="t-seance" role="tabpanel" aria-label="Séance" hidden>
     <div class="grid g2">
+      <div class="card span">
+        <div class="eyebrow">Au programme</div>
+        <div class="row" style="align-items:flex-end">
+          <label class="fld" style="flex:1 1 230px">Morceau travaillé<select id="focusPiece"></select></label>
+          <label class="fld" style="flex:0 0 130px">Durée<select id="focusLen">
+            <option value="15">15 min</option><option value="20">20 min</option>
+            <option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option>
+          </select></label>
+          <button class="btn" id="focusBuild">Refaire la séance</button>
+        </div>
+        <div class="mt" id="focusInfo" style="margin-top:9px"></div>
+      </div>
+
       <div class="card">
         <div class="eyebrow">Minuteur</div>
         <div class="row" style="gap:18px;align-items:center">
@@ -319,23 +336,20 @@ details.tuck[open]>summary{margin-bottom:12px}
           <button class="btn" id="btnNext">Bloc suivant ⏭</button>
           <button class="btn ghost" id="btnStop">Terminer</button>
         </div>
+        <div class="task" id="nowTask" hidden></div>
         <div class="hr"></div>
         <div class="list" id="blockProgress"></div>
       </div>
 
       <div class="card">
         <div class="row" style="justify-content:space-between">
-          <div class="eyebrow" style="margin:0">Ta routine</div>
-          <div class="row tight">
-            <button class="btn sm ghost" data-preset="15">15 min</button>
-            <button class="btn sm ghost" data-preset="30">30 min</button>
-            <button class="btn sm ghost" data-preset="45">45 min</button>
-          </div>
+          <div class="eyebrow" style="margin:0">Les blocs de cette séance</div>
+          <span class="sub" id="routineTotal"></span>
         </div>
         <div class="list" id="routineEdit" style="margin-top:10px"></div>
         <div class="row" style="margin-top:10px">
           <button class="btn sm" id="addBlock">+ Ajouter un bloc</button>
-          <span class="sub" id="routineTotal"></span>
+          <span class="sub">Tu peux toujours renommer, rallonger ou retirer un bloc.</span>
         </div>
       </div>
 
@@ -343,6 +357,7 @@ details.tuck[open]>summary{margin-bottom:12px}
         <div class="eyebrow">Bilan de séance</div>
         <div class="row" style="align-items:flex-end">
           <label class="fld">Minutes jouées<input type="number" id="logMin" min="1" max="600" step="1"></label>
+          <label class="fld" id="logBpmWrap" hidden style="flex:0 0 160px"><span id="logBpmLbl">Tempo atteint</span><input type="number" id="logBpm" min="20" max="300" step="1"></label>
           <label class="fld" style="flex:1 1 180px">Ressenti
             <div class="seg" id="logMood" role="group" aria-label="Ressenti">
               <button type="button" data-m="1">😖</button><button type="button" data-m="2">😐</button>
@@ -600,6 +615,7 @@ details.tuck[open]>summary{margin-bottom:12px}
         </div>
         <div class="row" style="margin-top:8px">
           <label class="fld">État<select id="pStatus"></select></label>
+          <label class="fld">Tonalité<select id="pKey"></select></label>
           <label class="fld">Tempo actuel<input type="number" id="pCur" min="20" max="300" placeholder="60"></label>
           <label class="fld">Tempo cible<input type="number" id="pTgt" min="20" max="300" placeholder="72"></label>
         </div>
@@ -850,9 +866,62 @@ var DEF_ROUTINE=[
  {n:'Travail ciblé',m:20,d:'Petites boucles sur les passages durs'},
  {n:'Plaisir',m:5,d:'Joue pour jouer'}
 ];
-function cloneRoutine(r){return r.map(function(b){return {n:b.n,m:+b.m,d:b.d||''};});}
+function cloneRoutine(r){return r.map(function(b){return {n:b.n,m:+b.m,d:b.d||'',bpm:+b.bpm||0};});}
+
+/* Recettes de séance : ce qu'on fait sur un morceau dépend d'où il en est.
+   w = poids relatif (la durée choisie est répartie dessus), bpm = repère de
+   métronome calculé à partir des tempos du morceau. */
+var RECIPES={
+ decouverte:{
+  h:'Tu défriches. Peu de mesures, beaucoup de lenteur.',
+  bl:[
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces, loin du morceau.'},
+   {n:'Repérage',w:4,d:'Partition sous les yeux, sans jouer : {arm}, la forme, les retours du thème, les changements de main. Note les doigtés au crayon.'},
+   {n:'Mains séparées',w:7,d:'Quatre à huit mesures, pas plus. Main gauche seule, puis main droite seule.',bpm:'slow'},
+   {n:'Mains ensemble',w:7,d:'Les mêmes mesures, encore plus lentement. Tu t’arrêtes avant la faute, pas après.',bpm:'veryslow'},
+   {n:'Plaisir',w:3,d:'Autre chose : ce que tu sais déjà jouer. On termine en musique.'}
+  ]},
+ travail:{
+  h:'Le cœur du travail : une difficulté à la fois, et les coutures autour.',
+  bl:[
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. Rien de difficile.'},
+   {n:'Technique utile',w:4,d:'{gamme}, mains ensemble, deux octaves. C’est le terrain du morceau, pas une corvée à part.',bpm:'work'},
+   {n:'Le passage qui coince',w:9,d:'Boucle courte sur {spots}. Cinq passages nets d’affilée avant d’élargir d’une mesure.',bpm:'slow'},
+   {n:'Raccords',w:5,d:'Deux mesures avant, deux mesures après ce passage. C’est la couture qui lâche en concert, pas le passage lui-même.',bpm:'slow'},
+   {n:'Jeu continu',w:5,d:'{t} d’un bout à l’autre, sans t’arrêter, même avec des fautes. Tu notes au passage où ça accroche encore.',bpm:'work'},
+   {n:'Plaisir',w:2,d:'Joue pour jouer.'}
+  ]},
+ presque:{
+  h:'Ça tient. Reste le tempo, la continuité et les départs à froid.',
+  bl:[
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. {gamme}, en mouvement contraire.'},
+   {n:'Montée en tempo',w:8,d:'{spots}, {climb}. Tu redescends d’un palier dès que ce n’est plus net.'},
+   {n:'Points de reprise',w:6,d:'Quatre endroits au hasard dans {t}. Départ à froid, sans élan, sans reprendre depuis le début.',bpm:'work'},
+   {n:'Intégrale',w:7,d:'En entier, nuances et pédale, sans t’arrêter quoi qu’il arrive.',bpm:'work'},
+   {n:'Écoute',w:3,d:'Enregistre une minute, réécoute : une chose à garder, une chose à changer. Sans te juger.'}
+  ]},
+ memorise:{
+  h:'Par cœur : on consolide la mémoire autrement que par les doigts.',
+  bl:[
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
+   {n:'Par cœur au ralenti',w:7,d:'Au tiers du tempo, partition fermée. Là où la mémoire flanche, tu as trouvé le travail du jour.',bpm:'veryslow'},
+   {n:'Départs à froid',w:6,d:'Quatre points de reprise dans {t}, pris au hasard, sans élan.',bpm:'work'},
+   {n:'Intégrale au tempo',w:8,d:'En entier, au tempo, comme devant quelqu’un. Une seule prise.',bpm:'target'},
+   {n:'Détail',w:3,d:'Une seule chose à soigner : une nuance, une respiration, une fin de phrase.'}
+  ]},
+ entretien:{
+  h:'Il est à toi. On vérifie ce qui a glissé, et on en profite.',
+  bl:[
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
+   {n:'Relecture',w:5,d:'Partition sous les yeux pour {t} : cherche ce qui a glissé depuis la dernière fois. Doigtés, pédale, nuances oubliées.'},
+   {n:'Intégrale',w:7,d:'En entier, au tempo. Tu l’as, profite.',bpm:'target'},
+   {n:'Point faible',w:5,d:'Si un endroit a bougé : {spots}, trois passages lents, puis au tempo.',bpm:'slow'},
+   {n:'Plaisir',w:4,d:'Un autre morceau du répertoire, ou improvise. L’entretien n’est pas une corvée.'}
+  ]}
+};
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
+            focus:{piece:'',len:30},
             metro:{bpm:92,beats:4,sub:1,accent:true}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
@@ -864,6 +933,7 @@ function loadLocal(){
     if(o.settings)S.settings=Object.assign(S.settings,o.settings);
     if(!S.settings.routine||!S.settings.routine.length)S.settings.routine=cloneRoutine(DEF_ROUTINE);
     if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
+    if(!S.settings.focus)S.settings.focus={piece:'',len:30};
     S.pieces=o.pieces||[];S.sessions=o.sessions||[];S.drills=o.drills||{};
     S.learn=(o.learn&&o.learn.done)?o.learn:{done:{}};return true;
   }catch(e){return false;}
@@ -1280,6 +1350,139 @@ function markReviewed(id){
    9. Vue : Séance guidée
    ========================================================= */
 var T={on:false,bi:0,left:0,tick:null,played:0,lock:null};
+
+/* --- La séance se construit à partir du morceau au programme --------- */
+var FREE_RECIPE=[
+ {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
+ {n:'Technique',w:5,d:'Gammes et arpèges au métronome.'},
+ {n:'Déchiffrage',w:3,d:'Du neuf, très lentement.'},
+ {n:'Travail ciblé',w:8,d:'Petites boucles sur les passages durs.'},
+ {n:'Plaisir',w:3,d:'Joue pour jouer.'}
+];
+function pieceById(id){for(var i=0;i<S.pieces.length;i++){if(S.pieces[i].id===id)return S.pieces[i];}return null;}
+function focusPiece(){return S.settings.focus?pieceById(S.settings.focus.piece):null;}
+function sessionBusy(){return T.on||T.bi>0||T.left>0;}
+
+/* Séance courte : on garde l'échauffement et les blocs les plus lourds,
+   plutôt que d'émietter la durée sur six blocs de deux minutes. */
+function trimRecipe(bl,len){
+  var max=Math.max(4,Math.floor(len/5));
+  if(bl.length<=max)return bl.slice();
+  var keep=[],opt=[];
+  bl.forEach(function(b,i){(b.keep?keep:opt).push({b:b,i:i});});
+  opt.sort(function(a,b){return b.b.w-a.b.w;});
+  var chosen=keep.concat(opt.slice(0,Math.max(0,max-keep.length)));
+  chosen.sort(function(a,b){return a.i-b.i;});
+  return chosen.map(function(x){return x.b;});
+}
+/* Répartit une durée totale sur des poids, minimum deux minutes par bloc. */
+function shareMinutes(w,total){
+  var W=0,i;for(i=0;i<w.length;i++)W+=w[i];
+  var out=w.map(function(x){return Math.max(2,Math.round(total*x/W));});
+  var sum=0;out.forEach(function(x){sum+=x;});
+  var guard=0;
+  while(sum!==total&&guard++<400){
+    var bi=0,k;
+    for(k=0;k<out.length;k++)if(out[k]>out[bi])bi=k;
+    if(sum>total){
+      var sm=-1;
+      for(k=0;k<out.length;k++)if(out[k]>2&&(sm<0||out[k]>out[sm]))sm=k;
+      if(sm<0)break;
+      out[sm]--;sum--;
+    } else {out[bi]++;sum++;}
+  }
+  return out;
+}
+/* Repères de métronome déduits des tempos du morceau. */
+function tempoRefs(p){
+  var work=+p.currentBpm||0,tgt=+p.targetBpm||0;
+  if(!work&&tgt)work=Math.round(tgt*0.7);
+  if(!tgt)tgt=work;
+  return {work:work,target:tgt,
+    slow:work?Math.max(30,Math.round(work*0.75)):0,
+    veryslow:work?Math.max(30,Math.round(work*0.6)):0};
+}
+function fillTask(d,p){
+  var r=tempoRefs(p),spots=(p.notes||'').trim().replace(/[.;,\s]+$/,'');
+  return d.replace(/\{t\}/g,p.title)
+    .replace(/\{spots\}/g,spots||'le passage qui résiste le plus')
+    .replace(/\{gamme\}/g,p.key?('Gamme de '+p.key+' et son arpège'):'La gamme de la tonalité du morceau et son arpège')
+    .replace(/\{arm\}/g,p.key?('l’armure de '+p.key):'l’armure')
+    .replace(/\{climb\}/g,(r.work&&r.target>r.work)
+      ?('de '+r.work+' à '+r.target+' bpm par paliers de 4 bpm, trois passages nets avant chaque palier')
+      :'par petits paliers, trois passages nets avant chaque accélération');
+}
+function sessionLen(){return clamp(+(S.settings.focus&&S.settings.focus.len)||30,5,180);}
+function buildSession(){
+  if(sessionBusy())return false;
+  var len=sessionLen(),p=focusPiece();
+  if(!p){
+    var fb=trimRecipe(FREE_RECIPE,len);
+    var fm=shareMinutes(fb.map(function(b){return b.w;}),len);
+    S.settings.routine=fb.map(function(b,i){return {n:b.n,m:fm[i],d:b.d,bpm:0};});
+  } else {
+    var rec=RECIPES[p.status]||RECIPES.travail,r=tempoRefs(p);
+    var bl=trimRecipe(rec.bl,len);
+    var mins=shareMinutes(bl.map(function(b){return b.w;}),len);
+    S.settings.routine=bl.map(function(b,i){
+      var bpm=b.bpm?r[b.bpm]:0,d=fillTask(b.d,p);
+      if(bpm)d+=' Métronome ≈ '+bpm+' bpm.';
+      return {n:b.n,m:mins[i],d:d,bpm:bpm||0};
+    });
+  }
+  saveSettings();renderRoutine();
+  return true;
+}
+/* Un changement d'état, de tonalité ou de tempo change la séance du jour. */
+function refreshFocusIfPiece(id){
+  if(S.settings.focus&&S.settings.focus.piece===id)buildSession();
+}
+function renderFocus(){
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+  var f=S.settings.focus,sel=$('#focusPiece');
+  sel.innerHTML='<option value="">Aucun — routine libre</option>'+S.pieces.map(function(p){
+    return '<option value="'+p.id+'">'+esc(p.title)+(p.composer?' — '+esc(p.composer):'')+'</option>';
+  }).join('');
+  sel.value=f.piece||'';
+  if(sel.value!==(f.piece||'')){f.piece='';sel.value='';}
+  $('#focusLen').value=String(f.len||30);
+  var p=focusPiece(),info=$('#focusInfo'),busy=sessionBusy()?
+    '<div style="margin-top:4px">Séance en cours : termine-la pour reconstruire les blocs.</div>':'';
+  if(!S.pieces.length){
+    info.innerHTML='Ajoute ce que tu travailles dans <b>Répertoire</b> — l’appli construira alors la séance autour de ce morceau, de son état d’avancement et de son tempo. '+
+      '<button class="btn sm ghost" id="focusGo" style="margin-top:8px">Aller au répertoire</button>';
+    var g=$('#focusGo');if(g)g.onclick=function(){go('repertoire');};
+    return;
+  }
+  if(!p){info.innerHTML='Routine libre, détachée du répertoire : les blocs ci-dessous sont les tiens.'+busy;return;}
+  var st=statusOf(p.status),r=tempoRefs(p),rec=RECIPES[p.status]||RECIPES.travail;
+  info.innerHTML='<b>'+esc(p.title)+'</b> · '+st.n+(r.work?' · '+r.work+' → '+r.target+' bpm':'')+(p.key?' · '+esc(p.key):'')+
+    '<div style="margin-top:4px">'+esc(rec.h)+'</div>'+
+    ((p.notes||'').trim()?'<div style="margin-top:4px">Passages à surveiller : '+esc(p.notes)+'</div>':'')+busy;
+}
+function focusChanged(){
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+  S.settings.focus.piece=$('#focusPiece').value;
+  S.settings.focus.len=clamp(+$('#focusLen').value||30,5,180);
+  saveSettings();
+  buildSession();
+  renderFocus();
+}
+function setMetroBpm(b){
+  M.bpm=clamp(Math.round(b),30,240);
+  S.settings.metro.bpm=M.bpm;saveSettings();
+  var rg=$('#bpmRange');if(rg)rg.value=M.bpm;
+  paintMet();
+}
+function paintTask(){
+  var r=S.settings.routine,b=r[T.bi]||r[0],el=$('#nowTask');
+  if(!b||!b.d){el.hidden=true;return;}
+  el.hidden=false;
+  el.innerHTML='<div class="tk">'+(T.on?'Maintenant — ':'')+esc(b.n)+'</div><div class="tb">'+esc(b.d)+'</div>'+
+    (b.bpm?'<div class="row tight"><button class="btn sm" id="taskMet">⏱ Métronome sur '+b.bpm+' bpm</button></div>':'');
+  var m=$('#taskMet');
+  if(m)m.onclick=function(){setMetroBpm(b.bpm);go('metronome');};
+}
 function renderRoutine(){
   var r=S.settings.routine,tot=0;
   r.forEach(function(b){tot+=+b.m||0;});
@@ -1299,10 +1502,11 @@ function renderRoutine(){
 function renderBlocks(){
   var r=S.settings.routine;
   $('#blockProgress').innerHTML=r.map(function(b,i){
-    return '<div class="blockrow'+(T.on&&i===T.bi?' now':'')+(T.on&&i<T.bi?' done':'')+'">'+
-      '<div class="bn">'+esc(b.n)+'<div class="mt" style="font-weight:400">'+esc(b.d||'')+'</div></div>'+
+    return '<div class="blockrow'+(i===T.bi&&sessionBusy()?' now':'')+(i<T.bi?' done':'')+'">'+
+      '<div class="bn">'+esc(b.n)+'</div>'+
       '<span class="num sub">'+(+b.m)+' min</span></div>';
   }).join('');
+  paintTask();
 }
 function setRing(frac){
   var c=2*Math.PI*42;
@@ -1332,7 +1536,7 @@ function startTimer(){
 function paintTimer(){
   var r=S.settings.routine,b=r[T.bi]||r[0];
   $('#clock').textContent=fmtClock(T.left);
-  $('#nowBlock').textContent=(T.on?'':'En pause · ')+b.n+(b.d?' — '+b.d:'');
+  $('#nowBlock').textContent=(T.on?'':'En pause · ')+b.n;
   setRing(1-(T.left/Math.max(1,(+b.m)*60)));
 }
 function nextBlock(){
@@ -1350,16 +1554,21 @@ function stopTimer(finished){
   var mins=Math.round(T.played);
   T.played=0;T.left=0;T.bi=0;
   $('#clock').textContent='00:00';$('#nowBlock').textContent=finished?'Séance terminée. Bravo.':'Prête à démarrer';
-  setRing(0);renderBlocks();
+  setRing(0);renderBlocks();renderFocus();
   if(mins>=1||finished)openLog(mins);else $('#logCard').hidden=true;
 }
 function openLog(mins){
   var c=$('#logCard');c.hidden=false;
   $('#logMin').value=mins>0?mins:'';
   logMood=4;paintMood();
+  var fp=focusPiece();
   $('#logPieces').innerHTML=S.pieces.length?S.pieces.map(function(p){
-    return '<label class="pill" style="cursor:pointer"><input type="checkbox" value="'+p.id+'" style="width:auto;margin-right:4px">'+esc(p.title)+'</label>';
+    return '<label class="pill" style="cursor:pointer"><input type="checkbox" value="'+p.id+'"'+
+      (fp&&fp.id===p.id?' checked':'')+' style="width:auto;margin-right:4px">'+esc(p.title)+'</label>';
   }).join(''):'<span class="sub">Aucun morceau dans le répertoire.</span>';
+  var w=$('#logBpmWrap');
+  w.hidden=!fp;
+  if(fp){$('#logBpmLbl').textContent='Tempo atteint — '+fp.title;$('#logBpm').value=+fp.currentBpm||'';}
   c.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 var logMood=4;
@@ -1372,9 +1581,14 @@ function saveSession(){
     pieces:ids,ts:Date.now(),blocks:S.settings.routine.map(function(b){return {n:b.n,m:+b.m};})};
   S.sessions.push(s);
   put('sessions/'+s.id,stripId(s));
+  var fp=focusPiece();
+  if(fp&&!$('#logBpmWrap').hidden){
+    var nb=clamp(+$('#logBpm').value||0,0,300);
+    if(nb>0&&nb!==(+fp.currentBpm||0)){fp.currentBpm=nb;put('pieces/'+fp.id,stripId(fp));}
+  }
   ids.forEach(function(id){markReviewed(id);});
   $('#logCard').hidden=true;$('#logNotes').value='';
-  renderToday();renderJournal();
+  renderToday();renderJournal();renderPieces();
   go('today');
 }
 
@@ -1940,10 +2154,18 @@ function renderLearnTeaser(){
 /* =========================================================
    14. Répertoire
    ========================================================= */
+/* Tonalités proposées pour un morceau : les douze majeures puis leurs relatives. */
+function keyOptions(sel){
+  var o='<option value="">— non précisée —</option>';
+  KEYS.forEach(function(k){var v=k.maj+' majeur';o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>';});
+  KEYS.forEach(function(k){var v=k.min+' mineur';o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>';});
+  return o;
+}
 function renderPieces(){
   if(!$('#pStatus').options.length){
     $('#pStatus').innerHTML=STATUS.map(function(s){return '<option value="'+s.id+'">'+s.n+'</option>';}).join('');
     $('#pStatus').value='travail';
+    $('#pKey').innerHTML=keyOptions('');
     $('#pFilter').innerHTML='<option value="">Tous les états</option>'+STATUS.map(function(s){return '<option value="'+s.id+'">'+s.n+'</option>';}).join('');
   }
   var f=$('#pFilter').value;
@@ -1956,14 +2178,16 @@ function renderPieces(){
     return '<div class="item" style="flex-direction:column;align-items:stretch;gap:7px">'+
       '<div class="row" style="justify-content:space-between;gap:8px">'+
         '<div class="grow"><div class="nm">'+esc(p.title)+(p.demo?' <span class="pill demo">exemple</span>':'')+'</div>'+
-        '<div class="mt">'+esc(p.composer||'—')+' · '+st.n+' · révision tous les '+st.days+' j</div></div>'+pill+'</div>'+
+        '<div class="mt">'+esc(p.composer||'—')+' · '+st.n+(p.key?' · '+esc(p.key):'')+' · révision tous les '+st.days+' j</div></div>'+pill+'</div>'+
       (p.targetBpm?'<div><div class="mt"><span class="num">'+(p.currentBpm||0)+'</span> → <span class="num">'+p.targetBpm+'</span> bpm</div>'+
         '<div class="bar"><i style="width:'+prog+'%"></i></div></div>':'')+
       (p.notes?'<div class="mt">'+esc(p.notes)+'</div>':'')+
       '<div class="row tight">'+
         '<button class="btn sm" data-rev2="'+p.id+'">Révisé</button>'+
+        '<button class="btn sm ghost" data-focus="'+p.id+'">Séance sur ce morceau</button>'+
         '<select data-st="'+p.id+'" style="width:auto;padding:5px 8px;font-size:12.5px">'+
           STATUS.map(function(s){return '<option value="'+s.id+'"'+(s.id===p.status?' selected':'')+'>'+s.n+'</option>';}).join('')+'</select>'+
+        '<select data-key="'+p.id+'" aria-label="Tonalité" style="width:auto;padding:5px 8px;font-size:12.5px">'+keyOptions(p.key||'')+'</select>'+
         '<button class="btn sm ghost" data-bpm2="'+p.id+'">+2 bpm</button>'+
         '<button class="btn sm ghost danger" data-del="'+p.id+'">Supprimer</button>'+
       '</div></div>';
@@ -1974,26 +2198,35 @@ function renderPieces(){
     drop('pieces/'+b.dataset.del);renderPieces();renderToday();};});
   $$('#pList [data-st]').forEach(function(sel){sel.onchange=function(){
     S.pieces.forEach(function(p){if(p.id===sel.dataset.st){p.status=sel.value;put('pieces/'+p.id,stripId(p));}});
-    renderPieces();renderToday();};});
+    refreshFocusIfPiece(sel.dataset.st);renderPieces();renderToday();};});
   $$('#pList [data-bpm2]').forEach(function(b){b.onclick=function(){
     S.pieces.forEach(function(p){if(p.id===b.dataset.bpm2){p.currentBpm=(+p.currentBpm||40)+2;put('pieces/'+p.id,stripId(p));}});
-    renderPieces();};});
+    refreshFocusIfPiece(b.dataset.bpm2);renderPieces();};});
+  $$('#pList [data-key]').forEach(function(sel){sel.onchange=function(){
+    S.pieces.forEach(function(p){if(p.id===sel.dataset.key){p.key=sel.value;put('pieces/'+p.id,stripId(p));}});
+    refreshFocusIfPiece(sel.dataset.key);renderPieces();};});
+  $$('#pList [data-focus]').forEach(function(b){b.onclick=function(){
+    if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+    S.settings.focus.piece=b.dataset.focus;saveSettings();
+    buildSession();renderFocus();go('seance');};});
+  renderFocus();
 }
 function addPiece(){
   var t=$('#pTitle').value.trim();
   if(!t){$('#pTitle').focus();return;}
   var p={id:'p-'+uid(),title:t,composer:$('#pComp').value.trim(),status:$('#pStatus').value,
+    key:$('#pKey').value,
     currentBpm:+$('#pCur').value||0,targetBpm:+$('#pTgt').value||0,notes:$('#pNotes').value.trim(),
     lastReviewed:today(),created:today()};
   S.pieces.push(p);put('pieces/'+p.id,stripId(p));
-  $('#pTitle').value='';$('#pComp').value='';$('#pCur').value='';$('#pTgt').value='';$('#pNotes').value='';
+  $('#pTitle').value='';$('#pComp').value='';$('#pCur').value='';$('#pTgt').value='';$('#pNotes').value='';$('#pKey').value='';
   renderPieces();renderToday();
 }
 function addDemo(){
   var d=[
-    {title:'Gymnopédie n°1',composer:'Erik Satie',status:'travail',currentBpm:52,targetBpm:66,notes:'Pédale longue, main gauche très souple.'},
-    {title:'Prélude en do majeur BWV 846',composer:'J.-S. Bach',status:'decouverte',currentBpm:48,targetBpm:72,notes:'Arpèges réguliers, aucun accent.'},
-    {title:'Lettre à Élise',composer:'L. van Beethoven',status:'entretien',currentBpm:76,targetBpm:88,notes:'Section en fa majeur à sécuriser.'}
+    {title:'Gymnopédie n°1',composer:'Erik Satie',status:'travail',key:'Ré majeur',currentBpm:52,targetBpm:66,notes:'Mes. 21-28 main gauche, pédale au retour du thème.'},
+    {title:'Prélude en do majeur BWV 846',composer:'J.-S. Bach',status:'decouverte',key:'Do majeur',currentBpm:48,targetBpm:72,notes:'Arpèges réguliers, aucun accent.'},
+    {title:'Lettre à Élise',composer:'L. van Beethoven',status:'entretien',key:'la mineur',currentBpm:76,targetBpm:88,notes:'Section en fa majeur à sécuriser.'}
   ];
   d.forEach(function(x,i){
     var p=Object.assign({id:'p-demo'+i+'-'+uid(),demo:true,lastReviewed:today(),created:today()},x);
@@ -2119,12 +2352,9 @@ function wire(){
   $('#btnNext').onclick=nextBlock;
   $('#btnStop').onclick=function(){stopTimer(false);};
   $('#addBlock').onclick=function(){S.settings.routine.push({n:'Nouveau bloc',m:5,d:''});saveSettings();renderRoutine();};
-  $$('[data-preset]').forEach(function(b){b.onclick=function(){
-    var p=+b.dataset.preset;
-    S.settings.routine=(p===15?[{n:'Échauffement',m:3,d:'Doigts au chaud'},{n:'Technique',m:4,d:'Une gamme, un arpège'},{n:'Travail ciblé',m:6,d:'Un seul passage'},{n:'Plaisir',m:2,d:'Joue pour jouer'}]
-      :p===30?[{n:'Échauffement',m:4,d:'Mains libres'},{n:'Technique',m:7,d:'Gammes au métronome'},{n:'Déchiffrage',m:4,d:'Du neuf, lentement'},{n:'Travail ciblé',m:12,d:'Boucles courtes'},{n:'Plaisir',m:3,d:'Par cœur'}]
-      :cloneRoutine(DEF_ROUTINE));
-    saveSettings();renderRoutine();};});
+  $('#focusPiece').onchange=focusChanged;
+  $('#focusLen').onchange=focusChanged;
+  $('#focusBuild').onclick=function(){if(buildSession())renderFocus();};
   $$('#logMood button').forEach(function(b){b.onclick=function(){logMood=+b.dataset.m;paintMood();};});
   $('#logSave').onclick=saveSession;
   $('#logCancel').onclick=function(){$('#logCard').hidden=true;};

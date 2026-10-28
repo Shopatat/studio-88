@@ -12,13 +12,13 @@ le son, et tes données enregistrées sur ton appareil.
 | Onglet | À quoi ça sert |
 | --- | --- |
 | **Aujourd'hui** | Série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours, jalons, et la citation du jour. |
-| **Séance** | Routine en blocs (échauffement, technique, déchiffrage, travail ciblé, plaisir) avec minuteur, carillon de fin de bloc et bilan enregistré. |
+| **Séance** | Tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Minuteur, carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau. |
 | **Apprentissage** | 18 leçons en 4 niveaux : un paragraphe, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
 | **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables. |
-| **Répertoire** | Tes morceaux avec état, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). |
+| **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
 | **Journal** | Séances, totaux, moyenne, réussite par exercice sur 30 jours, ajout de séances passées, réglages. |
 
 ## Où vivent les données
