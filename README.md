@@ -12,7 +12,7 @@ le son, et tes données enregistrées sur ton appareil.
 | Onglet | À quoi ça sert |
 | --- | --- |
 | **Aujourd'hui** | Série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours, jalons, et la citation du jour. |
-| **Séance** | Tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Minuteur, carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau. |
+| **Séance** | Tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau. |
 | **Apprentissage** | 18 leçons en 4 niveaux : un paragraphe, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
@@ -31,6 +31,11 @@ efface le suivi.
 Le même fichier, publié comme artifact sur claude.ai, utilise à la place une base
 attachée à la page et se synchronise alors d'un appareil à l'autre. Le code détecte
 l'un ou l'autre contexte tout seul (`window.claude`), sans réglage.
+
+Une écriture qui n'atteint pas la base — réseau coupé, base pas encore ouverte — est
+consignée sous la clé `studio88.pending`, relue au démarrage suivant et rejouée. La
+pastille de l'en-tête dit où on en est : `local`, `synchronisé`, `n en attente`, ou
+`non enregistré` si le navigateur refuse d'écrire.
 
 ## Installer sur iPhone ou iPad
 
