@@ -78,6 +78,8 @@ img{max-width:100%}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;
   -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;font-optical-sizing:auto}
+/* Pas de zoom au double tap sur iPad : on tape vite sur les boutons ; le pincement reste possible. */
+html{touch-action:manipulation}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 .wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{margin:0;text-wrap:balance}
@@ -1742,7 +1744,13 @@ function renderFocus(){
   var st=statusOf(p.status),r=tempoRefs(p),rec=RECIPES[p.status]||RECIPES.travail;
   info.innerHTML='<b>'+esc(p.title)+'</b> · '+st.n+(r.work?' · '+r.work+' → '+r.target+' bpm':'')+(p.key?' · '+esc(p.key):'')+
     '<div style="margin-top:4px">'+esc(rec.h)+'</div>'+
-    ((p.notes||'').trim()?'<div style="margin-top:4px">Passages à surveiller : '+esc(p.notes)+'</div>':'')+busy;
+    ((p.notes||'').trim()?'<div style="margin-top:4px">Passages à surveiller : '+esc(p.notes)+'</div>':'')+busy+
+    '<button class="btn sm ghost" id="focusEdit" style="margin-top:8px">Modifier le morceau et son tempo</button>';
+  $('#focusEdit').onclick=function(){
+    go('repertoire');editPieceId=p.id;renderPieces();
+    var t=$('#pList [data-ef="currentBpm"]');
+    if(t){if(t.scrollIntoView)t.scrollIntoView({block:'center'});t.focus();}
+  };
 }
 function focusChanged(){
   if(!S.settings.focus)S.settings.focus={piece:'',len:30};
