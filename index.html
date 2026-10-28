@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="description" content="Atelier de piano : séance minutée, métronome, parcours de leçons, exercices de lecture et d'oreille, suivi de répertoire avec rappels de révision.">
 <meta name="theme-color" content="#EDEBE6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141316" media="(prefers-color-scheme: dark)">
@@ -78,10 +78,11 @@ img{max-width:100%}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;
   -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;font-optical-sizing:auto}
-/* Pas de zoom au double tap sur iPad ni iPhone : on tape vite sur les boutons,
-   et le pincement, lui, reste possible. touch-action ne s'hérite pas — d'où le
+/* Aucun zoom : ni au double tap, ni au pincement. L'appli se met déjà à la
+   taille de l'écran, et un zoom accidentel en pleine séance est une plaie.
+   pan-x pan-y laisse le défilement. touch-action ne s'hérite pas — d'où le
    sélecteur universel, dont la spécificité nulle laisse .kb passer devant. */
-*{touch-action:manipulation}
+*{touch-action:pan-x pan-y}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 .wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{margin:0;text-wrap:balance}
@@ -2036,6 +2037,12 @@ function releaseLock(){
   if(T.on||M.on)return;   /* l'autre minuteur peut encore avoir besoin de l'écran */
   try{if(T.lock){T.lock.release();T.lock=null;}}catch(e){}
 }
+/* Safari en onglet ignore « user-scalable=no » ; il écoute en revanche ses
+   propres événements de geste, les seuls à pouvoir couper le pincement. */
+var ZOOM_GESTURES=['gesturestart','gesturechange','gestureend'];
+ZOOM_GESTURES.forEach(function(ev){
+  document.addEventListener(ev,function(e){e.preventDefault();},{passive:false});
+});
 /* iOS reprend le verrou d'écran dès que la page passe en arrière-plan : on le redemande au retour. */
 document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'&&(T.on||M.on)){T.lock=null;requestLock();}

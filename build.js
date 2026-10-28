@@ -22,7 +22,7 @@ var head = '<!doctype html>\n' +
 '<html lang="fr">\n' +
 '<head>\n' +
 '<meta charset="utf-8">\n' +
-'<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
+'<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">\n' +
 '<meta name="description" content="Atelier de piano : séance minutée, métronome, parcours de leçons, exercices de lecture et d\'oreille, suivi de répertoire avec rappels de révision.">\n' +
 '<meta name="theme-color" content="#EDEBE6" media="(prefers-color-scheme: light)">\n' +
 '<meta name="theme-color" content="#141316" media="(prefers-color-scheme: dark)">\n' +

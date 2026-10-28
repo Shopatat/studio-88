@@ -52,6 +52,13 @@ pastille de l'en-tête dit où on en est : `local`, `synchronisé`, `n en attent
 3. L'icône lance l'appli en plein écran, sans barre de navigateur, et elle fonctionne
    sans réseau grâce au service worker.
 
+L'appli ne se laisse pas zoomer, ni au double tap ni au pincement : elle se met déjà
+à la taille de l'écran, et un zoom accidentel en pleine séance est pénible. Trois
+verrous, parce qu'aucun ne suffit seul : `user-scalable=no` dans la balise viewport
+(respecté par l'appli de l'écran d'accueil, ignoré par Safari en onglet),
+`touch-action: pan-x pan-y` sur tous les éléments, et les événements `gesture*`
+de Safari interceptés. Le défilement, lui, est intact.
+
 Garde l'écran allumé pendant une séance : iOS coupe l'audio dès le verrouillage, ce
 qui arrêterait le métronome. L'appli demande le maintien de l'écran quand le minuteur
 tourne, et Safari récent l'accorde.
