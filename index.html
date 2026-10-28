@@ -142,7 +142,7 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 
 /* ---------- panneaux ---------- */
 main{padding-block:var(--s5) 64px}
-section[hidden]{display:none!important}
+[hidden]{display:none!important}
 .grid{display:grid;gap:var(--s4)}
 @media(min-width:760px){.g2{grid-template-columns:1fr 1fr;align-items:start}.g2 .span{grid-column:1/-1}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r4);padding:var(--s5);
@@ -403,7 +403,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <span id="qText"></span>
           <cite id="qWho"></cite>
         </button>
-        <button class="btn primary" data-goto="seance">▶ Séance guidée</button>
+        <button class="btn primary" data-goto="seance">▶ Séance</button>
       </div>
 
       <div class="tiles" id="tiles"></div>
@@ -460,6 +460,13 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           </select></label>
           <button class="btn" id="focusBuild">Refaire la séance</button>
         </div>
+        <div class="row" style="margin-top:9px;align-items:center;gap:10px">
+          <div class="seg" id="focusMode" role="group" aria-label="Mode de séance">
+            <button type="button" data-mode="guide" aria-pressed="true">Guidée</button>
+            <button type="button" data-mode="simple" aria-pressed="false">Simple</button>
+          </div>
+          <span class="sub" id="focusModeHint"></span>
+        </div>
         <div class="mt" id="focusInfo" style="margin-top:9px"></div>
       </div>
 
@@ -485,7 +492,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div class="task" id="nowTask" hidden></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="routineCard">
         <div class="row" style="justify-content:space-between">
           <div class="eyebrow" style="margin:0">Le programme</div>
           <span class="sub num" id="routineTotal"></span>
@@ -1088,7 +1095,7 @@ var RECIPES={
 };
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
-            focus:{piece:'',len:30},
+            focus:{piece:'',len:30,mode:'guide'},
             metro:{bpm:92,beats:4,sub:1,accent:true}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
@@ -1672,6 +1679,9 @@ var FREE_RECIPE=[
 function pieceById(id){for(var i=0;i<S.pieces.length;i++){if(S.pieces[i].id===id)return S.pieces[i];}return null;}
 function focusPiece(){return S.settings.focus?pieceById(S.settings.focus.piece):null;}
 function sessionBusy(){return T.on||T.bi>0||T.left>0;}
+/* Deux façons de s'en servir : la séance guidée découpe le temps en blocs avec
+   des consignes ; la séance simple ne réserve que le temps, et c'est tout. */
+function simpleMode(){return !!(S.settings.focus&&S.settings.focus.mode==='simple');}
 
 /* Séance courte : on garde l'échauffement et les blocs les plus lourds,
    plutôt que d'émietter la durée sur six blocs de deux minutes. */
@@ -1730,7 +1740,9 @@ function sessionLen(){return clamp(+(S.settings.focus&&S.settings.focus.len)||30
 function buildSession(){
   if(sessionBusy())return false;
   var len=sessionLen(),p=focusPiece();
-  if(!p){
+  if(simpleMode()){
+    S.settings.routine=[{n:p?p.title:'Travail libre',m:len,d:'',bpm:0}];
+  } else if(!p){
     var fb=trimRecipe(FREE_RECIPE,len);
     var fm=shareMinutes(fb.map(function(b){return b.w;}),len);
     S.settings.routine=fb.map(function(b,i){return {n:b.n,m:fm[i],d:b.d,bpm:0};});
@@ -1762,8 +1774,24 @@ function renderFocus(){
   var ln=$('#focusLen');
   ln.value=String(f.len||30);
   if(!ln.value){f.len=30;ln.value='30';} /* durée hors liste : on retombe sur une valeur proposée */
+  paintMode();
   var p=focusPiece(),info=$('#focusInfo'),busy=sessionBusy()?
     '<div style="margin-top:4px">Séance en cours : termine-la pour reconstruire les blocs.</div>':'';
+  if(simpleMode()){
+    var r0=p?tempoRefs(p):null;
+    info.innerHTML=p
+      ?('<b>'+esc(p.title)+'</b>'+(r0&&r0.work?' · '+r0.work+' → '+r0.target+' bpm':'')+(p.key?' · '+esc(p.key):'')+
+        '<div style="margin-top:4px">'+sessionLen()+' minutes pour lui, et rien d’autre à suivre.</div>'+
+        (busy?busy:'<button class="btn sm ghost" id="focusEdit2" style="margin-top:8px">Modifier le morceau et son tempo</button>'))
+      :('<div>'+sessionLen()+' minutes au piano, sans programme. Le bilan les comptera.</div>'+busy);
+    var e2=$('#focusEdit2');
+    if(e2)e2.onclick=function(){
+      go('repertoire');editPieceId=p.id;renderPieces();
+      var t2=$('#pList [data-ef="currentBpm"]');
+      if(t2){if(t2.scrollIntoView)t2.scrollIntoView({block:'center'});t2.focus();}
+    };
+    return;
+  }
   if(!S.pieces.length){
     info.innerHTML='Ajoute ce que tu travailles dans <b>Répertoire</b> — l’appli construira alors la séance autour de ce morceau, de son état d’avancement et de son tempo. '+
       '<button class="btn sm ghost" id="focusGo" style="margin-top:8px">Aller au répertoire</button>';
@@ -1781,6 +1809,27 @@ function renderFocus(){
     var t=$('#pList [data-ef="currentBpm"]');
     if(t){if(t.scrollIntoView)t.scrollIntoView({block:'center'});t.focus();}
   };
+}
+function paintMode(){
+  var sim=simpleMode();
+  $$('#focusMode button').forEach(function(b){
+    b.setAttribute('aria-pressed',(b.dataset.mode==='simple')===sim?'true':'false');
+  });
+  $('#focusModeHint').textContent=sim
+    ?'Un seul minuteur, pas de blocs.'
+    :'Blocs minutés et consignes déduits du morceau.';
+  $('#routineCard').hidden=sim;
+  $('#focusBuild').hidden=sim;
+  $('#btnNext').hidden=sim;
+  $('#ribbon').hidden=sim;
+}
+function setMode(m){
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
+  if(sessionBusy()){paintMode();return;}   /* on ne change pas de mode en pleine séance */
+  S.settings.focus.mode=(m==='simple')?'simple':'guide';
+  saveSettings();
+  buildSession();
+  renderFocus();
 }
 function focusChanged(){
   if(!S.settings.focus)S.settings.focus={piece:'',len:30};
@@ -1918,7 +1967,7 @@ function paintTimer(){
   if(!b)return;
   var frac=clamp(1-(T.left/Math.max(1,(+b.m)*60)),0,1);
   $('#clock').textContent=fmtClock(T.left);
-  $('#nowBlock').textContent=(T.on?'':'En pause · ')+b.n;
+  $('#nowBlock').textContent=(T.on?'':'En pause · ')+(simpleMode()?(b.n+' · '+(+b.m)+' min'):b.n);
   setRing(frac);
   var seg=$('#ribbon .now');
   if(seg)seg.style.setProperty('--p',Math.round(frac*100)+'%');
@@ -2977,6 +3026,7 @@ function wire(){
   $('#focusPiece').onchange=focusChanged;
   $('#focusLen').onchange=focusChanged;
   $('#focusBuild').onclick=function(){if(buildSession())renderFocus();};
+  $$('#focusMode button').forEach(function(b){b.onclick=function(){setMode(b.dataset.mode);};});
   $$('#logMood button').forEach(function(b){b.onclick=function(){logMood=+b.dataset.m;paintMood();};});
   $('#logSave').onclick=saveSession;
   $('#logCancel').onclick=function(){$('#logCard').hidden=true;$('#logNotes').value='';};
