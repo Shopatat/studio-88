@@ -10,7 +10,7 @@
  * renouvellement chez tous les appareils.
  */
 'use strict';
-var CACHE = 'studio88-v7';
+var CACHE = 'studio88-v8';
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -45,7 +45,9 @@ self.addEventListener('fetch', function (e) {
 
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then(function (res) {
+      /* no-cache : GitHub Pages autorise 10 min de cache HTTP ; on revalide toujours
+         pour que l'iPad reçoive la nouvelle version dès la première ouverture. */
+      fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (res) {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put('./index.html', copy); });
         return res;
