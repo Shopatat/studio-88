@@ -397,6 +397,8 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
 
       <div class="card" id="tipsToday" hidden></div>
 
+      <div class="card" id="bkNudge" hidden></div>
+
       <div class="card" id="learnTeaser"></div>
 
       <div class="grid g2">
@@ -830,7 +832,9 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
             <div class="hr"></div>
             <div class="eyebrow">Sauvegarde</div>
             <p class="sub">À faire de temps en temps, et pour emporter ton suivi d’un appareil à l’autre.</p>
+            <p class="sub" id="bkAge" style="margin-top:8px"></p>
             <div class="row" style="margin-top:10px">
+              <button class="btn sm" id="bkShare" hidden>Partager…</button>
               <button class="btn sm" id="bkDl">Exporter un fichier</button>
               <button class="btn sm ghost" id="bkCopy">Copier</button>
               <label class="btn sm ghost" for="bkFile">Importer…</label>
@@ -1061,7 +1065,7 @@ var RECIPES={
 };
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
-            focus:{piece:'',len:30,mode:'guide'},nextTips:'',
+            focus:{piece:'',len:30,mode:'guide'},nextTips:'',lastBackup:'',
             metro:{bpm:92,beats:4,sub:1,accent:true}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
@@ -1077,7 +1081,7 @@ function loadLocal(){
     if(o.settings)S.settings=Object.assign(S.settings,o.settings);
     S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
     if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
-    if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+    if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
     S.pieces=o.pieces||[];S.sessions=o.sessions||[];S.drills=o.drills||{};
     S.learn=(o.learn&&o.learn.done)?o.learn:{done:{}};return true;
   }catch(e){return false;}
@@ -1183,7 +1187,7 @@ function initStore(){
         S.settings=Object.assign(S.settings,r[0].data());
         S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
         if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
-        if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+        if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
       }
       S.pieces=mergeList('pieces/',S.pieces,r[1].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
       S.sessions=mergeList('sessions/',S.sessions,r[2].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
@@ -1609,6 +1613,7 @@ function renderToday(){
   $('#badges').innerHTML=BADGE_DEFS.map(function(b){
     return '<div class="badge'+(b.t(x)?' won':'')+'"><span>'+b.i+'</span>'+b.n+'</div>';
   }).join('');
+  renderBackupNudge();
 }
 function tile(k,v,s,extra){
   return '<div class="tile"><div class="k">'+k+'</div><div class="v">'+v+' <small>'+(s||'')+'</small></div>'+(extra||'')+'</div>';
@@ -1723,7 +1728,7 @@ function refreshFocusIfPiece(id){
   if(S.settings.focus&&S.settings.focus.piece===id)buildSession();
 }
 function renderFocus(){
-  if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
   var f=S.settings.focus,sel=$('#focusPiece');
   sel.innerHTML='<option value="">Aucun — routine libre</option>'+S.pieces.map(function(p){
     return '<option value="'+p.id+'">'+esc(p.title)+(p.composer?' — '+esc(p.composer):'')+'</option>';
@@ -1823,7 +1828,7 @@ function setMode(m){
   renderFocus();
 }
 function focusChanged(){
-  if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
   if(sessionBusy()){renderFocus();return;} /* on ne change pas le programme en pleine séance */
   S.settings.focus.piece=$('#focusPiece').value;
   S.settings.focus.len=clamp(+$('#focusLen').value||30,5,180);
@@ -2777,7 +2782,7 @@ function renderPieces(){
     S.pieces.forEach(function(p){if(p.id===b.dataset.bpm2){p.currentBpm=clamp((+p.currentBpm||40)+2,0,300);put('pieces/'+p.id,stripId(p));}});
     refreshFocusIfPiece(b.dataset.bpm2);renderPieces();};});
   $$('#pList [data-focus]').forEach(function(b){b.onclick=function(){
-    if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+    if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
     S.settings.focus.piece=b.dataset.focus;saveSettings();
     buildSession();renderFocus();go('seance');};});
   $$('#pList [data-edit]').forEach(function(b){b.onclick=function(){
@@ -2890,6 +2895,7 @@ function renderJournal(){
     return '<div class="item"><div class="grow"><div class="nm" style="font-size:13.5px">'+labels[k]+'</div>'+
       '<div class="bar"><i style="width:'+p+'%"></i></div></div><span class="num sub">'+p+'% · '+t[k].n+'</span></div>';
   }).join(''):'<div class="empty">Fais quelques exercices : la réussite par type s’affiche ici.</div>';
+  renderBackupAge();
   $('#sGoal').value=S.settings.goal;$('#sNames').value=S.settings.names;
   var n=pendingCount();
   $('#storeNote').textContent=(!localOk?'Ce navigateur refuse d’enregistrer (stockage plein ou navigation privée) : exporte une sauvegarde avant de fermer. ':'')+
@@ -2926,15 +2932,86 @@ function bkMsg(t){var e=$('#bkMsg');if(e)e.textContent=t;}
 function backupText(){
   return JSON.stringify({app:'studio88',format:1,exportedAt:new Date().toISOString(),state:S},null,1);
 }
+function backupName(){return 'studio88-'+today()+'.json';}
+/* Une sauvegarde réussie : on retient le jour, pour pouvoir dire qu'elle date. */
+function markBackup(){
+  S.settings.lastBackup=today();
+  saveSettings();renderBackupAge();renderToday();
+}
+function backupDays(){
+  var k=S.settings.lastBackup;
+  if(!k||!validDay(k))return -1;
+  return Math.max(0,Math.round((parseKey(today()).getTime()-parseKey(k).getTime())/86400000));
+}
+/* Le navigateur peut effacer le stockage d'un site pour faire de la place.
+   On demande l'exemption : Safari l'accorde aux applis de l'écran d'accueil. */
+var persisted=null;
+function askPersist(){
+  try{
+    if(!navigator.storage||!navigator.storage.persist)return;
+    navigator.storage.persisted().then(function(ok){
+      if(ok){persisted=true;renderBackupAge();return;}
+      navigator.storage.persist().then(function(got){persisted=!!got;renderBackupAge();},function(){});
+    },function(){});
+  }catch(e){}
+}
+function renderBackupAge(){
+  var el=$('#bkAge');if(!el)return;
+  var d=backupDays();
+  el.textContent=(d<0?'Jamais sauvegardé depuis cet appareil.'
+    :d===0?'Dernière sauvegarde : aujourd’hui.'
+    :d===1?'Dernière sauvegarde : hier.'
+    :'Dernière sauvegarde : il y a '+d+' jours.')+
+    (DB?'':(persisted===true?' Le navigateur a accepté de garder ces données même quand il manque de place.'
+      :persisted===false?' Le navigateur n’a pas promis de les garder s’il manque de place.':''));
+}
+/* Rappel sur Aujourd'hui, et seulement quand il y a quelque chose à perdre. */
+function renderBackupNudge(){
+  var el=$('#bkNudge');if(!el)return;
+  var d=backupDays(),worth=S.sessions.length>=3;
+  var late=DB?false:(worth&&(d<0||d>=21));
+  el.hidden=!late;
+  if(!late)return;
+  el.innerHTML='<div class="eyebrow">Sauvegarde</div>'+
+    '<div class="mt" style="margin-top:8px">Ton suivi vit dans ce navigateur, sur cet appareil. '+
+    (d<0?'Tu n’en as jamais emporté de copie.':'La dernière copie date d’il y a '+d+' jours.')+'</div>'+
+    '<div class="row" style="margin-top:12px"><button class="btn sm" id="bkNudgeGo">En faire une copie</button></div>';
+  var g=$('#bkNudgeGo');
+  if(g)g.onclick=function(){
+    go('journal');
+    var n=$('#bkAge');if(n&&n.scrollIntoView)n.scrollIntoView({block:'center'});
+  };
+}
+/* Sur iPhone, un téléchargement se perd ; la feuille de partage, elle, sait
+   déposer le fichier dans Fichiers, iCloud Drive, un mail ou un AirDrop. */
+function canShareBackup(){
+  try{
+    if(!navigator.canShare||!navigator.share||typeof File!=='function')return false;
+    return navigator.canShare({files:[new File(['{}'],'t.json',{type:'application/json'})]});
+  }catch(e){return false;}
+}
+function doShare(){
+  var file;
+  try{file=new File([backupText()],backupName(),{type:'application/json'});}
+  catch(e){bkMsg('Partage impossible ici : utilise « Exporter un fichier ».');return;}
+  navigator.share({files:[file],title:'Sauvegarde Studio 88'}).then(function(){
+    markBackup();bkMsg('Sauvegarde partagée. Garde-la quelque part hors de cet appareil.');
+  },function(err){
+    /* L'utilisateur qui referme la feuille n'est pas une erreur à signaler. */
+    if(err&&(err.name==='AbortError'||err.name==='NotAllowedError'))return;
+    bkMsg('Partage refusé ici : utilise « Exporter un fichier ».');
+  });
+}
 function doExport(){
   var txt=backupText();
   try{
     var url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
     var a=document.createElement('a');
-    a.href=url;a.download='studio88-'+today()+'.json';
+    a.href=url;a.download=backupName();
     document.body.appendChild(a);a.click();
     setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1500);
-    bkMsg('Fichier studio88-'+today()+'.json proposé au téléchargement.');
+    markBackup();
+    bkMsg('Fichier '+backupName()+' proposé au téléchargement.');
   }catch(e){bkMsg('Téléchargement impossible ici : utilise « Copier ».');}
 }
 /* Dernier recours quand le presse-papier est refusé et le téléchargement masqué :
@@ -2949,7 +3026,7 @@ function doCopy(){
   var txt=backupText();
   if(navigator.clipboard&&navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(
-      function(){bkMsg('Sauvegarde copiée : colle-la dans une note ou un fichier .json.');},
+      function(){markBackup();bkMsg('Sauvegarde copiée : colle-la dans une note ou un fichier .json.');},
       showBackupText);
   }else showBackupText();
 }
@@ -2977,7 +3054,7 @@ function applyImport(st){
   if(st.settings)S.settings=Object.assign(S.settings,st.settings);
   S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
   if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
-  if(!S.settings.focus)S.settings.focus={piece:'',len:30};
+  if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
   S.pieces=(st.pieces||[]).filter(function(p){return p&&p.id;});
   S.sessions=(st.sessions||[]).filter(function(x){return x&&x.id;});
   S.drills=st.drills||{};
@@ -3027,6 +3104,7 @@ function applyTheme(){
 }
 function renderAll(){
   applyTheme();renderChips();renderToday();renderTips();renderRoutine();setSessionControls();metSetup();
+  renderBackupAge();
   renderClavier();drawCof();paintKey();renderPieces();renderJournal();renderLearn();
 }
 function wire(){
@@ -3123,6 +3201,7 @@ function wire(){
   /* sauvegarde */
   $('#bkDl').onclick=doExport;
   $('#bkCopy').onclick=doCopy;
+  if(canShareBackup()){$('#bkShare').hidden=false;$('#bkShare').onclick=doShare;}
   $('#bkFile').onchange=function(){if(this.files&&this.files[0])doImport(this.files[0]);this.value='';};
   $('#bkGo').onclick=function(){if(staged){applyImport(staged);staged=null;}$('#bkConfirm').hidden=true;};
   $('#bkNo').onclick=function(){staged=null;$('#bkConfirm').hidden=true;bkMsg('Import annulé. Rien n’a changé.');};
@@ -3150,6 +3229,7 @@ var hadSave=loadLocal();
 wire();
 if(!hadSave)buildSession();   /* première ouverture : des blocs cohérents avec la durée affichée */
 renderAll();
+askPersist();
 setDrill('read');
 var h=(location.hash||'').replace('#','');
 go(TABS.some(function(t){return t[0]===h;})?h:'today');

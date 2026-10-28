@@ -24,6 +24,14 @@ le son, et tes données enregistrées sur ton appareil.
 ## Où vivent les données
 
 Dans le navigateur de l'appareil (`localStorage`), sous la clé `studio88.v1`.
+Au démarrage, l'appli demande au navigateur de marquer ce stockage comme persistant
+(`navigator.storage.persist()`) : Safari l'accorde aux applis de l'écran d'accueil,
+ce qui met les données à l'abri d'un nettoyage automatique — mais pas d'un effacement
+des données de sites. D'où la sauvegarde, et le rappel qui s'affiche sur
+**Aujourd'hui** quand la dernière copie date de plus de trois semaines.
+Sur iPhone et iPad, le bouton **Partager…** du Journal passe par la feuille de partage
+iOS : le fichier part dans Fichiers, iCloud Drive, un mail ou un AirDrop, là où un
+téléchargement se perdrait.
 Rien ne part sur le réseau, et il n'y a donc pas de synchronisation entre ton
 ordinateur et ton iPad : chacun garde son propre journal. Vider les données du site
 efface le suivi.
