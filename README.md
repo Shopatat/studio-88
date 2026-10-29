@@ -1,6 +1,6 @@
 # Studio 88
 
-Atelier de piano en une seule page : séance minutée, métronome, parcours de leçons,
+Atelier de piano en une seule page : séance minutée, métronome, cours et parcours de leçons,
 exercices de lecture et d'oreille, clavier jouable, cercle des quintes et suivi de
 répertoire avec rappels de révision.
 
@@ -13,13 +13,27 @@ le son, et tes données enregistrées sur ton appareil.
 | --- | --- |
 | **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
 | **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
-| **Apprentissage** | 18 leçons en 4 niveaux : un paragraphe, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. |
+| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : une bibliothèque de pages courtes rangées par thème, à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
 | **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables. |
 | **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
 | **Journal** | Séances, totaux, moyenne, réussite par exercice sur 30 jours, ajout de séances passées, réglages. |
+
+## Du bloc au cours
+
+Un bloc de séance qui dit « Gamme de fa dièse majeur et son arpège, mains ensemble,
+deux octaves » ne sert à rien si on ne sait pas ce que ça demande. Chaque bloc porte
+donc un lien **Comment on fait ?**, sous le programme comme sous le minuteur, qui
+ouvre le cours correspondant dans une feuille superposée : la séance continue de
+tourner derrière, et on la retrouve en fermant.
+
+Les recettes de séance désignent leur cours par un identifiant (`h`). Les blocs que tu
+as écrits toi-même, et la routine libre, n'en ont pas : le lien se déduit alors des
+mots du bloc (`COURS_HINTS`), de sorte qu'un bloc nommé « Gammes » trouve quand même
+quelque chose à dire. Quand le morceau au programme a une tonalité, le cours sur les
+gammes propose d'ouvrir celle-là au clavier, pas une autre.
 
 ## Où vivent les données
 

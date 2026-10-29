@@ -223,6 +223,24 @@ input[type=checkbox]{accent-color:var(--brass)}
 .lbody p{font-size:14.5px;line-height:1.62;max-width:64ch}
 .todo{border-left:2px solid var(--brass);padding-left:12px;font-size:13px;color:var(--fg2)}
 .todo b{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px;color:var(--brass)}
+/* cours : la bibliothèque et sa feuille superposée */
+.crow{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--bg);
+  border:1px solid var(--line);border-radius:var(--r3);padding:11px 13px;transition:border-color .15s}
+.crow:hover{border-color:var(--brass)}
+.crow .ct{font-weight:600;font-size:14px}
+.crow .cs{font-size:12.5px;color:var(--fg2);line-height:1.45}
+.sheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center}
+.sheet>.bd{position:absolute;inset:0;background:rgba(18,17,20,.55);backdrop-filter:blur(3px)}
+.sheet>.pane{position:relative;width:100%;max-width:680px;max-height:90vh;overflow:auto;-webkit-overflow-scrolling:touch;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r4) var(--r4) 0 0;box-shadow:var(--shadow-lift);
+  padding:var(--s5) var(--s5) calc(var(--s6) + env(safe-area-inset-bottom));animation:sheetUp .22s ease}
+@keyframes sheetUp{from{transform:translateY(16px);opacity:.5}to{transform:none;opacity:1}}
+@media(min-width:620px){.sheet{align-items:center;padding:var(--s4)}
+  .sheet>.pane{border-radius:var(--r4);max-height:84vh}}
+.sheet .sx{position:absolute;top:12px;right:12px;padding:5px 11px;z-index:2}
+.chead{padding-right:48px}
+.cbody p{font-size:14.5px;line-height:1.68;max-width:62ch;margin-top:14px}
+body.noscroll{overflow:hidden}
 details.tuck{border:1px dashed var(--line2);border-radius:var(--r3);padding:12px 15px}
 details.tuck>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--fg2);list-style:none}
 details.tuck>summary::-webkit-details-marker{display:none}
@@ -601,7 +619,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
       </div>
 
       <div class="grid g2">
-        <div class="card">
+        <div class="card" id="scaleCard">
           <div class="eyebrow">Gammes</div>
           <div class="row">
             <label class="fld">Tonique<select id="scRoot"></select></label>
@@ -685,6 +703,11 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
   <!-- =============== APPRENTISSAGE =============== -->
   <section id="t-apprentissage" role="tabpanel" aria-label="Apprentissage" hidden>
     <div class="stack">
+      <div class="seg" id="learnSeg" role="group" aria-label="Parcours ou cours">
+        <button type="button" data-ls="parcours" aria-pressed="true">Parcours</button>
+        <button type="button" data-ls="cours" aria-pressed="false">Cours</button>
+      </div>
+      <div class="stack" id="secParcours">
       <div class="card">
         <div class="row" style="justify-content:space-between;align-items:flex-end">
           <div style="min-width:0">
@@ -700,6 +723,15 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div class="bar" style="margin-top:12px"><i id="learnBar" style="width:0%"></i></div>
       </div>
       <div id="learnList" class="stack"></div>
+      </div>
+      <div class="stack" id="secCours" hidden>
+      <div class="card">
+        <div class="eyebrow">Cours</div>
+        <h2 class="ttl" style="font-size:25px">Le pourquoi et le comment</h2>
+        <p class="sub" style="max-width:56ch">Des pages courtes, à lire dans n’importe quel ordre, et qui s’ouvrent aussi depuis une consigne de séance quand tu te demandes ce qu’elle attend de toi. Rien à cocher : on ne finit pas une référence.</p>
+      </div>
+      <div id="coursList" class="stack"></div>
+      </div>
     </div>
   </section>
 
@@ -832,6 +864,14 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
     </div>
   </section>
 </main>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="bd" id="sheetBd"></div>
+  <div class="pane" id="sheetPane" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <button class="btn sm ghost sx" id="sheetX" aria-label="Fermer le cours">✕</button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -999,48 +1039,48 @@ var RECIPES={
  decouverte:{
   h:'Tu défriches. Peu de mesures, beaucoup de lenteur.',
   bl:[
-   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces, loin du morceau.'},
-   {n:'Repérage',w:4,d:'Partition sous les yeux, sans jouer : {arm}, la forme, les retours du thème, les changements de main. Note les doigtés au crayon.'},
-   {n:'Mains séparées',w:7,d:'Quatre à huit mesures, pas plus. Main gauche seule, puis main droite seule.',bpm:'slow'},
-   {n:'Mains ensemble',w:7,d:'Les mêmes mesures, encore plus lentement. Tu t’arrêtes avant la faute, pas après.',bpm:'veryslow'},
-   {n:'Plaisir',w:3,d:'Autre chose : ce que tu sais déjà jouer. On termine en musique.'}
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces, loin du morceau.',h:'echauffement'},
+   {n:'Repérage',w:4,d:'Partition sous les yeux, sans jouer : {arm}, la forme, les retours du thème, les changements de main. Note les doigtés au crayon.',h:'reperage'},
+   {n:'Mains séparées',w:7,d:'Quatre à huit mesures, pas plus. Main gauche seule, puis main droite seule.',bpm:'slow',h:'mains-separees'},
+   {n:'Mains ensemble',w:7,d:'Les mêmes mesures, encore plus lentement. Tu t’arrêtes avant la faute, pas après.',bpm:'veryslow',h:'mains-ensemble'},
+   {n:'Plaisir',w:3,d:'Autre chose : ce que tu sais déjà jouer. On termine en musique.',h:'plaisir'}
   ]},
  travail:{
   h:'Le cœur du travail : une difficulté à la fois, et les coutures autour.',
   bl:[
-   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. Rien de difficile.'},
-   {n:'Technique utile',w:4,d:'{gamme}, mains ensemble, deux octaves. C’est le terrain du morceau, pas une corvée à part.',bpm:'work'},
-   {n:'Le passage qui coince',w:9,d:'Boucle courte sur {spots}. Cinq passages nets d’affilée avant d’élargir d’une mesure.',bpm:'slow'},
-   {n:'Raccords',w:5,d:'Deux mesures avant, deux mesures après ce passage. C’est la couture qui lâche en concert, pas le passage lui-même.',bpm:'slow'},
-   {n:'Jeu continu',w:5,d:'{t} d’un bout à l’autre, sans t’arrêter, même avec des fautes. Tu notes au passage où ça accroche encore.',bpm:'work'},
-   {n:'Plaisir',w:2,d:'Joue pour jouer.'}
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. Rien de difficile.',h:'echauffement'},
+   {n:'Technique utile',w:4,d:'{gamme}, mains ensemble, deux octaves. C’est le terrain du morceau, pas une corvée à part.',bpm:'work',h:'travailler-gamme'},
+   {n:'Le passage qui coince',w:9,d:'Boucle courte sur {spots}. Cinq passages nets d’affilée avant d’élargir d’une mesure.',bpm:'slow',h:'boucle-courte'},
+   {n:'Raccords',w:5,d:'Deux mesures avant, deux mesures après ce passage. C’est la couture qui lâche en concert, pas le passage lui-même.',bpm:'slow',h:'raccords'},
+   {n:'Jeu continu',w:5,d:'{t} d’un bout à l’autre, sans t’arrêter, même avec des fautes. Tu notes au passage où ça accroche encore.',bpm:'work',h:'jeu-continu'},
+   {n:'Plaisir',w:2,d:'Joue pour jouer.',h:'plaisir'}
   ]},
  presque:{
   h:'Ça tient. Reste le tempo, la continuité et les départs à froid.',
   bl:[
-   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. {gamme}, en mouvement contraire.'},
-   {n:'Montée en tempo',w:8,d:'{spots}, {climb}. Tu redescends d’un palier dès que ce n’est plus net.'},
-   {n:'Points de reprise',w:6,d:'Quatre endroits au hasard dans {t}. Départ à froid, sans élan, sans reprendre depuis le début.',bpm:'work'},
-   {n:'Intégrale',w:7,d:'En entier, nuances et pédale, sans t’arrêter quoi qu’il arrive.',bpm:'work'},
-   {n:'Écoute',w:3,d:'Enregistre une minute, réécoute : une chose à garder, une chose à changer. Sans te juger.'}
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces. {gamme}, en mouvement contraire.',h:'travailler-gamme'},
+   {n:'Montée en tempo',w:8,d:'{spots}, {climb}. Tu redescends d’un palier dès que ce n’est plus net.',h:'monter-tempo'},
+   {n:'Points de reprise',w:6,d:'Quatre endroits au hasard dans {t}. Départ à froid, sans élan, sans reprendre depuis le début.',bpm:'work',h:'depart-froid'},
+   {n:'Intégrale',w:7,d:'En entier, nuances et pédale, sans t’arrêter quoi qu’il arrive.',bpm:'work',h:'integrale'},
+   {n:'Écoute',w:3,d:'Enregistre une minute, réécoute : une chose à garder, une chose à changer. Sans te juger.',h:'s-enregistrer'}
   ]},
  memorise:{
   h:'Par cœur : on consolide la mémoire autrement que par les doigts.',
   bl:[
-   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
-   {n:'Par cœur au ralenti',w:7,d:'Au tiers du tempo, partition fermée. Là où la mémoire flanche, tu as trouvé le travail du jour.',bpm:'veryslow'},
-   {n:'Départs à froid',w:6,d:'Quatre points de reprise dans {t}, pris au hasard, sans élan.',bpm:'work'},
-   {n:'Intégrale au tempo',w:8,d:'En entier, au tempo, comme devant quelqu’un. Une seule prise.',bpm:'target'},
-   {n:'Détail',w:3,d:'Une seule chose à soigner : une nuance, une respiration, une fin de phrase.'}
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.',h:'echauffement'},
+   {n:'Par cœur au ralenti',w:7,d:'Au tiers du tempo, partition fermée. Là où la mémoire flanche, tu as trouvé le travail du jour.',bpm:'veryslow',h:'par-coeur'},
+   {n:'Départs à froid',w:6,d:'Quatre points de reprise dans {t}, pris au hasard, sans élan.',bpm:'work',h:'depart-froid'},
+   {n:'Intégrale au tempo',w:8,d:'En entier, au tempo, comme devant quelqu’un. Une seule prise.',bpm:'target',h:'integrale'},
+   {n:'Détail',w:3,d:'Une seule chose à soigner : une nuance, une respiration, une fin de phrase.',h:'relecture'}
   ]},
  entretien:{
   h:'Il est à toi. On vérifie ce qui a glissé, et on en profite.',
   bl:[
-   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
-   {n:'Relecture',w:5,d:'Partition sous les yeux pour {t} : cherche ce qui a glissé depuis la dernière fois. Doigtés, pédale, nuances oubliées.'},
-   {n:'Intégrale',w:7,d:'En entier, au tempo. Tu l’as, profite.',bpm:'target'},
-   {n:'Point faible',w:5,d:'Si un endroit a bougé : {spots}, trois passages lents, puis au tempo.',bpm:'slow'},
-   {n:'Plaisir',w:4,d:'Un autre morceau du répertoire, ou improvise. L’entretien n’est pas une corvée.'}
+   {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.',h:'echauffement'},
+   {n:'Relecture',w:5,d:'Partition sous les yeux pour {t} : cherche ce qui a glissé depuis la dernière fois. Doigtés, pédale, nuances oubliées.',h:'relecture'},
+   {n:'Intégrale',w:7,d:'En entier, au tempo. Tu l’as, profite.',bpm:'target',h:'integrale'},
+   {n:'Point faible',w:5,d:'Si un endroit a bougé : {spots}, trois passages lents, puis au tempo.',bpm:'slow',h:'boucle-courte'},
+   {n:'Plaisir',w:4,d:'Un autre morceau du répertoire, ou improvise. L’entretien n’est pas une corvée.',h:'plaisir'}
   ]}
 };
 var S={
@@ -1620,11 +1660,11 @@ var T={on:false,bi:0,left:0,tick:null,played:0,lock:null,end:0,last:0,over:false
 
 /* --- La séance se construit à partir du morceau au programme --------- */
 var FREE_RECIPE=[
- {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.'},
- {n:'Technique',w:5,d:'Gammes et arpèges au métronome.'},
- {n:'Déchiffrage',w:3,d:'Du neuf, très lentement.'},
- {n:'Travail ciblé',w:8,d:'Petites boucles sur les passages durs.'},
- {n:'Plaisir',w:3,d:'Joue pour jouer.'}
+ {n:'Échauffement',w:3,keep:1,d:'Mains libres, nuances douces.',h:'echauffement'},
+ {n:'Technique',w:5,d:'Gammes et arpèges au métronome.',h:'travailler-gamme'},
+ {n:'Déchiffrage',w:3,d:'Du neuf, très lentement.',h:'dechiffrage'},
+ {n:'Travail ciblé',w:8,d:'Petites boucles sur les passages durs.',h:'boucle-courte'},
+ {n:'Plaisir',w:3,d:'Joue pour jouer.',h:'plaisir'}
 ];
 function pieceById(id){for(var i=0;i<S.pieces.length;i++){if(S.pieces[i].id===id)return S.pieces[i];}return null;}
 function focusPiece(){return S.settings.focus?pieceById(S.settings.focus.piece):null;}
@@ -1695,7 +1735,7 @@ function buildSession(){
   } else if(!p){
     var fb=trimRecipe(FREE_RECIPE,len);
     var fm=shareMinutes(fb.map(function(b){return b.w;}),len);
-    S.settings.routine=fb.map(function(b,i){return {n:b.n,m:fm[i],d:b.d,bpm:0};});
+    S.settings.routine=fb.map(function(b,i){return {n:b.n,m:fm[i],d:b.d,bpm:0,h:b.h||''};});
   } else {
     var rec=RECIPES[p.status]||RECIPES.travail,r=tempoRefs(p);
     var bl=trimRecipe(rec.bl,len);
@@ -1703,7 +1743,7 @@ function buildSession(){
     S.settings.routine=bl.map(function(b,i){
       var bpm=b.bpm?r[b.bpm]:0,d=fillTask(b.d,p);
       if(bpm)d+=' Métronome ≈ '+bpm+' bpm.';
-      return {n:b.n,m:mins[i],d:d,bpm:bpm||0};
+      return {n:b.n,m:mins[i],d:d,bpm:bpm||0,h:b.h||''};
     });
   }
   saveSettings();renderRoutine();
@@ -1840,8 +1880,12 @@ function paintTask(){
   }
   if(!b||!b.d||!sessionBusy()){el.hidden=true;return;}
   el.hidden=false;
+  var hp=helpFor(b);
   el.innerHTML='<div class="tk">'+(T.on?'Maintenant — ':'')+esc(b.n)+'</div><div class="tb">'+esc(b.d)+'</div>'+
-    (b.bpm?'<div class="row tight"><button class="btn sm" id="taskMet">⏱ Métronome sur '+b.bpm+' bpm</button></div>':'');
+    ((b.bpm||hp)?'<div class="row tight">'+
+      (b.bpm?'<button class="btn sm" id="taskMet">⏱ Métronome sur '+b.bpm+' bpm</button>':'')+
+      (hp?coursBtn(hp):'')+'</div>':'');
+  wireCoursBtns('#nowTask');
   var m=$('#taskMet');
   if(m)m.onclick=function(){setMetroBpm(b.bpm);go('metronome');};
 }
@@ -1864,15 +1908,19 @@ function renderRoutine(){
         (b.d?'<div class="mt" style="margin-top:5px">'+esc(b.d)+'</div>':'')+'</div>'+
         '<label class="fld" style="flex:0 0 70px">min<input type="number" min="1" max="120" value="'+(+b.m)+'" data-rm="'+i+'"></label>'+
         '<button class="btn sm danger ghost" data-rd="'+i+'" aria-label="Retirer le bloc '+esc(b.n)+'">✕</button></div>';
+    var hp=helpFor(b);
     return '<div class="blockrow" style="align-items:flex-start">'+
       '<span class="bi">'+(i+1)+'</span>'+
       '<div class="grow" style="flex:1 1 auto;min-width:0">'+
         '<div class="bn">'+esc(b.n)+'</div>'+
         (b.d?'<div class="bd">'+esc(b.d)+'</div>':'')+
-        (b.bpm?'<div class="row tight" style="margin-top:7px"><span class="pill brass">♩ = '+(+b.bpm)+'</span></div>':'')+
+        ((b.bpm||hp)?'<div class="row tight" style="margin-top:7px">'+
+          (b.bpm?'<span class="pill brass">♩ = '+(+b.bpm)+'</span>':'')+
+          (hp?coursBtn(hp):'')+'</div>':'')+
       '</div>'+
       '<span class="num sub" style="white-space:nowrap">'+(+b.m)+' min</span></div>';
   }).join('');
+  wireCoursBtns('#routineEdit');
   $$('#routineEdit [data-rn]').forEach(function(el){el.onchange=function(){S.settings.routine[+el.dataset.rn].n=el.value;saveSettings();};});
   $$('#routineEdit [data-rm]').forEach(function(el){el.onchange=function(){
     var i=+el.dataset.rm,b=S.settings.routine[i],old=+b.m||1;
@@ -2718,6 +2766,315 @@ function renderLearnTeaser(){
 }
 
 /* =========================================================
+   13 ter. Cours : une bibliothèque, et le pont depuis la séance
+   ========================================================= */
+/* Le parcours est un chemin : des leçons graduées qu'on coche. Les cours sont
+   une référence : on y entre par la question du moment, le plus souvent depuis
+   une consigne de séance qu'on ne sait pas quoi faire. D'où la feuille
+   superposée, qui ne fait pas perdre le minuteur de vue. */
+var COURS_TH=[
+ ['travail','Travailler'],
+ ['gammes','Gammes et tonalités'],
+ ['harmonie','Accords et harmonie'],
+ ['impro','Improviser'],
+ ['rythme','Rythme et pédale'],
+ ['lecture','Lire et mémoriser'],
+ ['histoire','D’où ça vient']
+];
+var COURS=[
+ {id:'pourquoi-gammes',th:'gammes',t:'À quoi sert une gamme',
+  s:'Pas un exercice à part : le terrain du morceau.',
+  b:['Une tonalité, c’est sept notes choisies parmi douze. Le morceau que tu travailles est fait presque uniquement de ces sept-là, dans tous les ordres possibles. Jouer la gamme avant le morceau, c’est donc parcourir à vide exactement le terrain sur lequel tu vas courir : les mêmes touches, les mêmes noires, les mêmes passages de pouce.',
+     'C’est aussi la façon la plus rapide de savoir où tombent les touches noires dans cette tonalité — ce que l’armure annonce en deux symboles au début de la partition, et que la main doit connaître sans y penser. Trois semaines de gamme de fa dièse majeur, et la partition cesse d’avoir six dièses : elle a une couleur, que la main reconnaît.',
+     'Le reste vient par-dessus : les doigtés deviennent des réflexes, l’oreille repère la tonique, et le jour où tu voudras improviser ou transposer, le matériau sera déjà sous les doigts.'],
+  k:'La gamme du morceau, c’est le morceau sans la musique : mêmes notes, mêmes noires, mêmes doigtés, mais plus rien à interpréter. D’où son efficacité.',
+  sc:'auto',see:['travailler-gamme','doigtes-gamme']},
+
+ {id:'travailler-gamme',th:'gammes',t:'Travailler une gamme et son arpège',
+  s:'Ce qu’il faut faire, dans l’ordre, quand un bloc dit « gamme et arpège, mains ensemble, deux octaves ».',
+  b:['Décodons la consigne. « Deux octaves » : tu montes de la tonique jusqu’à la même note deux octaves plus haut, puis tu redescends sans t’arrêter en haut. « Mains ensemble » : les deux mains jouent les mêmes notes à deux octaves d’écart, en même temps — ce qui n’est pas le plus facile, et c’est précisément pour cela que ça se travaille.',
+     'Dans l’ordre : main droite seule, lentement, en regardant où passe le pouce ; main gauche seule, de même ; puis les deux, moitié moins vite que ce que tu croyais pouvoir tenir. Le métronome sur un son par temps pour commencer, pas quatre. Tu n’accélères qu’après trois allers-retours nets d’affilée, sans accent parasite au passage de pouce.',
+     'L’arpège, c’est la même tonalité réduite à trois notes : la première, la troisième et la cinquième de la gamme, autrement dit l’accord de la tonalité. Même parcours, deux octaves, mains séparées puis ensemble. Les écarts sont plus grands : le poignet glisse au lieu de sauter, et le bras suit la main au lieu de la tirer.',
+     'Quand tout cela devient facile, change une seule chose à la fois : en mouvement contraire, les mains qui s’écartent ; en rythme pointé ; en staccato puis en legato ; une main forte et l’autre douce. C’est ainsi qu’une gamme reste un travail et pas une récitation.'],
+  k:'Lentement, mains séparées d’abord, et tu n’accélères qu’après trois allers-retours nets. Le passage de pouce se prépare une note avant d’en avoir besoin.',
+  sc:'auto',see:['pourquoi-gammes','doigtes-gamme','monter-tempo']},
+
+ {id:'doigtes-gamme',th:'gammes',t:'Les doigtés de gamme',
+  s:'Pourquoi le pouce passe sous, et quand.',
+  b:['Cinq doigts, sept notes : la main doit bien se replacer une fois par octave. En montant main droite, le pouce passe sous le majeur après trois notes, puis sous l’annulaire après quatre — 1 2 3, 1 2 3 4, et on recommence. En descendant, c’est l’inverse : le majeur, puis l’annulaire, passent par-dessus le pouce.',
+     'Main gauche en montant : 5 4 3 2 1, puis le troisième doigt passe par-dessus le pouce, 3 2 1. Ce découpage vaut pour la plupart des tonalités ; celles qui commencent sur une touche noire ont leurs variantes, toutes guidées par la même règle — le pouce ne tombe jamais sur une touche noire.',
+     'Le défaut qui s’entend n’est pas l’erreur de doigté, c’est le retard : un pouce préparé trop tard produit un petit accent et un trou. Le coude recule très légèrement pendant les trois notes qui précèdent, et le pouce est déjà en place quand son tour vient.'],
+  k:'Le pouce ne joue pas de touche noire, et il se prépare une note avant d’en avoir besoin. Presque tout le reste en découle.',
+  sc:'auto',see:['travailler-gamme']},
+
+ {id:'echauffement',th:'travail',t:'S’échauffer',
+  s:'Trois minutes qui changent la demi-heure qui suit.',
+  b:['L’échauffement ne sert pas à chauffer les muscles — en trois minutes, rien ne chauffe. Il sert à passer du monde où tu étais à celui du clavier : baisser le rythme, écouter le son que fait l’instrument aujourd’hui, retrouver le poids du bras.',
+     'Ce qui marche : quelques accords tenus en écoutant leur extinction, une gamme très lente, une phrase que tu connais par cœur. Ce qui ne marche pas : attaquer le passage qui t’a résisté hier. Tu commencerais la séance par un échec, et ça teinte tout le reste.'],
+  k:'Lent, doux, facile. Si c’est difficile, ce n’est plus un échauffement.',
+  see:['plaisir']},
+
+ {id:'reperage',th:'travail',t:'Lire avant de jouer',
+  s:'Cinq minutes les mains sur les genoux.',
+  b:['Avant de jouer une mesure, on regarde. L’armure : combien de dièses ou de bémols, donc quelles touches noires pour tout le morceau. La mesure, le tempo. La forme : où le thème revient, ce qui se répète à l’identique, ce qui se répète en changeant. Les répétitions sont du temps gagné, à condition de les voir avant de les apprendre deux fois.',
+     'Puis les pièges : les changements de clé, les endroits où les mains se croisent, les sauts, les mesures où la main gauche fait autre chose que d’habitude. Tu notes les doigtés au crayon à ces endroits-là, pas partout. Un doigté écrit est un doigté décidé une fois pour toutes ; un doigté improvisé change à chaque passage, et ne s’apprend jamais.'],
+  k:'Dix minutes de lecture bien faite évitent une semaine de réapprentissage. C’est le seul moment de la séance où ne pas jouer est le travail.',
+  see:['dechiffrage']},
+
+ {id:'mains-separees',th:'travail',t:'Mains séparées',
+  s:'Pas par précaution : parce que chaque main a son propre problème.',
+  b:['Un passage difficile l’est rarement pour les deux mains à la fois. Séparées, tu découvres laquelle pose réellement le problème, et tu arrêtes de répéter dix fois ce que l’autre sait déjà faire. La main gauche a souvent les sauts, la droite les doigtés serrés.',
+     'Main seule veut dire main seule, lentement, en regardant le clavier et la partition : le doigté, le poids, l’articulation. Quatre à huit mesures, pas la page. Et la main qui ne joue pas se repose vraiment, posée sur la cuisse, plutôt que de mimer dans le vide.'],
+  k:'Chaque main doit savoir son texte sans l’autre. Ensuite seulement, on les assemble.',
+  see:['mains-ensemble','lenteur']},
+
+ {id:'mains-ensemble',th:'travail',t:'Mettre les mains ensemble',
+  s:'Le moment où le tempo doit descendre, pas monter.',
+  b:['Les deux mains savent leur partie, et ensemble ça ne marche pas : c’est normal, et ça ne veut pas dire que le travail d’avant était inutile. Jouer ensemble est une troisième chose à apprendre, qui demande de la coordination plus que de la mémoire. On la travaille moitié moins vite que chaque main seule.',
+     'Deux outils. S’arrêter avant la faute, pas après : tu joues jusqu’à la note qui précède l’endroit qui casse, tu t’arrêtes, tu repars. Et les points de rencontre, ces endroits où les deux mains tombent exactement ensemble : si ces notes-là sont justes et à l’heure, le reste s’aligne presque tout seul.'],
+  k:'Si les mains ensemble ne tiennent pas, le tempo est trop rapide. Il n’y a pas d’autre explication utile.',
+  see:['mains-separees','lenteur']},
+
+ {id:'lenteur',th:'travail',t:'Pourquoi si lentement',
+  s:'Ce que la lenteur fabrique, et que la vitesse ne fabrique pas.',
+  b:['Jouer lentement n’est pas jouer la même chose en moins bien : c’est le seul régime où tu as le temps de choisir chaque geste avant qu’il arrive. Ce que la main répète, elle l’apprend — y compris les crispations et les fautes. Au tempo, elle répète ce qu’elle sait déjà ; lentement, elle apprend ce que tu décides.',
+     'Le bon tempo de travail est celui où tu n’as aucune surprise : tu sais la note suivante avant de la jouer. Dès qu’il y a surprise, c’est trop vite. Et la vitesse revient étonnamment vite, en quelques jours, une fois le geste propre.'],
+  k:'Lent ne veut pas dire mou : même attention au son, même nuance, même pédale. Un ralenti, pas un brouillon.',
+  see:['monter-tempo','boucle-courte']},
+
+ {id:'boucle-courte',th:'travail',t:'La boucle courte',
+  s:'Deux mesures, cinq fois nettes, puis on élargit.',
+  b:['Un passage qui résiste se travaille sur sa plus petite unité qui ait du sens : souvent deux mesures, parfois trois notes. On joue cette unité, lentement, jusqu’à cinq passages nets d’affilée — nets, pas « à peu près ». Une faute remet le compteur à zéro, sans drame.',
+     'Puis on élargit d’une mesure, et le compte repart. L’erreur classique est de reprendre depuis le début du morceau à chaque essai : tu rejoues alors neuf fois ce que tu sais pour une fois ce que tu ne sais pas. La boucle courte inverse exactement ce rapport.',
+     'Si cinq passages nets ne viennent pas après une dizaine d’essais, ce n’est pas une question de répétition : ralentis encore, ou sépare les mains, ou change le doigté. Répéter un geste qui ne marche pas ne le fait pas marcher.'],
+  k:'Petite boucle, lente, cinq fois nettes, puis une mesure de plus. C’est l’outil le plus rentable de la séance.',
+  see:['raccords','lenteur']},
+
+ {id:'raccords',th:'travail',t:'Les raccords',
+  s:'Ce qui lâche en concert, ce n’est pas le passage difficile.',
+  b:['Un passage travaillé en boucle devient un îlot : tu sais le jouer en partant de son début. Mais dans le morceau, tu y arrives en mouvement, avec ce qui précède encore dans les doigts. C’est la jointure qui casse — l’endroit même où tu t’es arrêté cent fois pour recommencer.',
+     'Le remède est mécanique : tu prends deux mesures avant et deux mesures après le passage, et c’est ce bloc-là que tu répètes, jamais le passage seul. Même compte de passages nets. Le but est que le passage difficile n’ait plus de début repérable.'],
+  k:'Travaille les coutures, pas seulement les pièces. Deux mesures avant, deux mesures après.',
+  see:['boucle-courte','jeu-continu']},
+
+ {id:'monter-tempo',th:'travail',t:'Monter le tempo par paliers',
+  s:'Quatre bpm à la fois, et le droit de redescendre.',
+  b:['La vitesse ne s’obtient pas en essayant d’aller vite : en forçant, tu apprends la crispation en même temps que les notes. Tu la montes par paliers, au métronome — trois passages nets à ce tempo, puis quatre bpm de plus. Pas dix.',
+     'La règle qui compte est celle de la redescente : au premier passage qui n’est plus net, tu reviens au palier précédent et tu y restes jusqu’à ce qu’il soit confortable. Un palier raté qu’on s’entête à répéter installe exactement le défaut qu’on voulait éviter. Il arrive aussi qu’un plafond tombe tout seul après une nuit de sommeil, sans rien avoir fait de plus.'],
+  k:'Trois passages nets avant chaque palier, retour immédiat au palier d’avant dès que ça accroche.',
+  see:['lenteur','boucle-courte']},
+
+ {id:'jeu-continu',th:'travail',t:'Jouer d’un bout à l’autre',
+  s:'Sans s’arrêter, fautes comprises.',
+  b:['À force de boucles, on perd l’habitude de continuer. Le jeu continu est l’exercice inverse : tu joues du début à la fin sans jamais t’arrêter, quoi qu’il arrive. Une faute, tu continues. Un trou, tu sautes et tu reprends au repère suivant. C’est désagréable, et c’est exactement ce que fait un musicien devant quelqu’un.',
+     'Ce bloc sert aussi de diagnostic : les endroits qui accrochent encore sont ceux que tu mettras dans tes notes de fin de séance, et qui deviendront les boucles de demain. Note-les plutôt que de t’arrêter pour les corriger — corriger à chaud casse la continuité, qui est tout l’objet du bloc.'],
+  k:'S’arrêter pour corriger est interdit ici. Tu notes et tu continues.',
+  see:['integrale','notes-seance']},
+
+ {id:'depart-froid',th:'travail',t:'Les départs à froid',
+  s:'Quatre endroits au hasard, sans élan.',
+  b:['Tu sais jouer ton morceau depuis le début. Mais une mémoire qui ne fonctionne qu’en chaîne lâche entièrement dès qu’un maillon manque. Les départs à froid cassent la chaîne volontairement : tu choisis quatre endroits au hasard — un début de phrase, un milieu de page, une reprise — et tu démarres là, sans rejouer les mesures d’avant pour prendre de l’élan.',
+     'C’est inconfortable, et c’est le meilleur test de ce que tu sais vraiment. Les points que tu n’arrives pas à prendre à froid deviennent tes points de reprise à apprendre : trois ou quatre par morceau suffisent, choisis une fois pour toutes, de préférence là où l’harmonie recommence.'],
+  k:'Un morceau su est un morceau qu’on peut prendre en route. Choisis tes points de reprise, et entraîne-les.',
+  see:['par-coeur','integrale']},
+
+ {id:'par-coeur',th:'travail',t:'Apprendre par cœur',
+  s:'Quatre mémoires, dont une seule est dans les doigts.',
+  b:['Les doigts retiennent très bien, et très mal : ils enchaînent tant que rien ne les interrompt. Pour qu’un morceau tienne, il faut au moins deux autres mémoires. Celle de l’oreille : tu peux chanter la ligne sans le clavier. Celle de la tête : tu sais nommer ce qui se passe — ici le thème revient, là on part en fa majeur, ce passage est un arpège de dominante.',
+     'La quatrième est visuelle, et c’est un bonus plutôt qu’un appui. Le travail concret : au tiers du tempo, partition fermée, très lentement. Là où la mémoire hésite, tu as trouvé le travail du jour — et c’est presque toujours un endroit que tu n’avais pas compris, seulement répété.'],
+  k:'Si tu ne peux ni le chanter ni le raconter, tu ne le sais que des doigts. C’est la mémoire qui lâche en premier.',
+  see:['depart-froid','lenteur']},
+
+ {id:'integrale',th:'travail',t:'L’intégrale',
+  s:'Une seule prise, comme devant quelqu’un.',
+  b:['À la fin d’une séance, une fois, en entier, au tempo que tu tiens vraiment, avec les nuances et la pédale. Une seule prise : c’est ce qui lui donne sa valeur. Rejouée trois fois, l’intégrale devient du jeu continu et perd ce qu’elle apportait — l’enjeu.',
+     'Ce que tu cherches n’est pas la perfection, c’est l’endurance et l’engagement : finir, en musique, sans se réfugier dans la technique. Ce qui s’est passé pendant cette prise est l’état réel du morceau, et c’est celui-là qu’il faut noter, pas l’état du meilleur essai.'],
+  k:'Une fois, en entier, au tempo tenu. Ce qui s’y passe est l’état réel du morceau.',
+  see:['jeu-continu','s-enregistrer']},
+
+ {id:'relecture',th:'travail',t:'La relecture',
+  s:'Pour un morceau acquis : chercher ce qui a glissé.',
+  b:['Un morceau que tu as depuis longtemps dérive sans bruit : un doigté s’est simplifié, une nuance a disparu, la pédale est devenue continue, un tempo s’est installé plus vite que prévu. Rien de grave et rien de visible — jusqu’au jour où le morceau n’a plus de relief.',
+     'La relecture consiste à rouvrir la partition d’un morceau que tu crois savoir, et à comparer ce qui est écrit à ce que tu joues. On trouve toujours trois ou quatre choses. C’est le travail le moins spectaculaire du piano, et celui qui distingue un morceau entretenu d’un morceau usé.'],
+  k:'Rouvre la partition des morceaux que tu sais. Il y a toujours quelque chose qui a glissé.',
+  see:['reperage']},
+
+ {id:'s-enregistrer',th:'travail',t:'S’enregistrer',
+  s:'Une minute suffit, et ça fait un drôle d’effet.',
+  b:['Pendant que tu joues, tu entends ce que tu as l’intention de faire. L’enregistrement n’entend que ce que tu fais. Un téléphone posé sur l’instrument suffit : une minute, puis tu réécoutes.',
+     'La règle qui rend l’exercice supportable : une chose à garder, une chose à changer. Pas une liste. Les premières écoutes sont rudes pour tout le monde, et la rudesse passe en deux ou trois fois. Ce qu’on découvre presque toujours : le tempo n’est pas régulier, et les nuances sont plus petites qu’on ne le croit.'],
+  k:'Une chose à garder, une chose à changer. Sans te juger : ce que tu entends est corrigible, c’est tout.',
+  see:['integrale','notes-seance']},
+
+ {id:'dechiffrage',th:'travail',t:'Déchiffrer',
+  s:'Du neuf, lentement, sans s’arrêter.',
+  b:['Déchiffrer, c’est jouer une partition qu’on ne connaît pas, du premier coup, à un tempo où l’on peut continuer. L’objectif n’est pas la justesse : c’est de ne pas s’arrêter. On regarde devant, une mesure en avance, comme en lisant une phrase à voix haute.',
+     'Prends plus facile que ce que tu travailles — deux niveaux en dessous — et du nouveau à chaque fois. Repère l’armure, la mesure et les quelques motifs qui reviennent avant de commencer. Puis vas-y, au tiers du tempo, sans jamais revenir en arrière. Un quart d’heure par semaine suffit pour que la lecture cesse d’être un obstacle.'],
+  k:'Plus facile que ton niveau, toujours du neuf, et interdiction de s’arrêter.',
+  see:['reperage'],ex:{k:'read',clef:'gf'}},
+
+ {id:'notes-seance',th:'travail',t:'Noter ce qu’il faut revoir',
+  s:'Deux lignes à la fin, et la séance de demain est déjà prête.',
+  b:['La fin de séance est le seul moment où tu sais exactement où tu en es : quel endroit a accroché, quel tempo a tenu, ce que tu voulais essayer et que tu n’as pas eu le temps de faire. Vingt-quatre heures plus tard, il n’en reste rien. Deux lignes écrites sur le moment valent mieux que dix minutes de recherche le lendemain.',
+     'Ce qui est utile à noter est précis et actionnable : « mesures 21-28 main gauche, pédale au retour du thème », pas « travailler la main gauche ». Un endroit, un geste, éventuellement un tempo. Studio 88 te les remet sous les yeux au début de la séance suivante, et pendant la séance en mode simple.'],
+  k:'Un endroit, un geste, un tempo. Écrit à chaud, lu à froid.',
+  see:['jeu-continu']},
+
+ {id:'plaisir',th:'travail',t:'Finir en musique',
+  s:'Le dernier bloc n’est pas une récompense, c’est de la méthode.',
+  b:['Une séance qui se termine sur un passage difficile laisse le souvenir d’une difficulté. La même séance, terminée par quelque chose que tu sais jouer, laisse le souvenir d’avoir fait de la musique — et c’est ce souvenir-là qui te ramène demain. Une série de jours ne tient pas par discipline, elle tient parce que revenir est agréable.',
+     'Alors : un morceau du répertoire, une improvisation, trois accords qui sonnent bien. Rien à corriger, rien à compter.'],
+  k:'Finis par ce que tu aimes jouer. C’est ce qui rend la séance du lendemain probable.',
+  see:['echauffement']}
+];
+/* Du bloc de séance vers le cours : l'identifiant posé dans la recette d'abord,
+   sinon les mots du bloc — pour que les blocs que tu as écrits toi-même, et la
+   routine libre, trouvent aussi quelque chose à dire. */
+var COURS_HINTS=[
+ [/échauff/i,'echauffement'],
+ [/mains séparées|main gauche seule|main droite seule/i,'mains-separees'],
+ [/mains ensemble/i,'mains-ensemble'],
+ [/repérage|sans jouer|partition sous les yeux/i,'reperage'],
+ [/gamme|arpège|technique/i,'travailler-gamme'],
+ [/déchiffr|du neuf/i,'dechiffrage'],
+ [/raccord|couture/i,'raccords'],
+ [/coince|boucle|passage qui|petites boucles/i,'boucle-courte'],
+ [/palier|montée en tempo|accélér/i,'monter-tempo'],
+ [/reprise|à froid|au hasard/i,'depart-froid'],
+ [/par cœur|mémoire|partition fermée/i,'par-coeur'],
+ [/intégrale|en entier/i,'integrale'],
+ [/jeu continu|d’un bout à l’autre|sans t’arrêter/i,'jeu-continu'],
+ [/relecture|a glissé/i,'relecture'],
+ [/enregistre|réécoute|écoute/i,'s-enregistrer'],
+ [/plaisir|pour jouer|improvise/i,'plaisir'],
+ [/lentement|ralenti/i,'lenteur']
+];
+function coursById(id){
+  for(var i=0;i<COURS.length;i++)if(COURS[i].id===id)return COURS[i];
+  return null;
+}
+function helpFor(b){
+  if(!b)return null;
+  if(b.h&&coursById(b.h))return b.h;
+  var txt=(b.n||'')+' — '+(b.d||'');
+  for(var i=0;i<COURS_HINTS.length;i++)if(COURS_HINTS[i][0].test(txt))return COURS_HINTS[i][1];
+  return null;
+}
+/* La tonalité du morceau au programme, pour ouvrir la bonne gamme au clavier. */
+function focusKey(){
+  var p=focusPiece();
+  if(!p||!p.key)return null;
+  var minor=/mineur/.test(p.key),nm=p.key.replace(/\s*(majeur|mineur)\s*$/,'');
+  for(var i=0;i<KEYS.length;i++){
+    var k=KEYS[i];
+    if(minor?(k.min===nm):(k.maj===nm))
+      return {pc:minor?((k.pc+9)%12):k.pc,sc:minor?'min':'maj',name:p.key};
+  }
+  return null;
+}
+function goScale(pc,id){
+  closeCours();
+  go('clavier');
+  var r=$('#scRoot'),t=$('#scType');
+  if(!r||!t)return;
+  r.value=String(pc);t.value=id;paintScale();
+  var box=$('#scaleCard');
+  if(box&&box.scrollIntoView)try{box.scrollIntoView({block:'center'});}catch(e){}
+}
+
+/* --- La feuille superposée ------------------------------------------------ */
+var sheetBack=null;
+function openCours(id){
+  var c=coursById(id);if(!c)return;
+  var th=(COURS_TH.filter(function(t){return t[0]===c.th;})[0]||['','Cours'])[1];
+  var acts=[],fk=focusKey();
+  if(c.sc){
+    var pc=0,sid=c.sc,lbl='Essayer au clavier';
+    if(c.sc==='auto'){
+      pc=fk?fk.pc:0;sid=fk?fk.sc:'maj';
+      lbl=fk?('Ouvrir '+fk.name+' au clavier'):'Ouvrir une gamme au clavier';
+    }
+    acts.push('<button class="btn sm" data-csc="'+pc+'|'+sid+'">'+esc(lbl)+'</button>');
+  }
+  if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
+  var see=(c.see||[]).filter(coursById);
+  $('#sheetBody').innerHTML=
+    '<div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
+    '<h2 class="ttl" id="sheetTitle" style="font-size:25px;margin:2px 0 0">'+esc(c.t)+'</h2>'+
+    (c.s?'<p class="sub" style="margin:6px 0 0;max-width:60ch">'+esc(c.s)+'</p>':'')+
+    '<div class="cbody">'+c.b.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div>'+
+    (c.k?'<div class="todo"><b>À retenir</b>'+esc(c.k)+'</div>':'')+
+    (acts.length?'<div class="row tight" style="margin-top:14px">'+acts.join('')+'</div>':'')+
+    (see.length?'<div style="margin-top:16px"><div class="eyebrow" style="margin-bottom:7px">À lire ensuite</div>'+
+      '<div class="row tight">'+see.map(function(x){
+        return '<button class="btn sm ghost" data-csee="'+x+'">'+esc(coursById(x).t)+'</button>';}).join('')+'</div></div>':'');
+  $$('#sheetBody [data-csc]').forEach(function(b){b.onclick=function(){
+    var p=b.dataset.csc.split('|');goScale(+p[0],p[1]);};});
+  $$('#sheetBody [data-cex]').forEach(function(b){b.onclick=function(){
+    var x=coursById(b.dataset.cex);closeCours();openDrill({drill:x.ex});};});
+  $$('#sheetBody [data-csee]').forEach(function(b){b.onclick=function(){openCours(b.dataset.csee);};});
+  var sh=$('#sheet');
+  if(sh.hidden){
+    sheetBack=document.activeElement;
+    sh.hidden=false;
+    document.body.classList.add('noscroll');
+  }
+  $('#sheetPane').scrollTop=0;
+  var x=$('#sheetX');if(x&&x.focus)x.focus();
+}
+function closeCours(){
+  var sh=$('#sheet');
+  if(sh.hidden)return;
+  sh.hidden=true;
+  document.body.classList.remove('noscroll');
+  if(sheetBack&&sheetBack.focus)try{sheetBack.focus();}catch(e){}
+  sheetBack=null;
+}
+function coursBtn(id,label){
+  var c=coursById(id);if(!c)return '';
+  return '<button class="btn sm ghost" data-cgo="'+id+'">'+esc(label||'Comment on fait ?')+'</button>';
+}
+function wireCoursBtns(root){
+  $$(root+' [data-cgo]').forEach(function(b){b.onclick=function(e){
+    e.preventDefault();e.stopPropagation();openCours(b.dataset.cgo);};});
+}
+
+/* --- La bibliothèque, sous le parcours ----------------------------------- */
+function renderCours(){
+  var el=$('#coursList');if(!el)return;
+  var html='';
+  COURS_TH.forEach(function(t){
+    var cs=COURS.filter(function(c){return c.th===t[0];});
+    if(!cs.length)return;
+    html+='<div class="card"><div class="eyebrow" style="margin:0 0 12px">'+esc(t[1])+'</div><div class="list">'+
+      cs.map(function(c){
+        return '<button class="crow" data-cgo="'+c.id+'">'+
+          '<span class="ct">'+esc(c.t)+'</span>'+
+          (c.s?'<span class="cs">'+esc(c.s)+'</span>':'')+'</button>';
+      }).join('')+'</div></div>';
+  });
+  el.innerHTML=html;
+  wireCoursBtns('#coursList');
+}
+var learnSec='parcours';
+function setLearnSec(v){
+  learnSec=(v==='cours')?'cours':'parcours';
+  $('#secParcours').hidden=(learnSec!=='parcours');
+  $('#secCours').hidden=(learnSec!=='cours');
+  $$('#learnSeg button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.ls===learnSec?'true':'false');});
+  window.scrollTo(0,0);
+}
+function wireCours(){
+  $$('#learnSeg button').forEach(function(b){b.onclick=function(){setLearnSec(b.dataset.ls);};});
+  $('#sheetX').onclick=closeCours;
+  $('#sheetBd').onclick=closeCours;
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!$('#sheet').hidden){e.preventDefault();closeCours();}
+  });
+  renderCours();
+}
+
+/* =========================================================
    14. Répertoire
    ========================================================= */
 /* Tonalités proposées pour un morceau : les douze majeures puis leurs relatives. */
@@ -3097,7 +3454,7 @@ function applyTheme(){
 function renderAll(){
   applyTheme();renderChips();renderToday();renderTips();renderRoutine();setSessionControls();metSetup();
   renderBackupAge();
-  renderClavier();drawCof();paintKey();renderPieces();renderJournal();renderLearn();
+  renderClavier();drawCof();paintKey();renderPieces();renderJournal();renderLearn();renderCours();
 }
 function wire(){
   $('#themeBtn').onclick=function(){
@@ -3219,6 +3576,7 @@ buildTabs();
 loadPending();
 var hadSave=loadLocal();
 wire();
+wireCours();
 if(!hadSave)buildSession();   /* première ouverture : des blocs cohérents avec la durée affichée */
 renderAll();
 askPersist();
