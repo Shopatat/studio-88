@@ -28,7 +28,7 @@ mémoire, et d'où tout cela vient.
 |---|---|---|
 | 1 | Le pont et la bibliothèque : feuille superposée (`sheet`), structure `COURS` + thèmes, bascule Parcours/Cours dans Apprentissage, lien « Comment on fait ? » sur chaque bloc de séance, et les 20 cours que ces blocs appellent | **fait** |
 | 2 | Gammes et tonalités : 10 cours de plus (douze notes, gamme majeure, armure, cercle des quintes, mineures, modes, pentatonique, blues, chromatique, transposer) + un cours d'histoire sur le tempérament, et un clavier dessiné dans la feuille | **fait** |
-| 3 | Accords, harmonie, impro : triades, septièmes, renversements, chiffrage, degrés et cadences, grilles, improviser sur une pentatonique puis sur un blues, question-réponse, voicings, basse qui marche | à faire |
+| 3 | Accords, harmonie, impro : 7 cours d'harmonie (triades, renversements, septièmes, degrés, cadences, chiffrage, voicings) et 5 d'improvisation (commencer, question-réponse, grille de blues, ii-V-I, accompagner), plus l'accord dessiné dans la feuille | **fait** |
 | 4 | Rythme, pédale, lecture, mémoire : subdivisions, swing, syncope, les trois pédales, lecture à vue, apprendre par cœur ; et les cours d'histoire (d'où viennent les modes, Bach et les 24 tonalités, le blues) | à faire |
 | 5 | Finitions : recherche dans les cours, liens croisés, les 18 leçons du parcours reliées aux cours, README, relecture d'ensemble | à faire |
 
@@ -47,12 +47,12 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-Étapes 1 et 2 faites et poussées. 31 cours : 17 dans « Travailler », 13 dans
-« Gammes et tonalités », 1 dans « D’où ça vient ». Un cours qui porte un champ `sc`
-dessine la gamme sur un clavier d’une octave dans la feuille, avec le son ; `sc:'auto'`
-prend la tonalité du morceau au programme. La chromatique a rejoint `SCALES`, donc
-aussi l’explorateur de gammes de l’onglet Clavier.
+Étapes 1 à 3 faites et poussées. 43 cours : 17 « Travailler », 13 « Gammes et
+tonalités », 7 « Accords et harmonie », 5 « Improviser », 1 « D’où ça vient ».
+Dans la feuille, `sc:` dessine une gamme et `ch:` un accord sur un clavier d’une
+octave, avec le son ; `sc:'auto'` prend la tonalité du morceau au programme et
+`ch:'2:m7'` fixe la fondamentale (ré) pour illustrer l’accord dont parle le texte.
 
-Prochaine action : étape 3, accords, harmonie et improvisation. Prévoir d’y ajouter
-un affichage d’accord dans la feuille, sur le modèle du clavier de gamme (`ch:` à côté
-de `sc:`).
+Prochaine action : étape 4 — rythme et pédale, lecture et mémoire, et les cours
+d’histoire. Les thèmes `rythme` et `lecture` de `COURS_TH` sont encore vides et ne
+s’affichent donc pas.

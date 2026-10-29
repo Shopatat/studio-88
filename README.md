@@ -37,7 +37,8 @@ quelque chose à dire.
 Un cours qui parle d'une gamme la dessine : un clavier d'une octave dans la feuille,
 les notes allumées, la tonique marquée, un bouton pour l'entendre et un autre pour
 ouvrir l'onglet Clavier si tu veux les doigtés. Quand le morceau au programme a une
-tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do.
+tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do. Un cours d'accord fait de
+même : l'accord dessiné, joué, et l'explorateur d'accords à un bouton.
 
 ## Où vivent les données
 

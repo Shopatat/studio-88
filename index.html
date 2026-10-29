@@ -657,7 +657,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <div class="sub" id="scFing" style="margin-top:10px"></div>
         </div>
 
-        <div class="card">
+        <div class="card" id="chordCard">
           <div class="eyebrow">Accords</div>
           <div class="row">
             <label class="fld">Fondamentale<select id="chRoot"></select></label>
@@ -2920,6 +2920,102 @@ var COURS=[
   k:'Douze quintes empilées ne retombent pas sur l’octave. Le tempérament égal répartit l’erreur à parts égales : tout est légèrement faux, et tout devient jouable.',
   see:['cercle-quintes','douze-notes']},
 
+ {id:'triades',th:'harmonie',t:'La triade : une note sur deux',
+  s:'Trois sons, et la tierce du bas décide de tout.',
+  b:['Pars d’une note de la gamme, saute la suivante, prends la troisième ; saute encore, prends la cinquième. Trois sons : un accord. Construits ainsi sur chacun des sept degrés d’une gamme majeure, ils ne donnent que deux couleurs — majeur ou mineur — plus un accord diminué sur le septième degré.',
+     'Ce qui décide, c’est l’intervalle du bas. Quatre demi-tons entre la fondamentale et la note du milieu : tierce majeure, accord majeur, lumineux. Trois demi-tons : tierce mineure, accord mineur, plus sombre. Un seul demi-ton de différence et toute la couleur bascule — c’est l’information la plus rentable de toute l’harmonie.',
+     'La quinte, elle, ne dit presque rien, sauf quand on l’altère : abaissée d’un demi-ton l’accord devient diminué et sonne instable, en attente ; augmentée, il flotte sans attache.'],
+  k:'Une note sur deux. Tierce majeure (quatre demi-tons) : accord majeur. Tierce mineure (trois) : accord mineur. La quinte ne compte que lorsqu’elle est altérée.',
+  ch:'M',ex:{k:'chord',lvl:'facile'},see:['renversements','degres']},
+
+ {id:'renversements',th:'harmonie',t:'Les renversements',
+  s:'Les mêmes notes dans un autre ordre, et la main bouge de trois centimètres.',
+  b:['Do-Mi-Sol, Mi-Sol-Do, Sol-Do-Mi : trois dispositions, le même accord. Ce qui change est la note la plus grave, et l’oreille y est sensible — un accord en position fondamentale pose, un accord renversé relance.',
+     'L’intérêt est d’abord pratique. Pour enchaîner Do et Fa, la position fondamentale oblige la main à sauter d’un bout à l’autre ; en prenant Fa dans le renversement qui partage le Do, la main bouge de trois centimètres. La règle tient en une phrase : garder les notes communes, déplacer le reste au plus court.',
+     'Le même choix dessine la basse. Jouer un renversement, c’est décider quelle note se retrouve en bas, donc quelle ligne la main gauche trace d’un accord au suivant. Une basse qui descend par degrés sous des accords qui, eux, ne descendent pas : c’est tout l’effet du canon de Pachelbel.'],
+  k:'Garde les notes communes, bouge le reste au plus court. La note la plus grave est un choix, pas une conséquence.',
+  go:'clavier',see:['triades','voicings']},
+
+ {id:'septiemes',th:'harmonie',t:'Les accords de septième',
+  s:'Une quatrième note, et l’accord se met à vouloir quelque chose.',
+  b:['Ajoute à la triade la note située une tierce au-dessus de sa quinte : voilà un accord de septième. Le plus important est celui bâti sur le cinquième degré, l’accord de dominante — G7 en Do majeur. Il contient à la fois la sensible et la septième, deux notes qui frottent et qui n’ont qu’une envie : se résoudre sur la tonique.',
+     'Les autres couleurs : le majeur 7 (Cmaj7), doux, suspendu, celui de la bossa ; le mineur 7 (Dm7), rond et neutre, le pain quotidien du jazz ; le demi-diminué (Bm7♭5), instable, qui annonce presque toujours un accord mineur.',
+     'En pratique, une septième sert à annoncer où l’on va. Glisse un accord de septième sur le cinquième degré juste avant un changement, et l’arrivée paraîtra préparée au lieu d’être brusque. C’est la différence entre poser des accords et raconter quelque chose.'],
+  k:'La septième de dominante (V7) appelle la tonique. Maj7 suspend, m7 est neutre, le demi-diminué annonce un mineur.',
+  ch:'7:7',see:['degres','cadences','chiffrage']},
+
+ {id:'degres',th:'harmonie',t:'Les degrés : numéroter plutôt que nommer',
+  s:'I ii iii IV V vi vii° — et la même grille marche dans toutes les tonalités.',
+  b:['Sur chaque note de la gamme majeure, construis une triade. Les qualités obtenues sont toujours les mêmes, quelle que soit la tonalité : majeur, mineur, mineur, majeur, majeur, mineur, diminué. On les numérote en chiffres romains, majuscules pour les majeurs et minuscules pour les mineurs : I ii iii IV V vi vii°.',
+     'L’intérêt est considérable. Une chanson décrite par I-vi-IV-V se joue immédiatement dans n’importe quelle tonalité, là où Do-la-Fa-Sol ne vaut que pour Do majeur. Les musiciens qui transposent en direct ne pensent pas en noms d’accords, ils pensent en degrés.',
+     'Trois rôles suffisent pour commencer. Le I est le repos. Le V est la tension qui ramène au I. Le IV est l’écart, l’ouverture. Les mineurs nuancent : le vi est la relative mineure, celle qui assombrit une chanson sans changer de tonalité.'],
+  k:'I repose, V tend, IV ouvre. Écris tes grilles en chiffres plutôt qu’en noms : elles deviennent transposables.',
+  go:'theorie',see:['cadences','transposer','triades']},
+
+ {id:'cadences',th:'harmonie',t:'Les cadences : comment une phrase se termine',
+  s:'Quatre façons de poser, ou de faire semblant.',
+  b:['Une cadence est la ponctuation de la musique. La parfaite — V puis I — est le point final : la tension se résout, la phrase est close. Rien d’autre ne produit cette sensation de fin.',
+     'La demi-cadence s’arrête sur le V : une virgule, une question laissée en l’air, et c’est ainsi que se termine la première moitié d’innombrables thèmes. La plagale — IV puis I — pose plus doucement, sans la tension de la sensible : c’est l’amen des cantiques. La rompue — V puis vi — promet le repos et donne la relative mineure à la place : une fausse fin, l’un des plus vieux effets de surprise de la musique.',
+     'Repérer ces quatre-là suffit à comprendre la forme d’une pièce : les points, les virgules et les faux départs se voient dans la partition avant même de l’avoir jouée.'],
+  k:'V-I conclut, V suspend, IV-I pose en douceur, V-vi fait semblant de conclure.',
+  go:'theorie',see:['degres','septiemes']},
+
+ {id:'chiffrage',th:'harmonie',t:'Lire un chiffrage d’accord',
+  s:'C, Am7, F♯m7♭5, D/F♯ : ce que chaque signe veut dire.',
+  b:['Le chiffrage est une écriture compacte, venue du jazz et de la variété, qui dit quel accord jouer sans dire comment le jouer. La lettre donne la fondamentale, à l’anglaise : A B C D E F G pour la, si, do, ré, mi, fa, sol. Seule, elle signifie accord majeur ; un « m » minuscule le rend mineur.',
+     'Le reste s’ajoute : un chiffre pour une note supplémentaire (7, 9, 6), « maj7 » pour la septième majeure, « sus4 » pour une quarte à la place de la tierce, « dim » ou « ° » pour diminué, « ø » pour demi-diminué, un ♭ ou un ♯ devant un chiffre pour altérer cette note-là. Am7 se lit la mineur septième ; F♯m7♭5, fa dièse mineur septième à quinte bémol.',
+     'La barre oblique désigne la basse : D/F♯ se lit ré majeur avec fa dièse en bas, c’est-à-dire un premier renversement. C’est la notation qui permet d’écrire une ligne de basse sans écrire de portée.'],
+  k:'Lettre : fondamentale à l’anglaise. Rien : majeur. m : mineur. Chiffre : note ajoutée. Barre oblique : note à la basse.',
+  ch:'9:m7',see:['septiemes','renversements']},
+
+ {id:'voicings',th:'harmonie',t:'Les voicings : le même accord, mieux disposé',
+  s:'Pourquoi tes accords sonnent épais, et comment y remédier.',
+  b:['Un accord plaqué en position serrée dans le grave sonne boueux : les harmoniques des cordes graves se chevauchent et le résultat est une bouillie. La règle empirique des arrangeurs : plus on descend, plus il faut écarter les notes. Sous le Do central, mieux vaut ne jouer que deux sons — la fondamentale et la quinte, ou la fondamentale et la septième.',
+     'Le voicing le plus utile à connaître consiste à laisser tomber la fondamentale : si la main gauche ou une basse la joue, la droite n’a pas à la doubler. En ne gardant que la tierce et la septième — les deux notes qui définissent réellement la couleur — on obtient avec deux doigts un accord plus clair qu’avec quatre.',
+     'Dernier réflexe : ne pas répéter la même disposition d’un accord à l’autre. Enchaîne-les en bougeant le moins possible et une suite d’accords devient une suite de voix qui se déplacent — toute la différence entre un piano qui accompagne et un piano qui tape des accords.'],
+  k:'Écarte dans le grave, laisse tomber la fondamentale quand la gauche la joue, garde tierce et septième, bouge au plus court.',
+  see:['renversements','accompagner']},
+
+ {id:'commencer-impro',th:'impro',t:'Improviser ce soir, sans rien savoir d’autre',
+  s:'Une main qui tient, une main qui cherche.',
+  b:['Le dispositif le plus simple qui sonne : main gauche, une seule note grave tenue — un bourdon — ou la fondamentale et la quinte ensemble. Main droite, une pentatonique sur cette note. Tu ne peux pas tomber sur une note fausse ; il ne reste donc que des questions musicales, ce qui est précisément le but.',
+     'Ce qui fait la différence dès la première minute, ce sont le rythme et le silence. Joue trois notes, arrête-toi, écoute, reprends. On joue trop de notes quand on débute parce que le silence fait peur — or c’est le silence qui transforme une suite de notes en phrase.',
+     'Quand c’est confortable, change une seule chose : monte le bourdon d’un degré, passe sur les seules touches noires, ou impose-toi de ne jouer que quatre notes différentes pendant une minute. Les contraintes fabriquent des idées ; la liberté totale fabrique du remplissage.'],
+  k:'Un bourdon à gauche, une pentatonique à droite, et des silences. Le reste est de la décoration.',
+  sc:'pentM',see:['pentatonique','question-reponse']},
+
+ {id:'question-reponse',th:'impro',t:'Question, réponse',
+  s:'La forme la plus courte qui fasse une phrase.',
+  b:['Joue quatre temps qui montent et s’arrêtent en l’air : c’est une question. Réponds par quatre temps qui redescendent et se posent sur la tonique : c’est la réponse. Cette symétrie est à l’œuvre dans presque toutes les mélodies que tu connais, et elle s’improvise sans réfléchir une fois qu’on l’a repérée.',
+     'Deux façons de répondre : reprendre presque la même chose en changeant la fin, ou prendre le contre-pied — elle montait, tu descends. Répéter sans rien changer n’est pas une réponse mais un écho ; tout changer n’en est pas une non plus, c’est un nouveau sujet.',
+     'L’exercice qui porte vite : deux mesures de question, deux mesures de réponse, et respecte la longueur même quand l’idée est mauvaise. La contrainte de durée apprend à finir ses phrases, ce qui est la chose la plus difficile en improvisation.'],
+  k:'Monte et laisse en suspens, redescends et pose. Réponds en changeant la fin, ou en prenant le contre-pied.',
+  see:['commencer-impro','grille-blues']},
+
+ {id:'grille-blues',th:'impro',t:'La grille de blues en douze mesures',
+  s:'Trois accords, un ordre fixe, un siècle de musique.',
+  b:['Douze mesures, trois accords, toujours les mêmes degrés : quatre mesures de I, deux de IV, deux de I, une de V, une de IV, deux de I — la dernière servant souvent de relance vers le début. En Do : C, F, G, et avec des septièmes partout, ce qui est l’usage, C7, F7, G7.',
+     'La particularité qui déroute : on y joue la pentatonique mineure par-dessus des accords majeurs. Ce frottement n’est pas une erreur, c’est le son même du blues. Tu peux donc improviser sur toute la grille avec une seule gamme, sans suivre les accords — ce qui en fait le terrain d’entraînement idéal.',
+     'Pour l’entendre vraiment, joue la grille à la main gauche au métronome, lentement, en comptant les douze mesures à voix haute. Tant que la forme n’est pas automatique, la main droite n’a pas de place pour chercher.'],
+  k:'I I I I · IV IV I I · V IV I I. Pentatonique mineure par-dessus, et des septièmes partout.',
+  ch:'7',see:['blues-gamme','ii-v-i']},
+
+ {id:'ii-v-i',th:'impro',t:'Le ii-V-I',
+  s:'Trois accords qui racontent une tonalité — et la moitié du jazz.',
+  b:['En Do majeur : Dm7, G7, Cmaj7. Le ii prépare, le V tend, le I résout. C’est la cadence parfaite avec une marche de plus, et une basse qui descend de quinte en quinte — ré, sol, do — soit la façon la plus naturelle d’enchaîner des accords.',
+     'Sa puissance vient de ce qu’il se transporte : un standard de jazz n’est souvent qu’une suite de ii-V-I dans des tonalités successives. Reconnaître le motif, c’est lire une grille entière d’un coup d’œil au lieu de la déchiffrer accord par accord.',
+     'Au clavier, la version à deux doigts : main gauche la fondamentale ; main droite la tierce et la septième de chaque accord. Tu verras qu’entre le ii et le V elles ne font que s’échanger, en bougeant d’un demi-ton. C’est ce minuscule mouvement qui fait tout le son du jazz.'],
+  k:'Préparer, tendre, résoudre. Entre le ii et le V, tierce et septième s’échangent en bougeant d’un demi-ton.',
+  ch:'2:m7',see:['septiemes','cadences','voicings']},
+
+ {id:'accompagner',th:'impro',t:'Accompagner une mélodie',
+  s:'Ce que fait la main gauche pendant que quelqu’un chante.',
+  b:['Le plus sobre et le plus sûr : la fondamentale sur le premier temps, l’accord sur les temps faibles. Sur une valse, basse-accord-accord ; à quatre temps, basse-accord-basse-accord. Ça ne paie pas de mine et ça ne gêne jamais un chanteur, ce qui est la première qualité d’un accompagnement.',
+     'Ensuite, les variantes : arpéger l’accord au lieu de le plaquer pour que ça respire, tenir l’accord et ne bouger que la basse, ou ne jouer que sur les contretemps, ce qui suffit à donner une impression de groove. Changer de formule à chaque couplet est la façon la plus simple de faire vivre trois minutes de chanson.',
+     'La règle qui compte plus que les autres : laisser de la place. La mélodie occupe le milieu du clavier, alors la main gauche reste en bas et la droite évite la zone chantée. Un accompagnement ne se remarque que lorsqu’il est trop présent.'],
+  k:'Basse sur le temps fort, accord sur les faibles, et surtout : laisse libre la zone de la mélodie.',
+  see:['voicings','degres']},
+
  {id:'echauffement',th:'travail',t:'S’échauffer',
   s:'Trois minutes qui changent la demi-heure qui suit.',
   b:['L’échauffement ne sert pas à chauffer les muscles — en trois minutes, rien ne chauffe. Il sert à passer du monde où tu étais à celui du clavier : baisser le rythme, écouter le son que fait l’instrument aujourd’hui, retrouver le poids du bras.',
@@ -3095,6 +3191,16 @@ function goScale(pc,id){
   if(box&&box.scrollIntoView)try{box.scrollIntoView({block:'center'});}catch(e){}
 }
 
+function goChord(pc,id){
+  closeCours();
+  go('clavier');
+  var r=$('#chRoot'),t=$('#chType'),iv=$('#chInv');
+  if(!r||!t)return;
+  r.value=String(pc);t.value=id;if(iv)iv.value='0';paintChord();
+  var box=$('#chordCard');
+  if(box&&box.scrollIntoView)try{box.scrollIntoView({block:'center'});}catch(e){}
+}
+
 /* --- La feuille superposée ------------------------------------------------ */
 var sheetBack=null;
 function openCours(id){
@@ -3107,11 +3213,18 @@ function openCours(id){
     kpc=(c.sc==='auto'&&fk)?fk.pc:0;
     ksc=SCALES.filter(function(x){return x.id===sid;})[0]||null;
   }
-  if(ksc)kb='<div class="ckb"><div class="kb sm" id="sheetKB"></div>'+
+  var kch=null;
+  if(c.ch){
+    /* « m7 » part de Do ; « 2:m7 » fixe la fondamentale, pour illustrer un Rem7. */
+    var cp=String(c.ch).split(':'),cid=cp[cp.length-1];
+    if(cp.length>1)kpc=+cp[0]||0;
+    kch=CHORDS.filter(function(x){return x.id===cid;})[0]||null;
+  }
+  if(ksc||kch)kb='<div class="ckb"><div class="kb sm" id="sheetKB"></div>'+
     '<div class="row tight" style="margin-top:9px;align-items:center">'+
       '<button class="btn sm" id="sheetPlay">♪ Jouer</button>'+
       '<button class="btn sm ghost" id="sheetOpen">Ouvrir au clavier</button>'+
-      '<span class="sub">'+esc(pcName(kpc)+' '+ksc.n.toLowerCase())+'</span>'+
+      '<span class="sub">'+esc(pcName(kpc)+' '+(ksc?ksc.n:kch.n).toLowerCase())+'</span>'+
     '</div></div>';
   if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
   if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':'le clavier')+'</button>');
@@ -3127,12 +3240,16 @@ function openCours(id){
     (see.length?'<div style="margin-top:16px"><div class="eyebrow" style="margin-bottom:7px">À lire ensuite</div>'+
       '<div class="row tight">'+see.map(function(x){
         return '<button class="btn sm ghost" data-csee="'+x+'">'+esc(coursById(x).t)+'</button>';}).join('')+'</div></div>':'');
-  if(ksc&&$('#sheetKB')){
+  if((ksc||kch)&&$('#sheetKB')){
+    var kiv=ksc?ksc.iv:kch.iv;
     buildKB($('#sheetKB'),60,1,null,true);
-    highlight($('#sheetKB'),ksc.iv.map(function(iv){return (kpc+iv)%12;}),kpc%12);
-    $('#sheetPlay').onclick=function(){
-      playSeq(ksc.iv.map(function(iv){return 60+kpc+iv;}).concat([60+kpc+12]),0.18,0.55);};
-    $('#sheetOpen').onclick=function(){goScale(kpc,ksc.id);};
+    highlight($('#sheetKB'),kiv.map(function(iv){return (kpc+iv)%12;}),kpc%12);
+    $('#sheetPlay').onclick=ksc
+      ?function(){playSeq(ksc.iv.map(function(iv){return 60+kpc+iv;}).concat([60+kpc+12]),0.18,0.55);}
+      :function(){playChord(kch.iv.map(function(iv){return 60+kpc+iv;}),1.7);};
+    $('#sheetOpen').onclick=ksc
+      ?function(){goScale(kpc,ksc.id);}
+      :function(){goChord(kpc,kch.id);};
   }
   $$('#sheetBody [data-cgt]').forEach(function(b){b.onclick=function(){
     var t=b.dataset.cgt;closeCours();go(t);};});
