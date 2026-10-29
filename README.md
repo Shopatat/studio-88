@@ -40,6 +40,10 @@ ouvrir l'onglet Clavier si tu veux les doigtés. Quand le morceau au programme a
 tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do. Un cours d'accord fait de
 même : l'accord dessiné, joué, et l'explorateur d'accords à un bouton.
 
+Dans l'autre sens, chacune des 18 leçons du parcours renvoie au cours qui
+l'approfondit, et un champ de recherche filtre les 56 pages sur leur texte entier,
+accents ignorés : « pedale » trouve « pédale ».
+
 ## Où vivent les données
 
 Dans le navigateur de l'appareil (`localStorage`), sous la clé `studio88.v1`.

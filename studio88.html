@@ -730,6 +730,10 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div class="eyebrow">Cours</div>
         <h2 class="ttl" style="font-size:25px">Le pourquoi et le comment</h2>
         <p class="sub" style="max-width:56ch">Des pages courtes, à lire dans n’importe quel ordre, et qui s’ouvrent aussi depuis une consigne de séance quand tu te demandes ce qu’elle attend de toi. Rien à cocher : on ne finit pas une référence.</p>
+        <label class="fld" style="margin-top:14px;max-width:340px">Chercher
+          <input type="search" id="coursQ" placeholder="gamme, pédale, tempo, impro…" aria-label="Chercher dans les cours">
+        </label>
+        <div class="sub num" id="coursCount" style="margin-top:8px"></div>
       </div>
       <div id="coursList" class="stack"></div>
       </div>
@@ -2623,58 +2627,58 @@ function qKeysig(){
    ========================================================= */
 var LEVELS=[[1,'Se repérer au clavier'],[2,'Lire une partition'],[3,'Gammes et tonalités'],[4,'Accords et oreille']];
 var LESSONS=[
- {id:'l1',lvl:1,t:'Les groupes de deux et de trois touches noires',
+ {id:'l1',c:'douze-notes',lvl:1,t:'Les groupes de deux et de trois touches noires',
   b:'Les touches noires ne sont pas réparties régulièrement : elles alternent par groupes de deux et de trois, et ce dessin se répète toutes les douze touches. C’est la seule carte dont tu as besoin pour te repérer les yeux fermés. Le Do est toujours la blanche juste à gauche d’un groupe de deux noires.',
   todo:'Trouve dix Do en remontant du grave vers l’aigu, sans compter sur tes doigts.',drill:{k:'keys'}},
- {id:'l2',lvl:1,t:'Sept noms, puis ça recommence',
+ {id:'l2',c:'douze-notes',lvl:1,t:'Sept noms, puis ça recommence',
   b:'Do Ré Mi Fa Sol La Si, puis Do de nouveau : la même note une octave plus haut, exactement le double de fréquence. Deuxième repère à retenir, et il suffit : le Fa est la blanche à gauche du groupe de trois noires.',
   todo:'Vingt bonnes réponses d’affilée à « Trouve la touche ».',drill:{k:'keys'}},
- {id:'l3',lvl:1,t:'Une touche noire, deux noms',
+ {id:'l3',c:'armure',lvl:1,t:'Une touche noire, deux noms',
   b:'La même touche noire s’appelle Do♯ quand on monte d’un demi-ton depuis Do, et Ré♭ quand on descend d’un demi-ton depuis Ré. Le nom dépend de la tonalité du morceau, jamais du son produit : c’est la première chose qui désarçonne, et elle ne cache rien de plus.',
   todo:'Repère les cinq touches noires d’une octave et nomme-les des deux façons.',drill:{k:'keys'}},
- {id:'l4',lvl:2,t:'La portée : lignes et interlignes',
+ {id:'l4',c:'portee',lvl:2,t:'La portée : lignes et interlignes',
   b:'Cinq lignes, quatre interlignes. Une note monte d’un degré chaque fois qu’elle passe d’une ligne à l’interligne au-dessus. Lire, ce n’est donc pas déchiffrer des lettres une à une, c’est voir des écarts : deux notes sur deux lignes voisines forment toujours une tierce.',
   todo:'Observe la portée de l’exercice et dis à voix haute si la note est sur une ligne ou dans un interligne.',drill:{k:'read',clef:'g'}},
- {id:'l5',lvl:2,t:'Clé de sol : Mi Sol Si Ré Fa sur les lignes',
+ {id:'l5',c:'portee',lvl:2,t:'Clé de sol : Mi Sol Si Ré Fa sur les lignes',
   b:'La boucle de la clé de sol entoure la deuxième ligne : c’est le Sol au-dessus du Do central. De bas en haut, les lignes portent Mi Sol Si Ré Fa, et les interlignes Fa La Do Mi. Deux phrases à savoir par cœur, et la main droite est lisible.',
   todo:'Trente notes en clé de sol, au moins quatre justes sur cinq.',drill:{k:'read',clef:'g'}},
- {id:'l6',lvl:2,t:'Clé de fa : Sol Si Ré Fa La sur les lignes',
+ {id:'l6',c:'portee',lvl:2,t:'Clé de fa : Sol Si Ré Fa La sur les lignes',
   b:'Les deux points de la clé de fa encadrent la quatrième ligne, le Fa situé sous le Do central. Les lignes portent Sol Si Ré Fa La, les interlignes La Do Mi Sol. C’est la clé de la main gauche, et la raison pour laquelle on a l’impression de réapprendre à lire.',
   todo:'Trente notes en clé de fa, sans t’aider de la clé de sol pour transposer.',drill:{k:'read',clef:'f'}},
- {id:'l7',lvl:2,t:'Le Do central relie les deux portées',
+ {id:'l7',c:'portee',lvl:2,t:'Le Do central relie les deux portées',
   b:'Le Do du milieu se note juste sous la portée en clé de sol, et juste au-dessus en clé de fa, sur une petite ligne qu’on ajoute pour l’occasion : une ligne additionnelle. Les deux portées du piano ne sont qu’un seul grand clavier coupé à cet endroit.',
   todo:'Vingt notes en alternant les deux clés : c’est le vrai test de lecture.',drill:{k:'read',clef:'gf'}},
- {id:'l8',lvl:2,t:'L’armure annonce la tonalité',
+ {id:'l8',c:'armure',lvl:2,t:'L’armure annonce la tonalité',
   b:'Les dièses ou bémols placés juste après la clé valent pour tout le morceau, à toutes les octaves. Ils apparaissent toujours dans le même ordre : fa do sol ré la mi si pour les dièses, exactement l’inverse pour les bémols. Trois dièses, c’est donc fa, do, sol — rien d’autre à deviner.',
   todo:'Reconnais l’armure de huit tonalités de suite.',drill:{k:'keysig'}},
- {id:'l9',lvl:3,t:'Le ton et le demi-ton',
+ {id:'l9',c:'douze-notes',lvl:3,t:'Le ton et le demi-ton',
   b:'Deux touches voisines, blanche ou noire, sont séparées d’un demi-ton. Deux demi-tons font un ton. Mi-Fa et Si-Do sont des demi-tons sans touche noire entre eux : c’est pour cela que le clavier a l’air irrégulier alors qu’il ne l’est pas.',
   todo:'Monte une octave chromatique, un demi-ton à la fois, en nommant chaque touche.',goto:'clavier'},
- {id:'l10',lvl:3,t:'La gamme majeure : ton ton demi, ton ton ton demi',
+ {id:'l10',c:'gamme-majeure',lvl:3,t:'La gamme majeure : ton ton demi, ton ton ton demi',
   b:'Cette suite d’écarts donne la couleur majeure, quelle que soit la note de départ. En partant de Do, elle ne tombe que sur des blanches ; partout ailleurs elle emprunte des noires, et c’est précisément ce que l’armure note une fois pour toutes.',
   todo:'Compare Do majeur et Ré majeur dans l’onglet Clavier : cherche où tombent les noires.',goto:'clavier'},
- {id:'l11',lvl:3,t:'Les doigtés : le pouce passe sous',
+ {id:'l11',c:'doigtes-gamme',lvl:3,t:'Les doigtés : le pouce passe sous',
   b:'Main droite en Do majeur : 1 2 3, le pouce passe sous le majeur, puis 1 2 3 4. Main gauche : 5 4 3 2 1, le troisième doigt passe par-dessus le pouce, puis 3 2 1. Le passage se prépare une note avant d’en avoir besoin ; préparé en retard, il s’entend toujours.',
   todo:'Deux octaves lentes, chaque main séparément, métronome à 60.',goto:'clavier'},
- {id:'l12',lvl:3,t:'Mineur naturel et relative',
+ {id:'l12',c:'mineures',lvl:3,t:'Mineur naturel et relative',
   b:'Chaque tonalité majeure a une relative mineure trois demi-tons plus bas, avec la même armure : la mineur pour Do majeur. Le mineur naturel abaisse les troisième, sixième et septième degrés. Le mineur harmonique relève la septième, et c’est ce demi-ton qui donne cette couleur orientale si reconnaissable.',
   todo:'Dans l’onglet Clavier, joue la mineure naturelle puis harmonique sur la même tonique.',goto:'clavier'},
- {id:'l13',lvl:3,t:'Le cercle des quintes',
+ {id:'l13',c:'cercle-quintes',lvl:3,t:'Le cercle des quintes',
   b:'En montant de quinte en quinte, on ajoute un dièse à chaque pas : Do, Sol, Ré, La, Mi. Dans l’autre sens, on ajoute un bémol : Do, Fa, Si♭, Mi♭. Le cercle n’est qu’une façon commode d’afficher cette addition, et il indique au passage les tonalités voisines, celles vers lesquelles un morceau module naturellement.',
   todo:'Reconnais dix armures sans regarder le cercle.',drill:{k:'keysig'}},
- {id:'l14',lvl:4,t:'La triade : une note sur deux',
+ {id:'l14',c:'triades',lvl:4,t:'La triade : une note sur deux',
   b:'Pars d’une note de la gamme, saute la suivante, prends la troisième, saute encore, prends la cinquième : c’est un accord de trois sons. La tierce du bas décide de tout — grande, l’accord est majeur ; petite, il est mineur. Ton oreille entend cette différence bien avant que tu saches la nommer.',
   todo:'Dix accords reconnus à l’oreille, niveau facile.',drill:{k:'chord',lvl:'facile'}},
- {id:'l15',lvl:4,t:'Les renversements',
+ {id:'l15',c:'renversements',lvl:4,t:'Les renversements',
   b:'Les mêmes trois notes dans un autre ordre : Do-Mi-Sol devient Mi-Sol-Do, puis Sol-Do-Mi. L’accord ne change pas, la note la plus grave change. C’est ce qui permet d’enchaîner deux accords en bougeant d’un centimètre au lieu de sauter d’un bout à l’autre du clavier.',
   todo:'Onglet Clavier : écoute les trois positions de Do majeur, puis enchaîne Do et Fa en bougeant le moins possible.',goto:'clavier'},
- {id:'l16',lvl:4,t:'Les degrés et la cadence',
+ {id:'l16',c:'degres',lvl:4,t:'Les degrés et la cadence',
   b:'Numérote les accords construits sur la gamme : I ii iii IV V vi vii°. I-IV-V-I installe une tonalité, ii-V-I la raconte avec un mouvement de basse plus souple, et I-vi-IV-V fait tourner la moitié des chansons que tu connais. Savoir cela, c’est pouvoir accompagner sans partition.',
   todo:'Dans Théorie, joue I-IV-V-I puis ii-V-I dans trois tonalités différentes.',goto:'theorie'},
  {id:'l17',lvl:4,t:'Reconnaître un intervalle',
   b:'On ne calcule pas un intervalle, on lui associe un repère chantable. La quarte juste ouvre « La Marseillaise », la quinte juste « Ainsi parlait Zarathoustra », l’octave le début de « Over the Rainbow ». Deux ou trois repères solides valent mieux que douze approximatifs.',
   todo:'Vingt intervalles au niveau facile, puis passe au niveau moyen.',drill:{k:'interval',lvl:'facile'}},
- {id:'l18',lvl:4,t:'Jouer ce que tu entends',
+ {id:'l18',c:'commencer-impro',lvl:4,t:'Jouer ce que tu entends',
   b:'La dernière marche, et celle qui change tout : entendre une phrase et la retrouver au clavier sans partition. Commence à trois notes dans une seule tonalité, allonge quand c’est confortable. C’est le même travail que de retenir un numéro de téléphone, en plus agréable.',
   todo:'Cinq phrases de quatre notes rejouées sans erreur.',drill:{k:'echo'}}
 ];
@@ -2729,6 +2733,7 @@ function renderLearn(){
           (l.drill?'<div class="sub">'+drillHint(l.drill.k)+'</div>':'')+
           '<div class="row tight">'+
             (l.drill?'<button class="btn sm" data-ex="'+l.id+'">Ouvrir l’exercice</button>':'')+
+            (l.c&&coursById(l.c)?'<button class="btn sm ghost" data-cgo="'+l.c+'">Lire le cours</button>':'')+
             (l.goto?'<button class="btn sm" data-lgo="'+l.goto+'">Ouvrir '+(l.goto==='clavier'?'le clavier':'la théorie')+'</button>':'')+
             '<button class="btn sm '+(done?'ghost':'primary')+'" data-mk="'+l.id+'">'+(done?'Remettre à travailler':'Marquer comme acquis')+'</button>'+
           '</div></div>':'')+
@@ -2737,6 +2742,7 @@ function renderLearn(){
     html+='</div></div>';
   });
   $('#learnList').innerHTML=html;
+  wireCoursBtns('#learnList');
   $$('#learnList [data-open]').forEach(function(b){b.onclick=function(){
     var id=b.dataset.open;
     openLesson=(openLesson===id)?null:id;
@@ -2791,7 +2797,7 @@ var COURS=[
      'Le clavier n’a l’air irrégulier qu’à cause de deux endroits : entre Mi et Fa, et entre Si et Do, il n’y a pas de touche noire. Ce ne sont pas des trous — ce sont des demi-tons comme les autres. Simplement, les sept noms de notes ne se répartissent pas régulièrement sur douze cases. Le dessin deux noires / trois noires est la carte qui permet de se repérer sans compter.',
      'Une gamme, dès lors, c’est une façon de choisir quelques-unes de ces douze notes et d’en faire un monde : sept pour la majeure, cinq pour la pentatonique, les douze pour la chromatique.'],
   k:'Douze demi-tons par octave, et deux endroits sans touche noire — Mi-Fa, Si-Do. Tout part de là.',
-  sc:'chrom',see:['gamme-majeure','histoire-douze']},
+  sc:'chrom',see:['gamme-majeure','chromatique','histoire-douze']},
 
  {id:'gamme-majeure',th:'gammes',t:'La gamme majeure, une formule d’écarts',
   s:'Ton, ton, demi-ton, ton, ton, ton, demi-ton.',
@@ -2872,7 +2878,7 @@ var COURS=[
      'Mais ce qui fait le blues n’est pas la gamme, c’est le frottement : jouer cette gamme mineure par-dessus des accords majeurs. La tierce mineure de la mélodie contre la tierce majeure de l’accord produit cette tension permanente, ni majeure ni mineure, que le piano ne peut qu’approcher — la voix et la guitare, elles, glissent entre les deux.',
      'Au clavier, le tour de main classique consiste justement à jouer les deux tierces presque en même temps, la mineure venant mourir sur la majeure. C’est une imitation de glissé, et c’est l’idiome le plus reconnaissable du blues au piano.'],
   k:'Pentatonique mineure plus la quinte diminuée, qu’on traverse sans s’y poser. Le frottement mineur sur majeur fait le reste.',
-  sc:'blues',see:['pentatonique','modes']},
+  sc:'blues',see:['pentatonique','modes','histoire-blues']},
 
  {id:'chromatique',th:'gammes',t:'La chromatique : les douze, dans l’ordre',
   s:'Pas une tonalité : un matériau, et un exercice.',
@@ -2895,7 +2901,7 @@ var COURS=[
      'Pendant des siècles, chacun l’a réparti à sa façon. Chaque tempérament rendait quelques tonalités magnifiques et d’autres inutilisables, ce qui donnait aux tonalités des caractères réputés — une réputation qui tenait à l’accord de l’instrument autant qu’à la musique. Le Clavier bien tempéré de Bach, en 1722, est un manifeste : vingt-quatre préludes et fugues, toutes les tonalités, pour montrer qu’un accord bien réglé permet de jouer dans chacune.',
      'Le tempérament égal, généralisé au XIXᵉ siècle, tranche brutalement : l’octave est coupée en douze demi-tons rigoureusement identiques. Plus aucun intervalle n’est parfaitement juste, l’octave exceptée ; en échange, toutes les tonalités deviennent également praticables et Fa♯ devient exactement Sol♭. C’est le compromis qui tient ton piano, et la raison pour laquelle le cercle des quintes se referme.'],
   k:'Douze quintes empilées ne retombent pas sur l’octave. Le tempérament égal répartit l’erreur à parts égales : tout est légèrement faux, et tout devient jouable.',
-  see:['cercle-quintes','douze-notes']},
+  see:['cercle-quintes','douze-notes','histoire-piano']},
 
  {id:'triades',th:'harmonie',t:'La triade : une note sur deux',
   s:'Trois sons, et la tierce du bas décide de tout.',
@@ -3007,7 +3013,7 @@ var COURS=[
      'Trois usages. Mesurer : à quel tempo ce passage reste-t-il net ? Monter : par paliers de quatre bpm, trois passages propres avant chaque palier. Et dépouiller : un clic sur le premier temps seulement, voire un clic toutes les deux mesures — c’est beaucoup plus difficile, et c’est ce qui révèle la stabilité réelle.',
      'Son piège : il fabrique une régularité mécanique si on ne le quitte jamais. Alterne. Un passage au métronome, le même sans, et écoute ce qui change.'],
   k:'Laisse-le sonner et vérifie si tu tombes dessus. Pour les cas difficiles : un clic par mesure, pas quatre.',
-  go:'metronome',see:['monter-tempo','compter']},
+  go:'metronome',see:['monter-tempo','compter','tempo-italien']},
 
  {id:'swing-syncope',th:'rythme',t:'Le swing et la syncope',
   s:'Jouer entre les temps, et pourquoi ça fait bouger la tête.',
@@ -3039,7 +3045,7 @@ var COURS=[
      'La boucle de la clé de sol entoure la deuxième ligne, qui est donc le Sol au-dessus du Do central : les lignes portent Mi Sol Si Ré Fa, les interlignes Fa La Do Mi. Les deux points de la clé de fa encadrent la quatrième ligne, le Fa sous le Do central : lignes Sol Si Ré Fa La, interlignes La Do Mi Sol.',
      'Le Do du milieu s’écrit juste sous la portée en clé de sol et juste au-dessus en clé de fa, sur une petite ligne ajoutée pour l’occasion. Les deux portées du piano ne sont qu’un seul grand clavier coupé à cet endroit.'],
   k:'Lis des écarts, pas des notes. Clé de sol : Mi Sol Si Ré Fa. Clé de fa : Sol Si Ré Fa La.',
-  see:['lire-vite','armure']},
+  see:['lire-vite','ornements','armure']},
 
  {id:'lire-vite',th:'lecture',t:'Lire plus vite',
   s:'Reconnaître des formes au lieu d’épeler des notes.',
@@ -3364,11 +3370,22 @@ function wireCoursBtns(root){
 }
 
 /* --- La bibliothèque, sous le parcours ----------------------------------- */
+/* « pedale » doit trouver « pédale » : on compare sans accents. */
+function unaccent(x){
+  try{return x.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){return x;}
+}
+var coursQ='';
 function renderCours(){
   var el=$('#coursList');if(!el)return;
+  var q=unaccent(coursQ.trim().toLowerCase()),found=0;
+  function hit(c){
+    if(!q)return true;
+    return unaccent((c.t+' '+(c.s||'')+' '+c.b.join(' ')+' '+(c.k||'')).toLowerCase()).indexOf(q)>=0;
+  }
   var html='';
   COURS_TH.forEach(function(t){
-    var cs=COURS.filter(function(c){return c.th===t[0];});
+    var cs=COURS.filter(function(c){return c.th===t[0]&&hit(c);});
+    found+=cs.length;
     if(!cs.length)return;
     html+='<div class="card"><div class="eyebrow" style="margin:0 0 12px">'+esc(t[1])+'</div><div class="list">'+
       cs.map(function(c){
@@ -3377,7 +3394,10 @@ function renderCours(){
           (c.s?'<span class="cs">'+esc(c.s)+'</span>':'')+'</button>';
       }).join('')+'</div></div>';
   });
+  if(!found)html='<div class="empty"><b>Rien avec ce mot-là</b>Essaie « gamme », « pédale », « tempo », « accord », « blues ».</div>';
   el.innerHTML=html;
+  var cnt=$('#coursCount');
+  if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en sept thèmes');
   wireCoursBtns('#coursList');
 }
 var learnSec='parcours';
@@ -3390,6 +3410,7 @@ function setLearnSec(v){
 }
 function wireCours(){
   $$('#learnSeg button').forEach(function(b){b.onclick=function(){setLearnSec(b.dataset.ls);};});
+  $('#coursQ').oninput=function(){coursQ=this.value;renderCours();};
   $('#sheetX').onclick=closeCours;
   $('#sheetBd').onclick=closeCours;
   document.addEventListener('keydown',function(e){

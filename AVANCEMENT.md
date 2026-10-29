@@ -30,7 +30,7 @@ mémoire, et d'où tout cela vient.
 | 2 | Gammes et tonalités : 10 cours de plus (douze notes, gamme majeure, armure, cercle des quintes, mineures, modes, pentatonique, blues, chromatique, transposer) + un cours d'histoire sur le tempérament, et un clavier dessiné dans la feuille | **fait** |
 | 3 | Accords, harmonie, impro : 7 cours d'harmonie (triades, renversements, septièmes, degrés, cadences, chiffrage, voicings) et 5 d'improvisation (commencer, question-réponse, grille de blues, ii-V-I, accompagner), plus l'accord dessiné dans la feuille | **fait** |
 | 4 | Rythme et pédale (compter, métronome, swing et syncope, les trois pédales, rubato), lire et mémoriser (la portée, lire plus vite, nuances, ornements, indications italiennes) et trois cours d'histoire de plus (le piano et ses 88 touches, la notation, le blues) | **fait** |
-| 5 | Finitions : recherche dans les cours, liens croisés, les 18 leçons du parcours reliées aux cours, README, relecture d'ensemble | à faire |
+| 5 | Finitions : recherche plein texte sans accents, les 18 leçons du parcours reliées aux cours, plus aucun cours orphelin, README | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -47,11 +47,13 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-Étapes 1 à 4 faites et poussées. 56 cours, et plus aucun thème vide : 17
-« Travailler », 13 « Gammes et tonalités », 7 « Accords et harmonie », 5
-« Improviser », 5 « Rythme et pédale », 5 « Lire et mémoriser », 4 « D’où ça vient ».
+**Chantier terminé.** Les cinq étapes sont faites et poussées.
 
-Prochaine action : étape 5, les finitions. À faire : une recherche dans les cours
-(56 entrées, la liste devient longue), relier les 18 leçons du parcours aux cours
-correspondants, vérifier que chaque cours est atteignable depuis au moins un autre
-endroit, et relire l’ensemble d’un œil.
+56 cours en sept thèmes, atteignables de quatre façons : le lien « Comment on
+fait ? » d’un bloc de séance, la bibliothèque de l’onglet Apprentissage, sa
+recherche, et le « Lire le cours » de chaque leçon du parcours. Aucun cours n’est
+orphelin : tous ont au moins un lien entrant.
+
+Pistes si on y revient : des cours sur le répertoire (choisir un morceau à son
+niveau, combien de morceaux mener de front), un cours par état d’avancement du
+répertoire, et éventuellement un favori ou un historique des cours lus.
