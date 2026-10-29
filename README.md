@@ -32,8 +32,12 @@ tourner derrière, et on la retrouve en fermant.
 Les recettes de séance désignent leur cours par un identifiant (`h`). Les blocs que tu
 as écrits toi-même, et la routine libre, n'en ont pas : le lien se déduit alors des
 mots du bloc (`COURS_HINTS`), de sorte qu'un bloc nommé « Gammes » trouve quand même
-quelque chose à dire. Quand le morceau au programme a une tonalité, le cours sur les
-gammes propose d'ouvrir celle-là au clavier, pas une autre.
+quelque chose à dire.
+
+Un cours qui parle d'une gamme la dessine : un clavier d'une octave dans la feuille,
+les notes allumées, la tonique marquée, un bouton pour l'entendre et un autre pour
+ouvrir l'onglet Clavier si tu veux les doigtés. Quand le morceau au programme a une
+tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do.
 
 ## Où vivent les données
 

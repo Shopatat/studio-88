@@ -262,6 +262,7 @@ input[type=checkbox]{accent-color:var(--brass)}
   .sheet>.pane{border-radius:var(--r4);max-height:84vh}}
 .sheet .sx{position:absolute;top:12px;right:12px;padding:5px 11px;z-index:2}
 .chead{padding-right:48px}
+.ckb{margin-top:16px}
 .cbody p{font-size:14.5px;line-height:1.68;max-width:62ch;margin-top:14px}
 body.noscroll{overflow:hidden}
 details.tuck{border:1px dashed var(--line2);border-radius:var(--r3);padding:12px 15px}
@@ -953,7 +954,9 @@ var SCALES=[
  {id:'phry',n:'Phrygien',iv:[0,1,3,5,7,8,10],deg:['1','♭2','♭3','4','5','♭6','♭7']},
  {id:'pentM',n:'Pentatonique majeure',iv:[0,2,4,7,9],deg:['1','2','3','5','6']},
  {id:'pentm',n:'Pentatonique mineure',iv:[0,3,5,7,10],deg:['1','♭3','4','5','♭7']},
- {id:'blues',n:'Blues',iv:[0,3,5,6,7,10],deg:['1','♭3','4','♭5','5','♭7']}
+ {id:'blues',n:'Blues',iv:[0,3,5,6,7,10],deg:['1','♭3','4','♭5','5','♭7']},
+ {id:'chrom',n:'Chromatique',iv:[0,1,2,3,4,5,6,7,8,9,10,11],
+  deg:['1','♭2','2','♭3','3','4','♭5','5','♭6','6','♭7','7']}
 ];
 var CHORDS=[
  {id:'M',n:'Majeur',sfx:'',iv:[0,4,7]},
@@ -2805,6 +2808,22 @@ var COURS_TH=[
  ['histoire','D’où ça vient']
 ];
 var COURS=[
+ {id:'douze-notes',th:'gammes',t:'Douze notes, et puis c’est tout',
+  s:'Le demi-ton, l’octave, et pourquoi le clavier a l’air irrégulier.',
+  b:['Entre une touche et sa voisine immédiate, blanche ou noire, il y a un demi-ton : le plus petit écart du clavier. Douze demi-tons plus loin, on retrouve la même note une octave plus haut — même nom, fréquence exactement double. Toute la musique que tu joues tient dans ces douze cases qui se répètent.',
+     'Le clavier n’a l’air irrégulier qu’à cause de deux endroits : entre Mi et Fa, et entre Si et Do, il n’y a pas de touche noire. Ce ne sont pas des trous — ce sont des demi-tons comme les autres. Simplement, les sept noms de notes ne se répartissent pas régulièrement sur douze cases. Le dessin deux noires / trois noires est la carte qui permet de se repérer sans compter.',
+     'Une gamme, dès lors, c’est une façon de choisir quelques-unes de ces douze notes et d’en faire un monde : sept pour la majeure, cinq pour la pentatonique, les douze pour la chromatique.'],
+  k:'Douze demi-tons par octave, et deux endroits sans touche noire — Mi-Fa, Si-Do. Tout part de là.',
+  sc:'chrom',see:['gamme-majeure','histoire-douze']},
+
+ {id:'gamme-majeure',th:'gammes',t:'La gamme majeure, une formule d’écarts',
+  s:'Ton, ton, demi-ton, ton, ton, ton, demi-ton.',
+  b:['La gamme majeure n’est pas une liste de notes, c’est une suite d’écarts : un ton, un ton, un demi-ton, un ton, un ton, un ton, un demi-ton. Applique-la en partant de n’importe quelle touche et tu obtiens une gamme majeure — la couleur est dans la formule, pas dans la note de départ.',
+     'Partie de Do, elle ne tombe que sur des blanches : c’est un hasard de fabrication du clavier, et c’est pour cela que Do majeur sert d’exemple partout. Partout ailleurs, la formule oblige à emprunter des touches noires — une en Sol, deux en Ré, six en Fa♯. Ces emprunts, écrits une fois pour toutes au début de la partition, sont exactement ce qu’on appelle l’armure.',
+     'Les deux demi-tons sont les endroits sensibles de la gamme : celui entre le troisième et le quatrième degré, et surtout celui entre le septième et l’octave — la note qui appelle la tonique, et que l’oreille réclame avant même que tu la joues.'],
+  k:'Ton ton demi, ton ton ton demi. La même formule partout donne la même couleur.',
+  sc:'maj',see:['armure','mineures','pourquoi-gammes']},
+
  {id:'pourquoi-gammes',th:'gammes',t:'À quoi sert une gamme',
   s:'Pas un exercice à part : le terrain du morceau.',
   b:['Une tonalité, c’est sept notes choisies parmi douze. Le morceau que tu travailles est fait presque uniquement de ces sept-là, dans tous les ordres possibles. Jouer la gamme avant le morceau, c’est donc parcourir à vide exactement le terrain sur lequel tu vas courir : les mêmes touches, les mêmes noires, les mêmes passages de pouce.',
@@ -2829,6 +2848,77 @@ var COURS=[
      'Le défaut qui s’entend n’est pas l’erreur de doigté, c’est le retard : un pouce préparé trop tard produit un petit accent et un trou. Le coude recule très légèrement pendant les trois notes qui précèdent, et le pouce est déjà en place quand son tour vient.'],
   k:'Le pouce ne joue pas de touche noire, et il se prépare une note avant d’en avoir besoin. Presque tout le reste en découle.',
   sc:'auto',see:['travailler-gamme']},
+
+ {id:'armure',th:'gammes',t:'L’armure : la tonalité en deux symboles',
+  s:'Et l’ordre immuable des dièses et des bémols.',
+  b:['Les dièses ou les bémols placés juste après la clé valent pour tout le morceau, à toutes les octaves. Ils ne sont jamais dans le désordre : les dièses arrivent toujours dans l’ordre fa, do, sol, ré, la, mi, si, et les bémols exactement à l’envers — si, mi, la, ré, sol, do, fa. Trois dièses, c’est donc fa, do et sol. Rien d’autre à deviner.',
+     'De l’armure à la tonalité, deux raccourcis. Avec des dièses : le dernier dièse est la sensible, la tonique se trouve un demi-ton au-dessus — trois dièses, dernier dièse sol♯, donc La majeur. Avec des bémols : l’avant-dernier bémol donne directement la tonalité — quatre bémols dont l’avant-dernier est La♭, donc La♭ majeur.',
+     'Une armure ne dit pas si le morceau est majeur ou mineur : une armure vide, c’est Do majeur ou la mineur. Ce sont le début et surtout la fin du morceau qui tranchent.'],
+  k:'Dièses : fa do sol ré la mi si. Bémols : l’inverse. Le dernier dièse est la sensible ; l’avant-dernier bémol est la tonique.',
+  ex:{k:'keysig'},see:['cercle-quintes','mineures']},
+
+ {id:'cercle-quintes',th:'gammes',t:'Le cercle des quintes',
+  s:'Une addition déguisée en horloge.',
+  b:['Pars de Do et monte d’une quinte : Sol, un dièse. Encore une quinte : Ré, deux dièses. Puis La, Mi, Si, Fa♯ — un dièse de plus à chaque pas. Dans l’autre sens, de quinte en quinte vers le bas : Fa, Si♭, Mi♭, La♭ — un bémol de plus à chaque pas. Le cercle n’est rien d’autre que l’affichage commode de cette addition.',
+     'Il sert à trois choses, tous les jours. Retrouver une armure sans réciter. Savoir vers quelles tonalités un morceau peut moduler : les voisines sur le cercle, à un dièse près, sonnent naturelles, les opposées sonnent comme un coup de théâtre. Et comprendre pourquoi I-IV-V tourne si bien : ce sont trois cases voisines, la tonalité et ses deux immédiates.',
+     'En bas du cercle, les deux sens se rejoignent : Fa♯ majeur et Sol♭ majeur sont la même chose au clavier, écrites autrement. C’est le seul endroit où le cercle se referme — et il ne se referme que depuis le tempérament égal.'],
+  k:'Une quinte vers la droite, un dièse de plus. Les tonalités voisines sur le cercle sont celles vers lesquelles on module sans heurt.',
+  go:'theorie',ex:{k:'keysig'},see:['armure','histoire-douze']},
+
+ {id:'mineures',th:'gammes',t:'Les trois mineures',
+  s:'Naturelle, harmonique, mélodique — et la relative.',
+  b:['Chaque gamme majeure a une relative mineure qui partage son armure, trois demi-tons plus bas : la mineur pour Do majeur, mi mineur pour Sol majeur. Mêmes notes, autre point de départ, et donc autre couleur — parce que ce sont les écarts depuis la tonique qui font la couleur, pas les notes elles-mêmes.',
+     'La mineure naturelle abaisse d’un demi-ton les troisième, sixième et septième degrés de la majeure. Son défaut : sa septième est trop loin de la tonique pour l’appeler. D’où la mineure harmonique, qui relève cette septième — et crée au passage un ton et demi entre les sixième et septième degrés, ce saut si reconnaissable, presque oriental.',
+     'La mélodique corrige ce saut en relevant aussi la sixième, mais seulement en montant : en redescendant, on retombe le plus souvent sur la naturelle. Ce n’est pas une bizarrerie d’école, c’est la trace d’un compromis entre ce qui se chante bien et ce que l’harmonie réclame.'],
+  k:'Relative mineure : même armure, trois demi-tons plus bas. Harmonique : septième relevée. Mélodique : sixième et septième relevées en montant.',
+  sc:'harm',see:['gamme-majeure','armure']},
+
+ {id:'modes',th:'gammes',t:'Les modes : la même gamme vue d’ailleurs',
+  s:'Sept points de départ, sept couleurs.',
+  b:['Joue les touches blanches de Ré à Ré : ce sont les notes de Do majeur, mais la tonique a changé, donc les écarts depuis la tonique aussi. Le résultat s’appelle le dorien, et il sonne mineur avec une sixième claire. La même opération depuis Sol donne le mixolydien : majeur, mais avec une septième abaissée — la couleur du rock et du blues.',
+     'Les quatre utiles en pratique : dorien (mineur, mais pas triste), mixolydien (majeur, mais qui ne conclut pas), lydien (majeur avec une quarte augmentée, cette couleur suspendue des musiques de film), phrygien (mineur avec une seconde abaissée, la couleur espagnole). Les trois autres sont la majeure et la mineure naturelle sous un autre nom, plus un mode inutilisable tel quel.',
+     'Pour s’en servir, le raccourci qui marche : joue la gamme majeure de la tonalité, mais fais de la bonne note ta tonique, et reviens-y sans cesse. Un mode n’est pas une nouvelle gamme à apprendre, c’est une façon d’entendre celle que tu connais déjà.'],
+  k:'Mêmes notes, autre tonique. Dorien mineur-clair, mixolydien majeur-bluesy, lydien suspendu, phrygien espagnol.',
+  sc:'dor',see:['gamme-majeure','pentatonique']},
+
+ {id:'pentatonique',th:'gammes',t:'La pentatonique : cinq notes qui ne se trompent pas',
+  s:'La gamme avec laquelle on peut commencer à improviser ce soir.',
+  b:['Retire à la gamme majeure ses deux demi-tons — le quatrième et le septième degré — et il reste cinq notes qui sonnent bien ensemble dans presque n’importe quel ordre. C’est la pentatonique majeure, et c’est pour cette raison qu’on la met entre les mains de qui débute en improvisation : les notes capables de sonner faux ont été retirées.',
+     'Sa version mineure est la même série démarrée trois demi-tons plus bas : la pentatonique mineure de la est faite des mêmes cinq notes que la pentatonique majeure de Do. Sur un morceau en mineur ou sur un blues, c’est celle-là qu’on prend.',
+     'On la trouve partout dans le monde, et pas par imitation. Les cinq touches noires du piano en forment une à elles seules : joue n’importe quoi sur les seules noires, main gauche sur un Mi♭ grave. Ça sonne, toujours.'],
+  k:'Cinq notes, aucun demi-ton, rien qui jure. Les touches noires du piano en forment une.',
+  sc:'pentM',see:['blues-gamme','modes']},
+
+ {id:'blues-gamme',th:'gammes',t:'La gamme blues et la note bleue',
+  s:'La pentatonique mineure, plus une note qui ne devrait pas être là.',
+  b:['Prends la pentatonique mineure et ajoute un seul son, entre la quarte et la quinte : la quinte diminuée, la fameuse note bleue. Elle sonne instable, presque fausse si on s’y arrête — et c’est le but. On la traverse, on glisse dessus, on ne s’y installe jamais.',
+     'Mais ce qui fait le blues n’est pas la gamme, c’est le frottement : jouer cette gamme mineure par-dessus des accords majeurs. La tierce mineure de la mélodie contre la tierce majeure de l’accord produit cette tension permanente, ni majeure ni mineure, que le piano ne peut qu’approcher — la voix et la guitare, elles, glissent entre les deux.',
+     'Au clavier, le tour de main classique consiste justement à jouer les deux tierces presque en même temps, la mineure venant mourir sur la majeure. C’est une imitation de glissé, et c’est l’idiome le plus reconnaissable du blues au piano.'],
+  k:'Pentatonique mineure plus la quinte diminuée, qu’on traverse sans s’y poser. Le frottement mineur sur majeur fait le reste.',
+  sc:'blues',see:['pentatonique','modes']},
+
+ {id:'chromatique',th:'gammes',t:'La chromatique : les douze, dans l’ordre',
+  s:'Pas une tonalité : un matériau, et un exercice.',
+  b:['La gamme chromatique prend les douze demi-tons sans en choisir aucun. Elle n’a donc ni tonique, ni armure, ni couleur propre : c’est la matière brute, avant qu’une tonalité y découpe ses sept notes.',
+     'En pratique elle sert à deux choses. Comme exercice, c’est le meilleur test d’égalité entre les doigts : le doigté standard met le pouce sur chaque blanche qui suit une noire, et le moindre défaut d’indépendance s’y entend. Comme matériau, elle fournit les notes de passage — ces notes étrangères à la tonalité qui relient deux notes voisines en glissant, et qui donnent au jazz comme au romantisme leur fluidité.'],
+  k:'Les douze notes, sans tonique. Un exercice d’égalité, et un réservoir de notes de passage.',
+  sc:'chrom',see:['douze-notes','travailler-gamme']},
+
+ {id:'transposer',th:'gammes',t:'Transposer : la même chose ailleurs',
+  s:'Parce que ce sont les écarts qui comptent, pas les touches.',
+  b:['Transposer, c’est rejouer un morceau en décalant tout du même nombre de demi-tons. La mélodie reste reconnaissable, les écarts sont identiques, seules les touches changent. C’est la démonstration pratique qu’une musique est faite de rapports entre les notes, et non des notes elles-mêmes.',
+     'Deux raisons d’en passer par là. Accompagner quelqu’un : une chanson trop haute pour une voix se descend de deux ou trois demi-tons et tout rentre dans l’ordre. Et apprendre : un passage travaillé dans trois tonalités cesse d’être une suite de gestes pour devenir une idée musicale — c’est le test le plus sévère de ce qu’on a vraiment compris.',
+     'La méthode qui marche : ne transpose pas note à note, transpose par degrés. « Tonique, tierce, quinte, puis le quatrième degré » se transpose instantanément dans n’importe quelle tonalité, là où « Do, Mi, Sol, Fa » demande un calcul à chaque note.'],
+  k:'Pense en degrés, pas en noms de notes. Un passage su dans trois tonalités est un passage compris.',
+  see:['cercle-quintes','pourquoi-gammes']},
+
+ {id:'histoire-douze',th:'histoire',t:'D’où viennent les douze notes',
+  s:'De Pythagore au tempérament égal, et pourquoi Fa♯ est enfin Sol♭.',
+  b:['Tout part d’un constat vieux de deux mille cinq cents ans : deux cordes dont les longueurs sont dans un rapport simple sonnent bien ensemble. Deux pour un donne l’octave, trois pour deux la quinte. En empilant des quintes — Do, Sol, Ré, La… — on finit par repasser près du point de départ au bout de douze pas. Près, mais pas dessus : l’écart qui reste, le comma, est minuscule et parfaitement audible.',
+     'Pendant des siècles, chacun l’a réparti à sa façon. Chaque tempérament rendait quelques tonalités magnifiques et d’autres inutilisables, ce qui donnait aux tonalités des caractères réputés — une réputation qui tenait à l’accord de l’instrument autant qu’à la musique. Le Clavier bien tempéré de Bach, en 1722, est un manifeste : vingt-quatre préludes et fugues, toutes les tonalités, pour montrer qu’un accord bien réglé permet de jouer dans chacune.',
+     'Le tempérament égal, généralisé au XIXᵉ siècle, tranche brutalement : l’octave est coupée en douze demi-tons rigoureusement identiques. Plus aucun intervalle n’est parfaitement juste, l’octave exceptée ; en échange, toutes les tonalités deviennent également praticables et Fa♯ devient exactement Sol♭. C’est le compromis qui tient ton piano, et la raison pour laquelle le cercle des quintes se referme.'],
+  k:'Douze quintes empilées ne retombent pas sur l’octave. Le tempérament égal répartit l’erreur à parts égales : tout est légèrement faux, et tout devient jouable.',
+  see:['cercle-quintes','douze-notes']},
 
  {id:'echauffement',th:'travail',t:'S’échauffer',
   s:'Trois minutes qui changent la demi-heure qui suit.',
@@ -3010,29 +3100,42 @@ var sheetBack=null;
 function openCours(id){
   var c=coursById(id);if(!c)return;
   var th=(COURS_TH.filter(function(t){return t[0]===c.th;})[0]||['','Cours'])[1];
-  var acts=[],fk=focusKey();
+  var acts=[],fk=focusKey(),kb='',kpc=0,ksc=null;
   if(c.sc){
-    var pc=0,sid=c.sc,lbl='Essayer au clavier';
-    if(c.sc==='auto'){
-      pc=fk?fk.pc:0;sid=fk?fk.sc:'maj';
-      lbl=fk?('Ouvrir '+fk.name+' au clavier'):'Ouvrir une gamme au clavier';
-    }
-    acts.push('<button class="btn sm" data-csc="'+pc+'|'+sid+'">'+esc(lbl)+'</button>');
+    /* « auto » : la gamme du morceau au programme, à défaut celle de Do. */
+    var sid=(c.sc==='auto')?(fk?fk.sc:'maj'):c.sc;
+    kpc=(c.sc==='auto'&&fk)?fk.pc:0;
+    ksc=SCALES.filter(function(x){return x.id===sid;})[0]||null;
   }
+  if(ksc)kb='<div class="ckb"><div class="kb sm" id="sheetKB"></div>'+
+    '<div class="row tight" style="margin-top:9px;align-items:center">'+
+      '<button class="btn sm" id="sheetPlay">♪ Jouer</button>'+
+      '<button class="btn sm ghost" id="sheetOpen">Ouvrir au clavier</button>'+
+      '<span class="sub">'+esc(pcName(kpc)+' '+ksc.n.toLowerCase())+'</span>'+
+    '</div></div>';
   if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
+  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':'le clavier')+'</button>');
   var see=(c.see||[]).filter(coursById);
   $('#sheetBody').innerHTML=
-    '<div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
+    '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
     '<h2 class="ttl" id="sheetTitle" style="font-size:25px;margin:2px 0 0">'+esc(c.t)+'</h2>'+
-    (c.s?'<p class="sub" style="margin:6px 0 0;max-width:60ch">'+esc(c.s)+'</p>':'')+
+    (c.s?'<p class="sub" style="margin:6px 0 0;max-width:60ch">'+esc(c.s)+'</p>':'')+'</div>'+
+    kb+
     '<div class="cbody">'+c.b.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div>'+
     (c.k?'<div class="todo"><b>À retenir</b>'+esc(c.k)+'</div>':'')+
     (acts.length?'<div class="row tight" style="margin-top:14px">'+acts.join('')+'</div>':'')+
     (see.length?'<div style="margin-top:16px"><div class="eyebrow" style="margin-bottom:7px">À lire ensuite</div>'+
       '<div class="row tight">'+see.map(function(x){
         return '<button class="btn sm ghost" data-csee="'+x+'">'+esc(coursById(x).t)+'</button>';}).join('')+'</div></div>':'');
-  $$('#sheetBody [data-csc]').forEach(function(b){b.onclick=function(){
-    var p=b.dataset.csc.split('|');goScale(+p[0],p[1]);};});
+  if(ksc&&$('#sheetKB')){
+    buildKB($('#sheetKB'),60,1,null,true);
+    highlight($('#sheetKB'),ksc.iv.map(function(iv){return (kpc+iv)%12;}),kpc%12);
+    $('#sheetPlay').onclick=function(){
+      playSeq(ksc.iv.map(function(iv){return 60+kpc+iv;}).concat([60+kpc+12]),0.18,0.55);};
+    $('#sheetOpen').onclick=function(){goScale(kpc,ksc.id);};
+  }
+  $$('#sheetBody [data-cgt]').forEach(function(b){b.onclick=function(){
+    var t=b.dataset.cgt;closeCours();go(t);};});
   $$('#sheetBody [data-cex]').forEach(function(b){b.onclick=function(){
     var x=coursById(b.dataset.cex);closeCours();openDrill({drill:x.ex});};});
   $$('#sheetBody [data-csee]').forEach(function(b){b.onclick=function(){openCours(b.dataset.csee);};});

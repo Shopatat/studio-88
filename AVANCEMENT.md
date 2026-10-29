@@ -27,7 +27,7 @@ mémoire, et d'où tout cela vient.
 | Étape | Contenu | État |
 |---|---|---|
 | 1 | Le pont et la bibliothèque : feuille superposée (`sheet`), structure `COURS` + thèmes, bascule Parcours/Cours dans Apprentissage, lien « Comment on fait ? » sur chaque bloc de séance, et les 20 cours que ces blocs appellent | **fait** |
-| 2 | Gammes et tonalités : majeure, mineures, modes, pentatonique, blues, chromatique, à quoi sert une gamme, pourquoi douze, doigtés, l'histoire du tempérament | à faire |
+| 2 | Gammes et tonalités : 10 cours de plus (douze notes, gamme majeure, armure, cercle des quintes, mineures, modes, pentatonique, blues, chromatique, transposer) + un cours d'histoire sur le tempérament, et un clavier dessiné dans la feuille | **fait** |
 | 3 | Accords, harmonie, impro : triades, septièmes, renversements, chiffrage, degrés et cadences, grilles, improviser sur une pentatonique puis sur un blues, question-réponse, voicings, basse qui marche | à faire |
 | 4 | Rythme, pédale, lecture, mémoire : subdivisions, swing, syncope, les trois pédales, lecture à vue, apprendre par cœur ; et les cours d'histoire (d'où viennent les modes, Bach et les 24 tonalités, le blues) | à faire |
 | 5 | Finitions : recherche dans les cours, liens croisés, les 18 leçons du parcours reliées aux cours, README, relecture d'ensemble | à faire |
@@ -47,13 +47,12 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-Étape 1 faite et poussée. 20 cours écrits : 17 dans « Travailler » (échauffement,
-repérage, mains séparées, mains ensemble, lenteur, boucle courte, raccords, montée en
-tempo, jeu continu, départs à froid, par cœur, intégrale, relecture, s’enregistrer,
-déchiffrage, notes de séance, finir en musique) et 3 dans « Gammes et tonalités »
-(à quoi sert une gamme, travailler une gamme et son arpège, les doigtés de gamme).
+Étapes 1 et 2 faites et poussées. 31 cours : 17 dans « Travailler », 13 dans
+« Gammes et tonalités », 1 dans « D’où ça vient ». Un cours qui porte un champ `sc`
+dessine la gamme sur un clavier d’une octave dans la feuille, avec le son ; `sc:'auto'`
+prend la tonalité du morceau au programme. La chromatique a rejoint `SCALES`, donc
+aussi l’explorateur de gammes de l’onglet Clavier.
 
-Prochaine action : étape 2, le corpus « Gammes et tonalités ». Prévoir aussi, dans
-cette étape ou la suivante, de remplacer le bouton « Ouvrir une gamme au clavier »
-par un petit clavier dessiné dans la feuille elle-même, pour ne pas avoir à changer
-d’onglet en pleine séance.
+Prochaine action : étape 3, accords, harmonie et improvisation. Prévoir d’y ajouter
+un affichage d’accord dans la feuille, sur le modèle du clavier de gamme (`ch:` à côté
+de `sc:`).
