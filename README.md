@@ -59,6 +59,12 @@ verrous, parce qu'aucun ne suffit seul : `user-scalable=no` dans la balise viewp
 `touch-action: pan-x pan-y` sur tous les éléments, et les événements `gesture*`
 de Safari interceptés. Le défilement, lui, est intact.
 
+Le bouton silencieux de l'iPhone ne coupe pas le son de l'appli : par défaut une
+page web joue dans la session audio « ambient », que ce bouton éteint, alors l'appli
+déclare `navigator.audioSession.type = "playback"` (Safari 16.4+) et sort comme une
+appli de musique. Revers de la médaille : pendant qu'elle joue, la musique lancée
+ailleurs se met en pause.
+
 Garde l'écran allumé pendant une séance : iOS coupe l'audio dès le verrouillage, ce
 qui arrêterait le métronome. L'appli demande le maintien de l'écran quand le minuteur
 tourne, et Safari récent l'accorde.

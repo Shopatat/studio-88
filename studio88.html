@@ -1198,9 +1198,15 @@ function pushAll(){
    4. Audio : piano de synthèse + métronome
    ========================================================= */
 var AC=null;
+/* iOS 16.4+ : par défaut une page web passe par la session audio « ambient »,
+   que le petit bouton silencieux de l’iPhone coupe. En déclarant « playback »,
+   le son sort même en mode silencieux, comme dans une appli de musique. */
+function audioOut(){
+  try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
+}
 function ac(){
-  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
-  if(AC&&AC.state==='suspended')AC.resume();
+  if(!AC){audioOut();try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+  if(AC&&AC.state==='suspended'){audioOut();AC.resume();}
   return AC;
 }
 /* Tout le son passe par un compresseur doux : un accord joué pendant que le
