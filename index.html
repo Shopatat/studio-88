@@ -802,7 +802,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
   <!-- =============== RÉPERTOIRE =============== -->
   <section id="t-repertoire" role="tabpanel" aria-label="Répertoire" hidden>
     <div class="grid g2">
-      <div class="card">
+      <div class="card" id="pAddCard">
         <div class="eyebrow">Ajouter un morceau</div>
         <div class="row">
           <label class="fld" style="flex:1 1 200px">Titre<input type="text" id="pTitle" placeholder="Gymnopédie n°1"></label>
@@ -820,6 +820,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div class="row" style="margin-top:10px">
           <button class="btn primary" id="pAdd">Ajouter</button>
           <button class="btn ghost" id="pDemo">Charger 3 exemples</button>
+          <button class="btn ghost" data-cgo="choisir-morceau">Bien choisir un morceau</button>
         </div>
       </div>
       <div class="card">
@@ -2806,6 +2807,7 @@ function renderLearnTeaser(){
    superposée, qui ne fait pas perdre le minuteur de vue. */
 var COURS_TH=[
  ['travail','Travailler'],
+ ['repertoire','Mener un morceau'],
  ['gammes','Gammes et tonalités'],
  ['harmonie','Accords et harmonie'],
  ['impro','Improviser'],
@@ -3126,6 +3128,94 @@ var COURS=[
   k:'Une musique de hauteurs glissées, jouée sur un instrument de hauteurs fixes. Tous les idiomes du blues au piano viennent de là.',
   see:['blues-gamme','grille-blues']},
 
+ {id:'choisir-morceau',th:'repertoire',t:'Choisir un morceau à ta portée',
+  s:'Dix minutes de lecture avant de s’engager pour deux mois.',
+  b:['Un morceau trop difficile ne devient pas facile avec de la patience : il s’installe de travers. On y répète les mêmes trous pendant des semaines, on n’atteint jamais un tempo où la musique existe, et on finit par croire que c’est soi qui ne progresse pas. Choisir, c’est donc la décision la plus rentable de tout le travail.',
+     'Le test est simple et se fait debout devant la partition, avant de commencer : déchiffre la première page au tiers du tempo, mains ensemble. Si tu t’arrêtes trois ou quatre fois, c’est le bon niveau — il y a du travail, mais le chemin est visible. Si tu t’arrêtes à chaque mesure, le morceau n’est pas pour maintenant. Regarde aussi ce qui coûte cher : l’armure, les écarts de la main gauche, les rythmes à deux contre trois, les pages où les deux mains sont également occupées.',
+     'Garde une liste des morceaux que tu veux jouer un jour. Ce n’est pas un renoncement : c’est le seul moyen d’y revenir au bon moment, souvent six mois plus tard, quand la pièce est devenue déchiffrable.'],
+  k:'Si tu ne peux pas déchiffrer la première page lentement, ce n’est pas encore pour toi. Note-le dans une liste, prends autre chose.',
+  see:['dechiffrage','combien-morceaux','etat-decouverte','laisser-morceau'],go:'repertoire'},
+
+ {id:'combien-morceaux',th:'repertoire',t:'Combien de morceaux de front',
+  s:'Trois ou quatre, et jamais tous au même stade.',
+  b:['Un seul morceau à la fois sature : au bout de trois semaines l’oreille ne l’entend plus et la séance devient une corvée. Trois morceaux au même stade, c’est l’inverse : chacun reçoit un tiers du temps et aucun n’avance. L’équilibre qui marche mêle les états plutôt que les titres.',
+     'La répartition usuelle : un morceau en découverte ou en travail, qui prend le gros de la séance ; un presque prêt ou mémorisé, qu’on finit ou qu’on soigne en dix minutes ; un ou deux en entretien, qu’on joue une fois en entier de temps en temps. Les trois derniers coûtent très peu et donnent le sentiment d’avoir un répertoire, pas seulement un chantier.',
+     'Studio 88 trie ton répertoire par urgence de révision, pas par titre : le haut de la liste est ce qui demande de l’attention aujourd’hui. Si tout le haut de la liste est « en travail », tu en as trop en travail.'],
+  k:'Un seul morceau en travail à la fois. Les autres sont là pour être finis ou entretenus.',
+  see:['choisir-morceau','revisions-espacees','etat-entretien'],go:'repertoire'},
+
+ {id:'etat-decouverte',th:'repertoire',t:'Découverte : les premiers jours',
+  s:'On regarde plus qu’on ne joue.',
+  b:['Pendant ces quelques jours, tout ce qui sera joué pour la première fois va s’imprimer, juste ou faux. C’est donc le moment le moins rapide de toute la vie du morceau : partition sous les yeux sans jouer, repérage de l’armure et de la forme, doigtés écrits au crayon aux endroits qui en demandent, puis des sections de quatre mesures, mains séparées, à un tempo où tu ne te trompes pas.',
+     'Le but n’est pas de jouer le morceau : c’est de le comprendre et de décider. Quels doigtés, quelles sections, où sont les retours du thème, où la main gauche change de position. Une pièce courte y passe une à deux semaines. Studio 88 te la remet sous les yeux tous les deux jours — à ce stade l’oubli est très rapide.',
+     'Tu peux passer à « en travail » quand chaque section se joue mains ensemble, très lentement, sans chercher les notes.'],
+  k:'Rien de ce qui est joué ces jours-là ne sera facile à corriger plus tard. Lent, court, et les doigtés écrits.',
+  see:['reperage','mains-separees','lenteur','etat-travail'],go:'seance'},
+
+ {id:'etat-travail',th:'repertoire',t:'En travail : la longue phase',
+  s:'Là où un morceau passe le plus clair de sa vie.',
+  b:['Les notes sont connues, le morceau ne tient pas encore. C’est l’état le plus long et celui où la méthode compte le plus, parce que le réflexe naturel — rejouer du début à la fin en espérant que ça s’améliore — ne fait presque rien. Ce qui travaille, c’est : repérer les deux ou trois endroits qui lâchent, les boucler courts et lentement, raccorder chaque endroit à ce qui l’entoure, puis monter le tempo par paliers de deux.',
+     'Une séance type sur un morceau en travail : échauffement loin de la pièce, la gamme de sa tonalité, deux boucles sur les passages faibles, les raccords, une montée de tempo sur une section, et une seule intégrale pour finir — au tempo que tu tiens vraiment.',
+     'Les signes que ça avance ne sont pas « je le sens mieux » : le tempo tenu monte, le nombre d’arrêts baisse, et les mêmes endroits ne reviennent plus dans tes notes de fin de séance.'],
+  k:'Le temps passé à rejouer ce qui marche déjà est du temps volé aux trois mesures qui ne marchent pas.',
+  see:['boucle-courte','raccords','monter-tempo','etat-presque'],go:'seance'},
+
+ {id:'etat-presque',th:'repertoire',t:'Presque prêt : finir pour de vrai',
+  s:'Les dix derniers pour cent prennent un tiers du temps.',
+  b:['Un morceau joué en entier, à peu près au tempo, est à quatre-vingt-dix pour cent — et c’est exactement là que la plupart des morceaux s’arrêtent définitivement, parce qu’on s’ennuie et qu’on en commence un autre. Un morceau laissé à ce stade ne tient pas six mois : il n’a jamais été solide, il était seulement connu.',
+     'Ce qui reste à obtenir est précis : le tempo cible tenu deux fois de suite, un départ à froid réussi en début de séance, les nuances et la pédale assumées plutôt que subies, et la tenue sous enregistrement. Chacun de ces quatre points se travaille séparément, et aucun ne demande plus de dix minutes par séance.',
+     'C’est aussi le bon moment pour décider s’il te faut le par cœur. Si oui, maintenant : la mémoire s’installe beaucoup mieux sur un texte déjà propre.'],
+  k:'Tempo cible deux fois de suite, à froid, avec les nuances. Avant ça, ce n’est pas fini.',
+  see:['integrale','depart-froid','par-coeur','etat-memorise'],go:'seance'},
+
+ {id:'etat-memorise',th:'repertoire',t:'Mémorisé : sans la partition',
+  s:'Ce qui est su des doigts n’est pas encore su.',
+  b:['Les doigts enchaînent parfaitement tant que rien ne les interrompt — et c’est la mémoire qui lâche en premier, en public ou simplement un matin de fatigue. Un morceau est vraiment mémorisé quand trois autres appuis existent : tu peux chanter la ligne sans le clavier, raconter ce qui se passe harmoniquement, et repartir de quatre endroits choisis au hasard dans la pièce.',
+     'Le test se fait partition fermée, au tiers du tempo. Chaque hésitation désigne le travail du jour, et c’est presque toujours un endroit que tu n’avais pas compris, seulement répété. Studio 88 revient sur un morceau mémorisé tous les dix jours : assez souvent pour qu’il ne s’efface pas, assez rarement pour que ce soit tenable.',
+     'Mémorisé n’est pas l’arrivée. Un morceau mémorisé puis complètement abandonné redevient flou en six semaines — c’est pour cela que l’état suivant existe.'],
+  k:'Quatre points de reprise au hasard, partition fermée, sans hésiter : voilà le vrai test.',
+  see:['par-coeur','depart-froid','etat-entretien','jouer-devant'],go:'seance'},
+
+ {id:'etat-entretien',th:'repertoire',t:'Entretien : garder un morceau sous la main',
+  s:'Dix minutes toutes les trois semaines, et il reste jouable.',
+  b:['L’entretien a une règle simple : une seule intégrale, au tempo, à froid. Si elle tient, c’est fini, on ne touche à rien d’autre. Si un endroit lâche, deux boucles lentes dessus, une reprise de la section, et on repasse le morceau en « presque prêt » pour qu’il revienne plus tôt.',
+     'Ce n’est pas du travail et il ne faut pas le transformer en travail : chercher à améliorer un morceau d’entretien, c’est le remettre en chantier et perdre le bénéfice de l’état. L’intérêt est ailleurs — avoir trois ou quatre pièces prêtes à jouer tout de suite, sans prévenir. C’est ce qui rend le piano sociable, et c’est ce qui manque le plus à ceux qui n’ont que des chantiers.',
+     'Vingt et un jours entre deux passages suffisent pour un morceau solide. S’il ne tient pas trois semaines, c’est qu’il n’était pas aussi fini qu’il en avait l’air.'],
+  k:'Une intégrale, à froid, au tempo. Si ça tient, on n’y touche plus.',
+  see:['integrale','depart-froid','revisions-espacees','jouer-devant'],go:'repertoire'},
+
+ {id:'revisions-espacees',th:'repertoire',t:'Pourquoi l’appli te rappelle un morceau',
+  s:'Deux, trois, cinq, dix, vingt et un jours.',
+  b:['On n’oublie pas régulièrement : on oublie très vite au début, puis de plus en plus lentement. Revoir un morceau juste avant qu’il ne commence à s’effacer est ce qui coûte le moins d’efforts et tient le plus longtemps ; le revoir trop tôt ne rapporte presque rien, le revoir longtemps après revient à le réapprendre. D’où des intervalles qui s’allongent au fur et à mesure qu’il devient solide.',
+     'Studio 88 attache un délai à chaque état : deux jours en découverte, trois en travail, cinq quand c’est presque prêt, dix quand c’est mémorisé, vingt et un en entretien. La pastille « à réviser » apparaît le jour où ça valait le coup, et la liste du répertoire est triée par cette urgence. Changer l’état d’un morceau change donc son rythme de retour : c’est le seul réglage, et il suffit.',
+     'Être en retard de quelques jours n’est pas grave. Passer un morceau en revue tous les jours parce qu’on l’aime bien, en revanche, c’est du temps pris aux morceaux qui en avaient besoin.'],
+  k:'Revoir juste avant d’oublier. L’état du morceau fixe l’intervalle, rien d’autre.',
+  see:['etat-entretien','combien-morceaux','etat-memorise'],go:'repertoire'},
+
+ {id:'laisser-morceau',th:'repertoire',t:'Mettre un morceau de côté',
+  s:'Abandonner proprement, c’est le garder pour plus tard.',
+  b:['Trois signes ne trompent pas : le tempo que tu tiens n’a pas bougé depuis trois semaines ; un passage demande une technique que tu n’as pas encore acquise, et aucune quantité de répétitions ne la fabriquera ; ou tu n’as plus envie de l’ouvrir. Dans les trois cas, continuer coûte des semaines et n’apporte rien.',
+     'Mettre de côté se fait proprement, et ça prend deux minutes : note où tu en étais — tempo tenu, sections acquises — ce qui bloquait exactement, et la technique à aller chercher. Puis choisis un morceau plus accessible qui travaille précisément cette technique. C’est la différence entre abandonner et ajourner.',
+     'Il arrive très souvent qu’une pièce reprise six mois plus tard se déchiffre sans difficulté. Ce n’est pas de la magie : c’est le morceau intermédiaire qui a fait le travail.'],
+  k:'Trois semaines sans que le tempo tenu bouge : change de morceau, pas de méthode.',
+  see:['choisir-morceau','dechiffrage','plaisir'],go:'repertoire'},
+
+ {id:'jouer-devant',th:'repertoire',t:'Jouer devant quelqu’un',
+  s:'Le trac ne se soigne pas, il se prépare.',
+  b:['Le trac fait trois choses : il accélère le tempo, il raidit les bras et il supprime la mémoire de secours. On ne peut pas l’empêcher, on peut rendre le morceau insensible à ces trois effets. Deux semaines avant : une intégrale par séance, à froid, en tout début de séance — jamais après l’échauffement, puisque ce n’est pas dans ces conditions que tu joueras. Et s’enregistrer, parce qu’un micro qui tourne produit déjà la moitié de l’effet d’un public.',
+     'Le point le plus utile et le plus négligé : choisis à l’avance trois points de reprise dans le morceau, aux débuts de sections, et entraîne-toi à partir de chacun. En cas de trou, on repart du point de reprise suivant — jamais du début du morceau, qui est le réflexe et qui transforme un accroc de deux secondes en arrêt.',
+     'Le jour même : un cran de tempo en dessous de ce que tu tiens, et le morceau le plus solide en premier. Un public n’entend pas les fautes que tu entends ; il entend si tu t’arrêtes.'],
+  k:'Trois points de reprise décidés d’avance. Un trou de mémoire sans plan d’évasion devient un arrêt.',
+  see:['depart-froid','s-enregistrer','integrale','etat-presque'],go:'seance'},
+
+ {id:'varier-repertoire',th:'repertoire',t:'Varier ce que tu joues',
+  s:'Baroque, romantique, blues : ce ne sont pas les mêmes gestes.',
+  b:['Chaque répertoire entraîne autre chose. Une invention de Bach travaille l’indépendance des mains et l’écoute de deux voix simultanées, sans pédale pour cacher quoi que ce soit. Une pièce romantique travaille la pédale, le rubato, les grands écarts et le chant d’une ligne au-dessus d’un accompagnement. Le blues et le jazz travaillent le rythme, les accords de septième et l’improvisation. Le minimalisme travaille la régularité absolue et l’endurance.',
+     'Trois époques dans ton répertoire font donc progresser plus vite que trois pièces du même compositeur, même si les trois pièces sont plus difficiles. Les faiblesses se révèlent par contraste : on découvre qu’on dépend de la pédale en jouant du Bach, et qu’on ne compte pas vraiment en jouant une syncope.',
+     'Garde en plus un morceau facile et beau, toujours disponible, que tu joues pour rien. C’est lui qui fait revenir au piano les jours sans courage.'],
+  k:'Trois époques valent mieux que trois pièces du même compositeur : les faiblesses se voient par contraste.',
+  see:['pedale','grille-blues','histoire-piano','plaisir'],go:'repertoire'},
+
  {id:'echauffement',th:'travail',t:'S’échauffer',
   s:'Trois minutes qui changent la demi-heure qui suit.',
   b:['L’échauffement ne sert pas à chauffer les muscles — en trois minutes, rien ne chauffe. Il sert à passer du monde où tu étais à celui du clavier : baisser le rythme, écouter le son que fait l’instrument aujourd’hui, retrouver le poids du bras.',
@@ -3202,14 +3292,14 @@ var COURS=[
   b:['Les doigts retiennent très bien, et très mal : ils enchaînent tant que rien ne les interrompt. Pour qu’un morceau tienne, il faut au moins deux autres mémoires. Celle de l’oreille : tu peux chanter la ligne sans le clavier. Celle de la tête : tu sais nommer ce qui se passe — ici le thème revient, là on part en fa majeur, ce passage est un arpège de dominante.',
      'La quatrième est visuelle, et c’est un bonus plutôt qu’un appui. Le travail concret : au tiers du tempo, partition fermée, très lentement. Là où la mémoire hésite, tu as trouvé le travail du jour — et c’est presque toujours un endroit que tu n’avais pas compris, seulement répété.'],
   k:'Si tu ne peux ni le chanter ni le raconter, tu ne le sais que des doigts. C’est la mémoire qui lâche en premier.',
-  see:['depart-froid','lenteur']},
+  see:['depart-froid','lenteur','etat-memorise']},
 
  {id:'integrale',th:'travail',t:'L’intégrale',
   s:'Une seule prise, comme devant quelqu’un.',
   b:['À la fin d’une séance, une fois, en entier, au tempo que tu tiens vraiment, avec les nuances et la pédale. Une seule prise : c’est ce qui lui donne sa valeur. Rejouée trois fois, l’intégrale devient du jeu continu et perd ce qu’elle apportait — l’enjeu.',
      'Ce que tu cherches n’est pas la perfection, c’est l’endurance et l’engagement : finir, en musique, sans se réfugier dans la technique. Ce qui s’est passé pendant cette prise est l’état réel du morceau, et c’est celui-là qu’il faut noter, pas l’état du meilleur essai.'],
   k:'Une fois, en entier, au tempo tenu. Ce qui s’y passe est l’état réel du morceau.',
-  see:['jeu-continu','s-enregistrer']},
+  see:['jeu-continu','s-enregistrer','jouer-devant']},
 
  {id:'relecture',th:'travail',t:'La relecture',
   s:'Pour un morceau acquis : chercher ce qui a glissé.',
@@ -3230,7 +3320,7 @@ var COURS=[
   b:['Déchiffrer, c’est jouer une partition qu’on ne connaît pas, du premier coup, à un tempo où l’on peut continuer. L’objectif n’est pas la justesse : c’est de ne pas s’arrêter. On regarde devant, une mesure en avance, comme en lisant une phrase à voix haute.',
      'Prends plus facile que ce que tu travailles — deux niveaux en dessous — et du nouveau à chaque fois. Repère l’armure, la mesure et les quelques motifs qui reviennent avant de commencer. Puis vas-y, au tiers du tempo, sans jamais revenir en arrière. Un quart d’heure par semaine suffit pour que la lecture cesse d’être un obstacle.'],
   k:'Plus facile que ton niveau, toujours du neuf, et interdiction de s’arrêter.',
-  see:['reperage'],ex:{k:'read',clef:'gf'}},
+  see:['reperage','choisir-morceau'],ex:{k:'read',clef:'gf'}},
 
  {id:'notes-seance',th:'travail',t:'Noter ce qu’il faut revoir',
   s:'Deux lignes à la fin, et la séance de demain est déjà prête.',
@@ -3244,7 +3334,7 @@ var COURS=[
   b:['Une séance qui se termine sur un passage difficile laisse le souvenir d’une difficulté. La même séance, terminée par quelque chose que tu sais jouer, laisse le souvenir d’avoir fait de la musique — et c’est ce souvenir-là qui te ramène demain. Une série de jours ne tient pas par discipline, elle tient parce que revenir est agréable.',
      'Alors : un morceau du répertoire, une improvisation, trois accords qui sonnent bien. Rien à corriger, rien à compter.'],
   k:'Finis par ce que tu aimes jouer. C’est ce qui rend la séance du lendemain probable.',
-  see:['echauffement']}
+  see:['echauffement','varier-repertoire']}
 ];
 /* Du bloc de séance vers le cours : l'identifiant posé dans la recette d'abord,
    sinon les mots du bloc — pour que les blocs que tu as écrits toi-même, et la
@@ -3337,7 +3427,7 @@ function openCours(id){
       '<span class="sub">'+esc(pcName(kpc)+' '+(ksc?ksc.n:kch.n).toLowerCase())+'</span>'+
     '</div></div>';
   if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
-  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':'le clavier')+'</button>');
+  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':'le clavier')+'</button>');
   var see=(c.see||[]).filter(coursById);
   $('#sheetBody').innerHTML=
     '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
@@ -3420,7 +3510,7 @@ function renderCours(){
   if(!found)html='<div class="empty"><b>Rien avec ce mot-là</b>Essaie « gamme », « pédale », « tempo », « accord », « blues ».</div>';
   el.innerHTML=html;
   var cnt=$('#coursCount');
-  if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en sept thèmes');
+  if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en huit thèmes');
   wireCoursBtns('#coursList');
 }
 var learnSec='parcours';
@@ -3434,6 +3524,7 @@ function setLearnSec(v){
 function wireCours(){
   $$('#learnSeg button').forEach(function(b){b.onclick=function(){setLearnSec(b.dataset.ls);};});
   $('#coursQ').oninput=function(){coursQ=this.value;renderCours();};
+  wireCoursBtns('#pAddCard');
   $('#sheetX').onclick=closeCours;
   $('#sheetBd').onclick=closeCours;
   document.addEventListener('keydown',function(e){
@@ -3481,8 +3572,10 @@ function renderPieces(){
         '<button class="btn sm primary" data-focus="'+p.id+'">Travailler</button>'+
         '<button class="btn sm" data-rev2="'+p.id+'">Révisé aujourd’hui</button>'+
         '<button class="btn sm ghost" data-edit="'+p.id+'">Modifier</button>'+
+        coursBtn('etat-'+st.id,'Que faire à ce stade ?')+
       '</div></div>';
   }).join(''):'<div class="empty"><b>Pas encore de morceau</b>Ajoute ce que tu travailles : l’appli calcule la prochaine révision selon l’état.</div>';
+  wireCoursBtns('#pList');
   $$('#pList [data-rev2]').forEach(function(b){b.onclick=function(){markReviewed(b.dataset.rev2);};});
   $$('#pList [data-del]').forEach(function(b){b.onclick=function(){
     var id=b.dataset.del;

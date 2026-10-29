@@ -31,6 +31,7 @@ mémoire, et d'où tout cela vient.
 | 3 | Accords, harmonie, impro : 7 cours d'harmonie (triades, renversements, septièmes, degrés, cadences, chiffrage, voicings) et 5 d'improvisation (commencer, question-réponse, grille de blues, ii-V-I, accompagner), plus l'accord dessiné dans la feuille | **fait** |
 | 4 | Rythme et pédale (compter, métronome, swing et syncope, les trois pédales, rubato), lire et mémoriser (la portée, lire plus vite, nuances, ornements, indications italiennes) et trois cours d'histoire de plus (le piano et ses 88 touches, la notation, le blues) | **fait** |
 | 5 | Finitions : recherche plein texte sans accents, les 18 leçons du parcours reliées aux cours, plus aucun cours orphelin, README | **fait** |
+| 6 | Mener un morceau : un huitième thème de onze cours sur le répertoire (choisir, combien de front, un cours par état, les révisions espacées, laisser de côté, jouer devant, varier), le lien « Que faire à ce stade ? » sur chaque morceau et « Bien choisir un morceau » sur la carte d’ajout | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -47,13 +48,18 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Chantier terminé.** Les cinq étapes sont faites et poussées.
+**Rien en cours.** Les six étapes sont faites et poussées.
 
-56 cours en sept thèmes, atteignables de quatre façons : le lien « Comment on
-fait ? » d’un bloc de séance, la bibliothèque de l’onglet Apprentissage, sa
-recherche, et le « Lire le cours » de chaque leçon du parcours. Aucun cours n’est
-orphelin : tous ont au moins un lien entrant.
+67 cours en huit thèmes. On y entre de six façons : le lien « Comment on fait ? »
+d’un bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le
+« Bien choisir un morceau » de la carte d’ajout, la bibliothèque de l’onglet
+Apprentissage, sa recherche, et le « Lire le cours » de chaque leçon du parcours.
+Aucun cours n’est orphelin, aucun lien « à lire ensuite » ne pointe dans le vide.
 
-Pistes si on y revient : des cours sur le répertoire (choisir un morceau à son
-niveau, combien de morceaux mener de front), un cours par état d’avancement du
-répertoire, et éventuellement un favori ou un historique des cours lus.
+Décision de l’étape 6 : les cours d’état portent des identifiants réguliers
+(etat-decouverte, etat-travail, etat-presque, etat-memorise, etat-entretien) pour
+que le bouton d’un morceau se calcule d’un seul coursBtn("etat-"+st.id). Ajouter
+un état à STATUS demandera donc d’écrire le cours du même nom.
+
+Pistes si on y revient : un favori ou un historique des cours lus, et des cours
+liés aux exercices — ce que mesure chacun, quand le refaire.

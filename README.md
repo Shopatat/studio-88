@@ -13,7 +13,7 @@ le son, et tes données enregistrées sur ton appareil.
 | --- | --- |
 | **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
 | **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
-| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 56 pages courtes en sept thèmes — travailler, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
+| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 67 pages courtes en huit thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
@@ -41,8 +41,20 @@ tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do. Un cours d'acco
 même : l'accord dessiné, joué, et l'explorateur d'accords à un bouton.
 
 Dans l'autre sens, chacune des 18 leçons du parcours renvoie au cours qui
-l'approfondit, et un champ de recherche filtre les 56 pages sur leur texte entier,
+l'approfondit, et un champ de recherche filtre les 67 pages sur leur texte entier,
 accents ignorés : « pedale » trouve « pédale ».
+
+## Mener un morceau
+
+Le répertoire a son thème de cours. Chaque morceau de la liste porte un lien **Que
+faire à ce stade ?** qui ouvre le cours de son état — découverte, en travail, presque
+prêt, mémorisé, entretien — avec ce qu'on y cherche, comment une séance s'y organise
+et à quoi on reconnaît qu'il est temps de passer au suivant. La carte d'ajout renvoie
+au cours sur le choix d'un morceau, et le thème contient de quoi décider du reste :
+combien de morceaux mener de front, pourquoi l'appli rappelle un morceau au bout de
+deux, trois, cinq, dix ou vingt et un jours, quand mettre une pièce de côté, comment
+préparer de jouer devant quelqu'un, et pourquoi trois époques valent mieux que trois
+pièces du même compositeur.
 
 ## Où vivent les données
 
