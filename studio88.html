@@ -758,6 +758,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <div style="min-width:0">
             <h2 class="ttl" id="drillTitle">Lecture de notes</h2>
             <p class="sub" id="drillHow"></p>
+            <div class="row tight" id="drillCours" style="margin-top:9px"></div>
           </div>
           <div class="row tight">
             <span class="chip">série <b id="dStreak">0</b></span>
@@ -837,6 +838,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <div class="card">
             <div class="eyebrow">Exercices — 30 derniers jours</div>
             <div class="list" id="jDrills" style="margin-top:6px"></div>
+            <div class="row tight" id="jDrillsCours" style="margin-top:10px"></div>
           </div>
           <div class="card">
             <div class="eyebrow">Réglages</div>
@@ -2422,6 +2424,9 @@ function setDrill(kind){
   $$('#drillSeg button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.d===kind?'true':'false');});
   $('#drillTitle').textContent=DRILL_INFO[kind][0];
   $('#drillHow').textContent=DRILL_INFO[kind][1];
+  /* Chaque exercice a son cours, d'identifiant régulier : exo-<kind>. */
+  var dc=$('#drillCours');
+  if(dc){dc.innerHTML=coursBtn('exo-'+kind,'À quoi sert cet exercice ?');wireCoursBtns('#drillCours');}
   $('#dScore').textContent='0/0';$('#dStreak').textContent='0';
   $('#drillRepeat').hidden=(kind==='read'||kind==='keys'||kind==='keysig');
   var o=$('#drillOpts');o.innerHTML='';
@@ -2676,7 +2681,7 @@ var LESSONS=[
  {id:'l16',c:'degres',lvl:4,t:'Les degrés et la cadence',
   b:'Numérote les accords construits sur la gamme : I ii iii IV V vi vii°. I-IV-V-I installe une tonalité, ii-V-I la raconte avec un mouvement de basse plus souple, et I-vi-IV-V fait tourner la moitié des chansons que tu connais. Savoir cela, c’est pouvoir accompagner sans partition.',
   todo:'Dans Théorie, joue I-IV-V-I puis ii-V-I dans trois tonalités différentes.',goto:'theorie'},
- {id:'l17',lvl:4,t:'Reconnaître un intervalle',
+ {id:'l17',c:'intervalles',lvl:4,t:'Reconnaître un intervalle',
   b:'On ne calcule pas un intervalle, on lui associe un repère chantable. La quarte juste ouvre « La Marseillaise », la quinte juste « Ainsi parlait Zarathoustra », l’octave le début de « Over the Rainbow ». Deux ou trois repères solides valent mieux que douze approximatifs.',
   todo:'Vingt intervalles au niveau facile, puis passe au niveau moyen.',drill:{k:'interval',lvl:'facile'}},
  {id:'l18',c:'commencer-impro',lvl:4,t:'Jouer ce que tu entends',
@@ -2790,6 +2795,7 @@ var COURS_TH=[
  ['impro','Improviser'],
  ['rythme','Rythme et pédale'],
  ['lecture','Lire et mémoriser'],
+ ['exo','S’exercer'],
  ['histoire','D’où ça vient']
 ];
 var COURS=[
@@ -2799,7 +2805,7 @@ var COURS=[
      'Le clavier n’a l’air irrégulier qu’à cause de deux endroits : entre Mi et Fa, et entre Si et Do, il n’y a pas de touche noire. Ce ne sont pas des trous — ce sont des demi-tons comme les autres. Simplement, les sept noms de notes ne se répartissent pas régulièrement sur douze cases. Le dessin deux noires / trois noires est la carte qui permet de se repérer sans compter.',
      'Une gamme, dès lors, c’est une façon de choisir quelques-unes de ces douze notes et d’en faire un monde : sept pour la majeure, cinq pour la pentatonique, les douze pour la chromatique.'],
   k:'Douze demi-tons par octave, et deux endroits sans touche noire — Mi-Fa, Si-Do. Tout part de là.',
-  sc:'chrom',see:['gamme-majeure','chromatique','histoire-douze']},
+  sc:'chrom',see:['gamme-majeure','chromatique','histoire-douze','exo-keys']},
 
  {id:'gamme-majeure',th:'gammes',t:'La gamme majeure, une formule d’écarts',
   s:'Ton, ton, demi-ton, ton, ton, ton, demi-ton.',
@@ -2840,7 +2846,7 @@ var COURS=[
      'De l’armure à la tonalité, deux raccourcis. Avec des dièses : le dernier dièse est la sensible, la tonique se trouve un demi-ton au-dessus — trois dièses, dernier dièse sol♯, donc La majeur. Avec des bémols : l’avant-dernier bémol donne directement la tonalité — quatre bémols dont l’avant-dernier est La♭, donc La♭ majeur.',
      'Une armure ne dit pas si le morceau est majeur ou mineur : une armure vide, c’est Do majeur ou la mineur. Ce sont le début et surtout la fin du morceau qui tranchent.'],
   k:'Dièses : fa do sol ré la mi si. Bémols : l’inverse. Le dernier dièse est la sensible ; l’avant-dernier bémol est la tonique.',
-  ex:{k:'keysig'},see:['cercle-quintes','mineures']},
+  ex:{k:'keysig'},see:['cercle-quintes','mineures','exo-keysig']},
 
  {id:'cercle-quintes',th:'gammes',t:'Le cercle des quintes',
   s:'Une addition déguisée en horloge.',
@@ -2905,13 +2911,22 @@ var COURS=[
   k:'Douze quintes empilées ne retombent pas sur l’octave. Le tempérament égal répartit l’erreur à parts égales : tout est légèrement faux, et tout devient jouable.',
   see:['cercle-quintes','douze-notes','histoire-piano']},
 
+ {id:'intervalles',th:'harmonie',t:'Les intervalles',
+  s:'L’écart entre deux notes : le nom, la taille, la couleur.',
+  b:['Un intervalle, c’est la distance entre deux notes, et on la nomme en comptant les degrés, note de départ comprise. De Do à Mi il y a trois noms — Do, Ré, Mi — donc une tierce. De Do à Sol, cinq noms, donc une quinte. Ce comptage par noms explique une bizarrerie utile : de Do à Do il y a une prime, pas un zéro, et c’est pourquoi une tierce plus une tierce fait une quinte et non une sixte.',
+     'Le nom ne suffit pas, parce qu’une tierce a deux tailles possibles : quatre demi-tons (majeure, Do-Mi) ou trois (mineure, Do-Mi♭). Même chose pour les secondes, les sixtes et les septièmes. Les quartes, les quintes et les octaves, elles, n’ont qu’une forme courante — on les dit justes — et c’est bien pour cela qu’elles sonnent neutres, ni claires ni sombres.',
+     'Deux intervalles portent presque tout le reste. La tierce décide de la couleur : un accord est majeur ou mineur selon sa tierce, et rien d’autre. La quinte donne l’assise, celle qu’on entend dans une basse ou dans un accord ouvert à la main gauche. Gammes, accords, mélodies : tout se décrit en écarts, et c’est exactement ce qui permet de transposer sans rien réapprendre.',
+     'À l’oreille, chacun a un caractère. L’octave se confond presque avec une seule note. La quinte est vide et ouverte. La tierce majeure est claire, la mineure voilée. La seconde mineure frotte, la septième majeure tend vers la résolution. Les reconnaître se travaille, et c’est précisément ce que fait l’exercice d’intervalles.'],
+  k:'On compte les degrés en comptant la note de départ. La tierce décide de la couleur, la quinte donne l’assise.',
+  ex:{k:'interval',lvl:'facile'},see:['exo-interval','triades','transposer']},
+
  {id:'triades',th:'harmonie',t:'La triade : une note sur deux',
   s:'Trois sons, et la tierce du bas décide de tout.',
   b:['Pars d’une note de la gamme, saute la suivante, prends la troisième ; saute encore, prends la cinquième. Trois sons : un accord. Construits ainsi sur chacun des sept degrés d’une gamme majeure, ils ne donnent que deux couleurs — majeur ou mineur — plus un accord diminué sur le septième degré.',
      'Ce qui décide, c’est l’intervalle du bas. Quatre demi-tons entre la fondamentale et la note du milieu : tierce majeure, accord majeur, lumineux. Trois demi-tons : tierce mineure, accord mineur, plus sombre. Un seul demi-ton de différence et toute la couleur bascule — c’est l’information la plus rentable de toute l’harmonie.',
      'La quinte, elle, ne dit presque rien, sauf quand on l’altère : abaissée d’un demi-ton l’accord devient diminué et sonne instable, en attente ; augmentée, il flotte sans attache.'],
   k:'Une note sur deux. Tierce majeure (quatre demi-tons) : accord majeur. Tierce mineure (trois) : accord mineur. La quinte ne compte que lorsqu’elle est altérée.',
-  ch:'M',ex:{k:'chord',lvl:'facile'},see:['renversements','degres']},
+  ch:'M',ex:{k:'chord',lvl:'facile'},see:['renversements','degres','intervalles']},
 
  {id:'renversements',th:'harmonie',t:'Les renversements',
   s:'Les mêmes notes dans un autre ordre, et la main bouge de trois centimètres.',
@@ -2975,7 +2990,7 @@ var COURS=[
      'Deux façons de répondre : reprendre presque la même chose en changeant la fin, ou prendre le contre-pied — elle montait, tu descends. Répéter sans rien changer n’est pas une réponse mais un écho ; tout changer n’en est pas une non plus, c’est un nouveau sujet.',
      'L’exercice qui porte vite : deux mesures de question, deux mesures de réponse, et respecte la longueur même quand l’idée est mauvaise. La contrainte de durée apprend à finir ses phrases, ce qui est la chose la plus difficile en improvisation.'],
   k:'Monte et laisse en suspens, redescends et pose. Réponds en changeant la fin, ou en prenant le contre-pied.',
-  see:['commencer-impro','grille-blues']},
+  see:['commencer-impro','grille-blues','exo-echo']},
 
  {id:'grille-blues',th:'impro',t:'La grille de blues en douze mesures',
   s:'Trois accords, un ordre fixe, un siècle de musique.',
@@ -3047,7 +3062,7 @@ var COURS=[
      'La boucle de la clé de sol entoure la deuxième ligne, qui est donc le Sol au-dessus du Do central : les lignes portent Mi Sol Si Ré Fa, les interlignes Fa La Do Mi. Les deux points de la clé de fa encadrent la quatrième ligne, le Fa sous le Do central : lignes Sol Si Ré Fa La, interlignes La Do Mi Sol.',
      'Le Do du milieu s’écrit juste sous la portée en clé de sol et juste au-dessus en clé de fa, sur une petite ligne ajoutée pour l’occasion. Les deux portées du piano ne sont qu’un seul grand clavier coupé à cet endroit.'],
   k:'Lis des écarts, pas des notes. Clé de sol : Mi Sol Si Ré Fa. Clé de fa : Sol Si Ré Fa La.',
-  see:['lire-vite','ornements','armure']},
+  see:['lire-vite','ornements','armure','exo-read']},
 
  {id:'lire-vite',th:'lecture',t:'Lire plus vite',
   s:'Reconnaître des formes au lieu d’épeler des notes.',
@@ -3055,7 +3070,7 @@ var COURS=[
      'Deux habitudes qui changent tout. Regarder devant : l’œil doit être une mesure en avance sur les mains, ce qui s’entraîne en se forçant à ne jamais revenir en arrière. Et ne pas regarder ses mains : le clavier se retrouve au toucher, grâce au dessin des touches noires.',
      'Le reste est affaire de quantité. Un quart d’heure par semaine de déchiffrage, toujours sur du neuf et plus facile que ton niveau, fait plus pour la lecture que des heures passées sur le morceau en cours.'],
   k:'Reconnais des formes — triades, arpèges, gammes. Lis une mesure en avance. Ne reviens jamais en arrière.',
-  see:['dechiffrage','portee']},
+  see:['dechiffrage','portee','exo-read']},
 
  {id:'nuances',th:'lecture',t:'Nuances et articulations',
   s:'Ce qui transforme des notes justes en musique.',
@@ -3269,7 +3284,7 @@ var COURS=[
   b:['Les doigts retiennent très bien, et très mal : ils enchaînent tant que rien ne les interrompt. Pour qu’un morceau tienne, il faut au moins deux autres mémoires. Celle de l’oreille : tu peux chanter la ligne sans le clavier. Celle de la tête : tu sais nommer ce qui se passe — ici le thème revient, là on part en fa majeur, ce passage est un arpège de dominante.',
      'La quatrième est visuelle, et c’est un bonus plutôt qu’un appui. Le travail concret : au tiers du tempo, partition fermée, très lentement. Là où la mémoire hésite, tu as trouvé le travail du jour — et c’est presque toujours un endroit que tu n’avais pas compris, seulement répété.'],
   k:'Si tu ne peux ni le chanter ni le raconter, tu ne le sais que des doigts. C’est la mémoire qui lâche en premier.',
-  see:['depart-froid','lenteur','etat-memorise']},
+  see:['depart-froid','lenteur','etat-memorise','exo-echo']},
 
  {id:'integrale',th:'travail',t:'L’intégrale',
   s:'Une seule prise, comme devant quelqu’un.',
@@ -3311,7 +3326,79 @@ var COURS=[
   b:['Une séance qui se termine sur un passage difficile laisse le souvenir d’une difficulté. La même séance, terminée par quelque chose que tu sais jouer, laisse le souvenir d’avoir fait de la musique — et c’est ce souvenir-là qui te ramène demain. Une série de jours ne tient pas par discipline, elle tient parce que revenir est agréable.',
      'Alors : un morceau du répertoire, une improvisation, trois accords qui sonnent bien. Rien à corriger, rien à compter.'],
   k:'Finis par ce que tu aimes jouer. C’est ce qui rend la séance du lendemain probable.',
-  see:['echauffement','varier-repertoire']}
+  see:['echauffement','varier-repertoire']},
+
+ {id:'exo-pourquoi',th:'exo',t:'À quoi servent les exercices',
+  s:'Ce qu’un exercice fait mieux qu’un morceau, et ce qu’il ne fait pas du tout.',
+  b:['Un morceau travaille tout à la fois : les notes, le rythme, les doigtés, les nuances, la mémoire. Quand ça coince, impossible de savoir laquelle de ces choses a lâché. Un exercice ne mesure qu’une chose, très vite, beaucoup de fois : trente notes à nommer en deux minutes, là où une page de musique t’en fait lire trente en cinq. C’est du volume concentré sur une seule compétence.',
+     'Les six exercices de l’appli couvrent les trois routes entre le son, le nom et la touche. Lecture de notes et armures vont de l’écrit vers le nom. Trouve la touche va du nom vers la main. Intervalles, accords à l’oreille et mémoire mélodique vont du son vers le nom ou vers la main. Un amateur à l’aise a les trois routes praticables ; la plupart des débutants n’en ont qu’une, et c’est ce déséquilibre que les exercices corrigent.',
+     'Ce qu’ils ne font pas : ils ne t’apprennent pas à jouer. Aucun ne travaille le son, le poids du bras, la pédale, le phrasé — rien de ce qui s’entend. Deux à cinq minutes en début de séance, et tout le reste au piano : c’est la bonne proportion, et l’inverse serait du temps perdu.',
+     'Ils n’ont d’effet qu’à petites doses répétées. Cinq minutes par jour pendant trois semaines valent largement trois heures d’affilée un dimanche : la reconnaissance se construit par passages espacés, exactement comme un morceau se mémorise.'],
+  k:'Un exercice mesure une seule compétence, en grand nombre, hors du morceau. Deux à cinq minutes par séance, tous les jours : c’est la dose.',
+  go:'exercices',see:['exo-score','exo-read','revisions-espacees']},
+
+ {id:'exo-read',th:'exo',t:'L’exercice de lecture de notes',
+  s:'Nommer la note affichée. Ce qu’il mesure, et comment passer aux deux clés.',
+  b:['Une note apparaît sur la portée, tu dis son nom. Ce que l’exercice mesure n’est pas ta connaissance de la portée — tu peux la réciter — mais ta vitesse : le délai entre voir et nommer. En lecture réelle, ce délai est tout. Une note trouvée en trois secondes arrive trop tard pour la mesure suivante, et le morceau s’arrête.',
+     'Trois réglages de clé, dans cet ordre. La clé de sol seule, jusqu’à quatre bonnes réponses sur cinq sans hésiter. Puis la clé de fa seule, qui demande le même travail depuis zéro : ne la lis pas en transposant de la clé de sol, c’est le raccourci qui coûte des années. Enfin « les deux », qui alternent — le vrai test, parce qu’il faut reconnaître la clé avant la note.',
+     'Deux repères valent mieux que le comptage. En clé de sol, les lignes portent Mi Sol Si Ré Fa ; en clé de fa, Sol Si Ré Fa La. À partir d’une de ces ancres tu te déplaces d’un cran, pas de sept. Compter depuis le Do central à chaque note est précisément ce que cet exercice doit t’apprendre à ne plus faire.',
+     'Quand y revenir : tous les jours tant que tu hésites, puis une fois par semaine pour entretenir. Et le jour où un déchiffrage te paraît dur, regarde d’abord ici — souvent ce n’est pas la pièce qui est difficile, c’est la lecture qui est lente.'],
+  k:'La clé de fa se lit pour elle-même, jamais en transposant la clé de sol. Et on part des lignes-repères, on ne compte pas depuis le Do central.',
+  ex:{k:'read',clef:'g'},see:['portee','lire-vite','exo-score']},
+
+ {id:'exo-keys',th:'exo',t:'L’exercice « trouve la touche »',
+  s:'Du nom à la main : le chemin inverse de la lecture.',
+  b:['On t’annonce un nom de note, tu cliques la touche. C’est le trajet inverse de la lecture : pas de l’écrit vers le nom, mais du nom vers la main. Les deux sont indépendants — on peut nommer un Fa♯ sur la portée sans savoir le trouver sans regarder, et c’est très courant.',
+     'Ce que l’exercice construit, c’est la carte du clavier. Les groupes de deux et de trois touches noires en sont les points fixes : un Ré est toujours entre les deux noires, un Sol♯ est la noire du milieu du groupe de trois, un Si est juste à gauche du Do. Qui cherche ses notes en comptant depuis le Do central perd une seconde par note, et cette seconde ne se rattrape pas en jouant.',
+     'Les touches noires ont deux noms — Fa♯ est aussi Sol♭ — et l’exercice emploie les deux, volontairement. La même touche s’appelle autrement selon la tonalité, et il faut pouvoir répondre aux deux appels sans réfléchir.',
+     'Fais-le d’abord en regardant, puis essaie de viser la touche avant de la chercher. Deux minutes suffisent. C’est aussi l’exercice à refaire quand tu reviens au piano après des semaines d’arrêt : la carte du clavier s’efface plus vite qu’on ne le croit.'],
+  k:'Le clavier se repère par les groupes de deux et de trois noires, jamais en comptant depuis le Do central.',
+  ex:{k:'keys'},see:['douze-notes','armure','exo-score']},
+
+ {id:'exo-interval',th:'exo',t:'L’exercice d’intervalles',
+  s:'Deux notes jouées : quel écart. L’oreille qui mesure.',
+  b:['Deux notes sonnent, tu nommes l’écart : seconde, tierce, quinte, octave. On ne te demande pas quelles notes — ce serait de l’oreille absolue, qui ne s’apprend guère — mais la distance entre elles, c’est-à-dire l’oreille relative, celle qui s’acquiert vraiment et qui sert tout le temps : relever une mélodie, se rattraper quand on s’est trompé, improviser en entendant d’avance où l’on va.',
+     'Trois niveaux. Facile s’en tient aux écarts très distincts. Moyen ajoute les voisins qu’on confond : tierce majeure et tierce mineure, quarte et quinte. Difficile va jusqu’aux grands écarts et aux intervalles descendants, qui ne s’entendent pas comme les montants. Monte de niveau à partir de 80 % de réussite, pas avant : un niveau trop dur n’enseigne rien, il décourage.',
+     'La méthode qui marche, c’est une chanson-repère par intervalle, et le parcours t’en donne trois : la quarte juste ouvre « La Marseillaise », la quinte juste « Ainsi parlait Zarathoustra », l’octave le début d’« Over the Rainbow ». Ajoute la sixte majeure avec « My Bonnie » et tu couvres l’essentiel du niveau facile. Dans tous les cas, chante l’intervalle avant de répondre : l’oreille qui chante reconnaît, l’oreille passive devine.',
+     'Après une série, va au clavier et rejoue les écarts que tu as ratés en les écoutant. C’est ce va-et-vient entre l’oreille et la main qui fixe les choses, pas la suite de clics.'],
+  k:'Chante l’intervalle avant de répondre, et garde une chanson-repère par écart. On change de niveau à 80 % de réussite.',
+  ex:{k:'interval',lvl:'facile'},see:['intervalles','exo-chord','exo-score']},
+
+ {id:'exo-chord',th:'exo',t:'L’exercice d’accords à l’oreille',
+  s:'Majeur, mineur, diminué : reconnaître une couleur plutôt que faire un calcul.',
+  b:['Un accord est joué, tu dis lequel. Ici on ne compte pas les demi-tons, on reconnaît une couleur. Le majeur est ouvert et stable ; le mineur est plus sombre, et il n’y a qu’un demi-ton de différence ; le diminué est serré, instable, il réclame une suite. Trois adjectifs suffisent pour commencer, et ils valent mieux que l’analyse — qui arrive toujours trop tard.',
+     'Les niveaux suivants ajoutent les accords de quatre notes : la septième de dominante qui tire vers l’avant, le majeur 7 qui flotte, le mineur 7 doux et sans urgence, le diminué 7 qui ne se décide pour aucune direction. Ce sont exactement ceux que tu croiseras dans une grille de jazz ou de variété.',
+     'À quoi ça sert, concrètement : entendre un morceau et savoir ce qui s’y passe, retrouver un accompagnement sans partition, et repérer qu’on s’est trompé d’un demi-ton dans un accord qu’on joue — l’oreille le dit avant les yeux.',
+     'Enchaîne avec le clavier : reprends les accords ratés dans l’explorateur, joue-les, puis rejoue-les dans un autre renversement. Le même accord disposé autrement garde sa couleur, et c’est cela qu’il faut finir par entendre.'],
+  k:'Majeur ouvert, mineur sombre, diminué instable : on reconnaît une couleur, on ne compte pas les demi-tons.',
+  ex:{k:'chord',lvl:'facile'},see:['triades','septiemes','exo-score']},
+
+ {id:'exo-echo',th:'exo',t:'L’exercice de mémoire mélodique',
+  s:'Écouter une phrase courte et la rejouer. Le pont entre l’oreille et la main.',
+  b:['Une phrase de quelques notes est jouée, tu la rejoues sur le clavier. C’est le seul exercice qui demande les trois choses à la fois : entendre, retenir, trouver les touches. C’est aussi le plus proche de ce que fait un musicien quand il relève un air ou qu’il répond à une phrase.',
+     'Ce qu’il mesure, c’est la mémoire de travail musicale : combien de notes tu peux garder en tête le temps de les retrouver. Quatre notes au début, c’est normal. Cela s’étend, lentement — et ce qui s’étend n’est pas la mémoire brute, ce sont les groupes. On ne retient pas quatre notes séparées, on retient « ça monte en tierces puis ça redescend d’un ton ».',
+     'La bonne tactique : ne cherche pas pendant l’écoute. Écoute jusqu’au bout, chante la phrase intérieurement une fois, puis joue. Partir à la recherche de la première note avant la fin de la phrase fait perdre tout le reste.',
+     'Quand tu rates, réécoute au lieu de deviner. Et si cinq phrases de quatre notes passent sans faute, c’est le signe que tu peux commencer à improviser des réponses : l’exercice et le jeu se rejoignent là.'],
+  k:'Écoute jusqu’au bout, chante la phrase intérieurement, puis joue. On retient des groupes, pas des notes isolées.',
+  ex:{k:'echo'},see:['question-reponse','par-coeur','exo-score']},
+
+ {id:'exo-keysig',th:'exo',t:'L’exercice d’armures',
+  s:'Combien d’altérations, et lesquelles. Ce qu’on lit avant la première note.',
+  b:['Une armure s’affiche, tu dis combien d’altérations elle porte. C’est la première chose qu’on lit sur une partition, et la plus rentable : trois dièses annoncés une fois valent mieux que trois dièses redécouverts à chaque mesure.',
+     'Il y a deux façons d’arriver à la réponse, et il faut les deux. Les altérations se suivent dans un ordre fixe — les dièses Fa Do Sol Ré La Mi Si, les bémols dans l’ordre inverse — donc compter les symboles suffit souvent. Mais la réponse vient plus vite par le cercle des quintes : une tonalité n’a pas un nombre d’altérations par hasard, elle a une place, et la place donne le nombre.',
+     'Le piège, ce sont les mineures. Chaque armure sert à deux tonalités : une majeure et sa relative mineure, trois demi-tons plus bas. L’armure seule ne dit pas laquelle des deux — c’est la musique qui le dit, par la note sur laquelle elle se repose. Sache au moins que la question reste ouverte.',
+     'Travaille-le avec le cercle sous les yeux, puis sans. Dix armures d’affilée sans regarder et tu n’y penseras plus : cette connaissance-là est finie, douze cases et c’est tout. Aller plus loin n’apporte rien.'],
+  k:'Les altérations arrivent dans un ordre fixe, et chaque armure sert à deux tonalités — une majeure et sa relative mineure.',
+  go:'theorie',ex:{k:'keysig'},see:['armure','cercle-quintes','exo-score']},
+
+ {id:'exo-score',th:'exo',t:'Lire ta réussite',
+  s:'Ce que veulent dire la série, le score, et les pourcentages du journal.',
+  b:['Pendant une série, deux chiffres. Le score, c’est les bonnes réponses sur les réponses données. La série, c’est les bonnes réponses d’affilée, remise à zéro à la première faute. Le score dit où tu en es, la série dit si c’est solide : dix sur quinze avec une série de un, ce n’est pas du tout dix sur quinze avec une série de huit.',
+     'Le journal garde autre chose : ta réussite par exercice sur les trente derniers jours. C’est le chiffre à regarder. Une série est bruyante — fatigue, distraction, chance. Un pourcentage sur deux cents réponses, lui, ne raconte pas d’histoires.',
+     'Comment le lire. En dessous de 70 %, l’exercice est trop dur ou mal compris : redescends d’un niveau et relis le cours. Entre 70 et 85 %, c’est la zone utile, celle où l’on apprend vraiment — reste là. Au-dessus de 90 % sur plusieurs centaines de réponses, l’exercice ne t’apporte plus grand-chose : monte de niveau, change de clé, ou laisse-le dormir quelques semaines.',
+     'Quand refaire quoi : ce que tu viens d’apprendre, tous les jours ; ce qui tient à 85 %, une fois par semaine ; ce qui est acquis, au retour d’une interruption. C’est le principe qui vaut déjà pour tes morceaux — on revoit juste avant d’oublier, pas longtemps après.'],
+  k:'Le pourcentage sur trente jours compte, pas la série du moment. 70 à 85 %, c’est la zone où l’on progresse ; au-dessus de 90 %, change quelque chose.',
+  go:'journal',see:['exo-pourquoi','revisions-espacees','exo-read']}
 ];
 /* Du bloc de séance vers le cours : l'identifiant posé dans la recette d'abord,
    sinon les mots du bloc — pour que les blocs que tu as écrits toi-même, et la
@@ -3404,7 +3491,7 @@ function openCours(id){
       '<span class="sub">'+esc(pcName(kpc)+' '+(ksc?ksc.n:kch.n).toLowerCase())+'</span>'+
     '</div></div>';
   if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
-  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':'le clavier')+'</button>');
+  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':c.go==='journal'?'le journal':'le clavier')+'</button>');
   var see=(c.see||[]).filter(coursById);
   $('#sheetBody').innerHTML=
     '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
@@ -3487,7 +3574,7 @@ function renderCours(){
   if(!found)html='<div class="empty"><b>Rien avec ce mot-là</b>Essaie « gamme », « pédale », « tempo », « accord », « blues ».</div>';
   el.innerHTML=html;
   var cnt=$('#coursCount');
-  if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en huit thèmes');
+  if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en neuf thèmes');
   wireCoursBtns('#coursList');
 }
 var learnSec='parcours';
@@ -3682,6 +3769,9 @@ function renderJournal(){
     return '<div class="item"><div class="grow"><div class="nm" style="font-size:13.5px">'+labels[k]+'</div>'+
       '<div class="bar"><i style="width:'+p+'%"></i></div></div><span class="num sub">'+p+'% · '+t[k].n+'</span></div>';
   }).join(''):'<div class="empty">Fais quelques exercices : la réussite par type s’affiche ici.</div>';
+  var jdc=$('#jDrillsCours');
+  if(jdc){jdc.innerHTML=coursBtn('exo-score','Comment lire ces chiffres ?');wireCoursBtns('#jDrillsCours');}
+  renderBackupAge();
   renderBackupAge();
   $('#sGoal').value=S.settings.goal;$('#sNames').value=S.settings.names;
   var n=pendingCount();

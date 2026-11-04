@@ -32,6 +32,7 @@ mémoire, et d'où tout cela vient.
 | 4 | Rythme et pédale (compter, métronome, swing et syncope, les trois pédales, rubato), lire et mémoriser (la portée, lire plus vite, nuances, ornements, indications italiennes) et trois cours d'histoire de plus (le piano et ses 88 touches, la notation, le blues) | **fait** |
 | 5 | Finitions : recherche plein texte sans accents, les 18 leçons du parcours reliées aux cours, plus aucun cours orphelin, README | **fait** |
 | 6 | Mener un morceau : un huitième thème de onze cours sur le répertoire (choisir, combien de front, un cours par état, les révisions espacées, laisser de côté, jouer devant, varier), le lien « Que faire à ce stade ? » sur chaque morceau et « Bien choisir un morceau » sur la carte d’ajout | **fait** |
+| 7 | S’exercer : un neuvième thème de huit cours sur les exercices (un par exercice, plus la lecture des scores), un cours sur les intervalles qui comble la seule leçon du parcours sans cours, le lien « À quoi sert cet exercice ? » sur la carte de l’onglet et « Comment lire ces chiffres ? » sous la réussite du journal | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -48,18 +49,44 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les six étapes sont faites et poussées.
+**Rien en cours.** Les sept étapes sont faites et poussées.
 
-67 cours en huit thèmes. On y entre de six façons : le lien « Comment on fait ? »
-d’un bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le
-« Bien choisir un morceau » de la carte d’ajout, la bibliothèque de l’onglet
-Apprentissage, sa recherche, et le « Lire le cours » de chaque leçon du parcours.
-Aucun cours n’est orphelin, aucun lien « à lire ensuite » ne pointe dans le vide.
+76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
+bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
+choisir un morceau » de la carte d’ajout, le « À quoi sert cet exercice ? » de la carte
+d’un exercice, la bibliothèque de l’onglet Apprentissage, sa recherche, et le « Lire le
+cours » de chaque leçon du parcours. Le journal ajoute « Comment lire ces chiffres ? »
+sous la réussite par exercice. Aucun cours n’est orphelin, aucun lien « à lire ensuite »
+ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 17e,
+« Reconnaître un intervalle », n’en avait pas.
 
-Décision de l’étape 6 : les cours d’état portent des identifiants réguliers
-(etat-decouverte, etat-travail, etat-presque, etat-memorise, etat-entretien) pour
-que le bouton d’un morceau se calcule d’un seul coursBtn("etat-"+st.id). Ajouter
-un état à STATUS demandera donc d’écrire le cours du même nom.
+## Décisions prises aux dernières étapes
 
-Pistes si on y revient : un favori ou un historique des cours lus, et des cours
-liés aux exercices — ce que mesure chacun, quand le refaire.
+- **Étape 6** : les cours d’état portent des identifiants réguliers (etat-decouverte,
+  etat-travail, etat-presque, etat-memorise, etat-entretien) pour que le bouton d’un
+  morceau se calcule d’un seul `coursBtn('etat-'+st.id)`. Ajouter un état à STATUS
+  demandera donc d’écrire le cours du même nom.
+- **Étape 7**, même principe : les cours d’exercice s’appellent `exo-<kind>` —
+  exo-read, exo-keys, exo-interval, exo-chord, exo-echo, exo-keysig — et `setDrill()`
+  en déduit le bouton par `coursBtn('exo-'+kind)`. Ajouter un exercice à DRILL_INFO
+  demandera d’écrire le cours du même nom, sinon le bouton disparaît silencieusement
+  (coursBtn rend une chaîne vide pour un identifiant inconnu).
+- Les cours d’exercice ne décrivent pas la manipulation (la carte le fait déjà en une
+  ligne) mais ce que l’exercice mesure, l’ordre des niveaux et quand y revenir.
+- `exo-score` est le premier cours à renvoyer vers le journal : la liste d’onglets de
+  `openCours` a gagné `journal`.
+
+## Vérification
+
+`node tools/check-cours.js` relit `studio88.html` et vérifie : la syntaxe du script
+entier, l’unicité des identifiants, les thèmes connus, les `see` qui existent, les onglets et exercices cités,
+les 18 leçons reliées, aucun cours orphelin (en tenant compte des familles calculées
+`etat-` et `exo-`), et que la recherche sans accents trouve bien les nouveaux mots.
+À lancer après chaque lot de cours : il sort en erreur s’il trouve quelque chose.
+
+## Pistes si on y revient
+
+- Un favori ou un historique des cours lus — la bibliothèque commence à être grande.
+- Des cours liés aux morceaux eux-mêmes : une fiche par compositeur ou par époque,
+  puisque « varier ce que tu joues » le demande sans rien proposer.
+- Le cercle des quintes de l’onglet Théorie n’a pas encore de lien vers les cours.
