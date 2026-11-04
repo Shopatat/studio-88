@@ -84,6 +84,9 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 button.chip{cursor:pointer;transition:color .15s,border-color .15s}
 button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .chip.flame{color:var(--brass);background:var(--brass-w)}
+/* Le son interrompu n'est pas une panne de l'appli : la pastille le dit, et
+   la toucher suffit à le rendre — comme n'importe quel autre geste. */
+.chip.warn{color:var(--brass);background:var(--brass-w);border-color:color-mix(in srgb,var(--brass) 45%,transparent)}
 .chip.flame b{color:var(--brass)}
 .iconbtn{background:var(--inset);border:1px solid transparent;border-radius:999px;width:32px;height:32px;
   display:grid;place-items:center;font-size:14px;color:var(--fg2);transition:color .15s,background .15s}
@@ -103,7 +106,7 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .mlbl:hover,.mstep:hover{color:var(--brass)}
 .mname{max-width:13ch;overflow:hidden;text-overflow:ellipsis}
 .mstep{width:24px;height:28px;border-radius:999px;font-size:15px;line-height:1;color:var(--fg2)}
-@media (max-width:600px){.mname,.mstep{display:none}}
+@media (max-width:600px){.mini .mname,.mini .mstep{display:none}}
 /* le dégradé local révèle une ombre au bord dès qu'il reste des onglets à faire défiler */
 .tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   background:
@@ -282,6 +285,15 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .task .tk{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--brass);font-weight:700}
 .task .tb{font-size:14.5px;line-height:1.6;margin-top:6px}
 .task .row{margin-top:11px}
+/* Le même moteur que l'onglet Métronome, en bandeau : lampes plus basses,
+   tempo à portée de pouce, et le reste des réglages à un bouton. */
+.smet{display:flex;align-items:center;gap:8px;margin-top:var(--s4);padding:8px 10px;
+  border-radius:var(--r3);background:var(--inset)}
+.smet .lamps{flex:1 1 auto;gap:5px;min-width:0}
+.smet .lamp{height:22px;border-radius:8px}
+.sbpm{padding:0 10px;height:30px;border-radius:999px;font-size:13px;font-weight:600;
+  color:var(--fg2);background:none;border:0;white-space:nowrap;transition:color .15s}
+.sbpm:hover{color:var(--brass)}
 
 /* ---------- clavier ---------- */
 .kbwrap{background:linear-gradient(#2A2730,#15141A);border:1px solid #0B0A0E;border-radius:var(--r3);
@@ -361,6 +373,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <button type="button" class="chip" id="chipToday" data-goto="today">⏱ <b>0</b>/20 min</button>
         <span class="chip" id="chipMidi" title="Clavier MIDI" hidden>🎛 <b>MIDI</b></span>
         <button type="button" class="chip" id="chipSync">● local</button>
+        <button type="button" class="chip warn" id="chipSnd" hidden title="Le son a été interrompu : touche l’écran">🔇 <b>son coupé</b></button>
         <button class="iconbtn" id="themeBtn" title="Thème clair / sombre" aria-label="Changer de thème">◐</button>
         <div class="mini">
           <div class="mgrp" id="miniT" hidden>
@@ -488,6 +501,15 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         </div>
         <div class="ribbon" id="ribbon" aria-hidden="true"></div>
         <div class="task" id="nowTask" hidden></div>
+        <!-- Le métronome de la séance : changer d’onglet pour régler un tempo,
+             c’est perdre le minuteur et la consigne de vue. -->
+        <div class="smet" id="sessMet" hidden>
+          <button type="button" class="mbtn" id="sessMetBtn" aria-label="Lancer le métronome">▶</button>
+          <div class="lamps" id="sessLamps" aria-hidden="true"></div>
+          <button type="button" class="mstep" data-mstep="-1" aria-label="Ralentir le métronome">−</button>
+          <button type="button" class="sbpm" id="sessBpm" title="Ouvrir le métronome : mesure, subdivision, tempo progressif">♩ <b id="sessBpmN">92</b></button>
+          <button type="button" class="mstep" data-mstep="1" aria-label="Accélérer le métronome">+</button>
+        </div>
       </div>
 
       <div class="card" id="routineCard">
@@ -1254,10 +1276,59 @@ var AC=null;
 function audioOut(){
   try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
 }
-function ac(){
-  if(!AC){audioOut();try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
-  if(AC&&AC.state==='suspended'){audioOut();AC.resume();}
+/* Le contexte audio peut mourir sous nos pieds, et c'est la panne la plus
+   déroutante : l'écran continue, le minuteur tourne, mais plus un son.
+   L'iPhone met le contexte en « interrupted » dès qu'un appel, Siri, une autre
+   appli ou le réveil prennent la sortie audio, et il n'en ressort jamais tout
+   seul ; après une veille longue ou un retour d'arrière-plan, c'est
+   « suspended » ; et il arrive qu'il soit carrément « closed », auquel cas il
+   faut en refaire un. On réveille donc à chaque son demandé, au retour au
+   premier plan, et au premier geste venu — un geste, lui, n'est jamais refusé
+   par iOS. Tant que le son n'est pas revenu, une pastille le dit dans l'en-tête
+   plutôt que de laisser croire à une panne de l'appli. */
+function acAlive(){return !!(AC&&AC.state==='running');}
+function acBuild(){
+  audioOut();
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;return null;}
+  OUT=null;CLK=[];   /* le compresseur et les clics programmés appartenaient à l'ancien contexte */
+  AC.onstatechange=function(){
+    if(!AC)return;
+    if(AC.state!=='running')hushClicks();
+    else if(M.on)metResync(AC);   /* on repart au début d'une mesure, pas en rattrapant */
+    paintSnd();
+  };
   return AC;
+}
+function acWake(){
+  if(!AC)return;
+  if(AC.state==='closed'){AC=null;acBuild();return;}
+  try{audioOut();var p=AC.resume();if(p&&p['catch'])p['catch'](function(){});}catch(e){}
+}
+function ac(){
+  if(!AC)acBuild();
+  if(AC&&AC.state!=='running')acWake();
+  paintSnd();
+  return AC;
+}
+/* Le premier geste qui suit une interruption rend le son : on en profite,
+   quel qu'il soit, et sans attendre que l'utilisateur comprenne. */
+function acKick(){
+  if(AC&&AC.state!=='running'){acWake();setTimeout(paintSnd,250);}
+}
+document.addEventListener('pointerdown',acKick,true);
+document.addEventListener('keydown',acKick,true);
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible')acKick();
+});
+window.addEventListener('focus',acKick);
+window.addEventListener('pageshow',acKick);
+var sndBad=false;
+function paintSnd(){
+  var bad=!!(AC&&AC.state!=='running');
+  if(bad===sndBad)return;   /* appelée à chaque note : elle ne touche le DOM qu'au changement */
+  sndBad=bad;
+  var el=document.getElementById('chipSnd');
+  if(el)el.hidden=!bad;
 }
 /* Tout le son passe par un compresseur doux : un accord joué pendant que le
    métronome tourne ne fait plus saturer la sortie. */
@@ -1897,7 +1968,8 @@ function paintTask(){
       (hp?coursBtn(hp):'')+'</div>':'');
   wireCoursBtns('#nowTask');
   var m=$('#taskMet');
-  if(m)m.onclick=function(){setMetroBpm(b.bpm);go('metronome');};
+  /* On ne quitte plus la séance pour ça : le bandeau est juste en dessous. */
+  if(m)m.onclick=function(){setMetroBpm(b.bpm);if(!M.on)metStart();else setBpmLive(b.bpm);};
 }
 /* Le programme est une seule liste : au repos elle se lit comme le plan de la
    séance, pendant la séance elle marque où tu en es. Les champs de saisie
@@ -2042,7 +2114,28 @@ function paintTimer(){
   if(seg)seg.style.setProperty('--p',Math.round(frac*100)+'%');
   paintMini();
 }
+/* Le bandeau de séance affiche le même état que l'onglet Métronome : il n'a
+   pas de moteur à lui, seulement des lampes de plus à allumer. */
+function paintSessMet(){
+  var el=$('#sessMet');if(!el)return;
+  el.hidden=!sessionBusy();
+  if(el.hidden)return;
+  $('#sessBpmN').textContent=M.bpm;
+  var b=$('#sessMetBtn');
+  b.textContent=M.on?'■':'▶';
+  b.setAttribute('aria-label',M.on?'Arrêter le métronome':'Lancer le métronome');
+  var l=$('#sessLamps'),i;
+  if(l.children.length!==M.beats){
+    l.innerHTML='';
+    for(i=0;i<M.beats;i++){var d=document.createElement('div');d.dataset.i=i;l.appendChild(d);}
+  }
+  for(i=0;i<l.children.length;i++){
+    var on=l.children[i].classList.contains('on');
+    l.children[i].className='lamp'+(i===0&&M.accent?' acc':'')+(on?' on':'');
+  }
+}
 function paintMini(){
+  paintSessMet();
   var t=$('#miniT');if(!t)return;
   var busy=sessionBusy(),r=S.settings.routine,b=r[T.bi]||r[0];
   t.hidden=!busy||!b;
@@ -2067,7 +2160,7 @@ function nextBlock(){
   if(T.bi<r.length-1){
     T.bi++;T.left=(+r[T.bi].m)*60;
     if(T.on)T.end=Date.now()+T.left*1000;
-    renderBlocks();paintTimer();
+    renderBlocks();paintTimer();metFollowBlock();
   }
   else stopTimer(true);
 }
@@ -2089,7 +2182,9 @@ document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'&&(T.on||M.on)){T.lock=null;requestLock();}
 });
 function stopTimer(finished){
-  clearInterval(T.tick);T.on=false;releaseLock();
+  clearInterval(T.tick);T.on=false;
+  if(M.on)metStop();   /* « Terminer » veut dire le silence, pas le métronome tout seul */
+  releaseLock();
   $('#btnStart').textContent='Démarrer';
   var mins=Math.round(T.played);
   T.played=0;T.left=0;T.bi=0;T.end=0;T.last=0;T.over=false;T.extra=0;
@@ -2157,7 +2252,7 @@ function paintMet(){
   var l=$('#lamps'),i;
   if(l.children.length!==M.beats){
     l.innerHTML='';
-    for(i=0;i<M.beats;i++)l.appendChild(document.createElement('div'));
+    for(i=0;i<M.beats;i++){var d=document.createElement('div');d.dataset.i=i;l.appendChild(d);}
   }
   for(i=0;i<l.children.length;i++){
     var on=l.children[i].classList.contains('on');
@@ -2176,8 +2271,24 @@ function setBpmLive(v){
   var rg=$('#bpmRange');if(rg)rg.value=M.bpm;
   paintMet();
 }
+/* Le tempo du bloc en cours, s'il en porte un. La recette de séance le calcule
+   à partir du morceau au programme : c'est lui qu'on veut entendre, pas le
+   dernier tempo réglé à la main trois jours plus tôt. */
+function blockBpm(){
+  if(!sessionBusy()||simpleMode())return 0;
+  var b=(S.settings.routine||[])[T.bi];
+  return (b&&+b.bpm)?clamp(Math.round(+b.bpm),30,240):0;
+}
+/* Au changement de bloc : si le métronome tourne, il suit, sans toucher au
+   tempo que tu as enregistré dans l'onglet Métronome. */
+function metFollowBlock(){
+  var v=blockBpm();
+  if(v&&M.on&&M.bpm!==v)setBpmLive(v);
+  else paintSessMet();
+}
 function metStart(){
   var c=ac();if(!c)return;
+  var v=blockBpm();if(v&&M.bpm!==v)setBpmLive(v);   /* en séance, démarrer c'est démarrer sur le bloc */
   M.on=true;M.gen++;M.tick=0;M.bar=1;M.next=c.currentTime+0.1;
   $('#metBtn').textContent='■ Arrêter';
   $('#metBtn').classList.remove('primary');
@@ -2187,7 +2298,7 @@ function metStart(){
 function metStop(){
   M.on=false;M.gen++;clearInterval(M.timer);hushClicks();
   $('#metBtn').textContent='▶ Démarrer';$('#metBtn').classList.add('primary');
-  $$('#lamps .lamp').forEach(function(l){l.classList.remove('on');});
+  $$('#lamps .lamp, #sessLamps .lamp').forEach(function(l){l.classList.remove('on');});
   releaseLock();
   var saved=+(S.settings.metro&&S.settings.metro.bpm)||M.bpm;
   if(saved!==M.bpm)setBpmLive(saved); /* le tempo progressif ne confisque pas ton réglage */
@@ -2224,7 +2335,7 @@ function lampAt(i,ms){
   var g=M.gen;
   setTimeout(function(){
     if(M.gen!==g||!M.on)return;   /* plus rien ne clignote après l'arrêt */
-    $$('#lamps .lamp').forEach(function(l,j){l.classList.toggle('on',j===i);});
+    $$('#lamps .lamp, #sessLamps .lamp').forEach(function(l){l.classList.toggle('on',+l.dataset.i===i);});
   },Math.max(0,ms));
 }
 
@@ -4049,6 +4160,13 @@ function wire(){
   $('#labelBtn').onclick=function(){S.settings.labels=!S.settings.labels;saveSettings();renderClavier();};
   /* MIDI */
   $('#midiBtn').onclick=function(){ac();if(MI.on)bindInputs();else midiConnect(false);};
+  $('#sessMetBtn').onclick=function(){if(M.on)metStop();else metStart();};
+  $('#sessBpm').onclick=function(){go('metronome');};
+  $('#chipSnd').onclick=function(){
+    acKick();
+    /* la reprise est asynchrone : on confirme à l'oreille une fois revenu */
+    setTimeout(function(){paintSnd();if(acAlive())chime();},300);
+  };
   $('#midiPanic').onclick=allNotesOff;
   $$('[data-trans]').forEach(function(b){b.onclick=function(){
     allNotesOff();MI.trans=clamp(MI.trans+(+b.dataset.trans),-2,2);paintMidi();};});

@@ -33,6 +33,7 @@ mémoire, et d'où tout cela vient.
 | 5 | Finitions : recherche plein texte sans accents, les 18 leçons du parcours reliées aux cours, plus aucun cours orphelin, README | **fait** |
 | 6 | Mener un morceau : un huitième thème de onze cours sur le répertoire (choisir, combien de front, un cours par état, les révisions espacées, laisser de côté, jouer devant, varier), le lien « Que faire à ce stade ? » sur chaque morceau et « Bien choisir un morceau » sur la carte d’ajout | **fait** |
 | 7 | S’exercer : un neuvième thème de huit cours sur les exercices (un par exercice, plus la lecture des scores), un cours sur les intervalles qui comble la seule leçon du parcours sans cours, le lien « À quoi sert cet exercice ? » sur la carte de l’onglet et « Comment lire ces chiffres ? » sous la réussite du journal | **fait** |
+| 8 | Le son qui disparaît, et la séance tout-en-un : réveil du contexte audio dans tous ses états (y compris l’« interrupted » de l’iPhone, qui ne se répare pas tout seul), pastille « son coupé » dans l’en-tête, et le métronome en bandeau sous la consigne, qui démarre sur le tempo du bloc et suit les blocs suivants | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -49,7 +50,7 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les sept étapes sont faites et poussées.
+**Rien en cours.** Les huit étapes sont faites et poussées.
 
 76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
@@ -61,6 +62,29 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 8, le son.** La panne venait d’un seul test : `ac()` ne réveillait le
+  contexte que s’il était `suspended`. L’iPhone, lui, le met en `interrupted` dès
+  qu’un appel ou une autre appli prend la sortie audio, et il n’en ressort jamais
+  seul : tout son demandé ensuite partait dans le vide, sans la moindre erreur.
+  Désormais tout état autre que `running` déclenche une reprise, un contexte
+  `closed` est refabriqué (avec son compresseur, qui appartenait à l’ancien), et
+  quatre déclencheurs s’en chargent : chaque son, le retour au premier plan, le
+  `pageshow`, et le premier geste venu. Les gestes sont le seul recours qu’iOS ne
+  refuse jamais, d’où le `pointerdown` en capture.
+- La pastille **🔇 son coupé** ne s’affiche que si la reprise échoue. Elle évite
+  la seule conclusion possible autrement : « l’appli est cassée ». `paintSnd()`
+  est appelée à chaque note, donc elle ne touche le DOM qu’au changement d’état.
+- **Étape 8, la séance.** Le bandeau de métronome n’a pas de moteur à lui : même
+  `M`, mêmes fonctions, une deuxième série de lampes. Elles portent un `data-i`
+  parce que `lampAt` peint maintenant deux listes d’un coup.
+- Le tempo du bloc s’impose au démarrage du métronome et au changement de bloc,
+  par `setBpmLive()` — qui ne touche pas au tempo enregistré dans l’onglet
+  Métronome. Un bloc sans tempo ne change rien. « Terminer » arrête le métronome.
+- Piège rencontré, à retenir : dans `String.replace(a, b)`, un `$$` du texte de
+  remplacement vaut un `$` littéral. Les scripts de remplacement de ce dépôt
+  passent donc une **fonction** comme second argument, sinon `$$('#x')` devient
+  `$('#x')` — ce qui s’exécute sans erreur et casse en silence.
 
 - **Étape 6** : les cours d’état portent des identifiants réguliers (etat-decouverte,
   etat-travail, etat-presque, etat-memorise, etat-entretien) pour que le bouton d’un
@@ -86,6 +110,10 @@ les 18 leçons reliées, aucun cours orphelin (en tenant compte des familles cal
 
 ## Pistes si on y revient
 
+- Les exercices dans la tonalité du morceau au programme : `focusKey()` existe
+  déjà, les tirages sont encore au hasard des douze tonalités.
+- Métronome, Clavier et Théorie sont les trois derniers onglets d’où aucun cours
+  ne part, alors que les cours correspondants existent tous.
 - Un favori ou un historique des cours lus — la bibliothèque commence à être grande.
 - Des cours liés aux morceaux eux-mêmes : une fiche par compositeur ou par époque,
   puisque « varier ce que tu joues » le demande sans rien proposer.
