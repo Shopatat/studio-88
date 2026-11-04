@@ -317,6 +317,27 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .sbpm{padding:0 10px;height:30px;border-radius:999px;font-size:13px;font-weight:600;
   color:var(--fg2);background:none;border:0;white-space:nowrap;transition:color .15s}
 .sbpm:hover{color:var(--brass)}
+/* Les outils de la séance : des boutons francs, et un seul tiroir ouvert.
+   On reste sur l'écran de la séance, le minuteur sous les yeux. */
+.tools{margin-top:var(--s4)}
+.tbar{display:flex;gap:7px;flex-wrap:wrap}
+.tbtn{flex:1 1 auto;min-width:96px;justify-content:center;background:var(--btn);border:1px solid var(--line2);
+  border-radius:var(--r2);padding:9px 12px;font-size:13px;font-weight:600;color:var(--fg2);
+  display:inline-flex;align-items:center;gap:6px;transition:color .15s,border-color .15s,background .15s}
+.tbtn:hover{color:var(--fg);border-color:var(--brass)}
+.tbtn[aria-pressed="true"]{color:var(--brass);background:var(--brass-w);border-color:var(--brass)}
+.tdrawer{margin-top:9px;padding:12px;border-radius:var(--r3);background:var(--inset);
+  border:1px solid var(--line);animation:drawer .18s ease}
+@keyframes drawer{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* Un interrupteur doit se voir allumé : les boutons des tiroirs qui gardent
+   un état le portent, comme les segments. */
+.tdrawer .btn[aria-pressed="true"]{color:var(--brass);background:var(--brass-w);border-color:var(--brass)}
+/* Séance lancée : le minuteur et ses outils prennent toute la largeur et
+   passent devant ; les réglages du programme s’effacent, on ne refait pas
+   sa séance en la jouant. */
+.insess #focusCard{display:none}
+.insess #nowCard{order:-1}
+@media(min-width:760px){.insess #nowCard,.insess #routineCard{grid-column:1/-1}}
 
 /* ---------- clavier ---------- */
 .kbwrap{background:linear-gradient(#2A2730,#15141A);border:1px solid #0B0A0E;border-radius:var(--r3);
@@ -475,7 +496,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
 
   <!-- =============== SÉANCE =============== -->
   <section id="t-seance" role="tabpanel" aria-label="Séance" hidden>
-    <div class="grid g2">
+    <div class="grid g2" id="seanceGrid">
       <div class="card span" id="tipsCard">
         <div class="row" style="justify-content:space-between">
           <div class="eyebrow" style="margin:0">À revoir aujourd’hui</div>
@@ -484,7 +505,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div id="tipsBody" style="margin-top:10px"></div>
       </div>
 
-      <div class="card span">
+      <div class="card span" id="focusCard">
         <div class="eyebrow">Au programme</div>
         <div class="row" style="align-items:flex-end">
           <label class="fld" style="flex:1 1 230px">Morceau travaillé<select id="focusPiece"></select></label>
@@ -504,7 +525,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <div class="mt" id="focusInfo" style="margin-top:9px"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="nowCard">
         <div class="eyebrow">Minuteur</div>
         <div class="row" style="gap:18px;align-items:center">
           <svg class="ring" id="ring" width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
@@ -532,6 +553,54 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <button type="button" class="mstep" data-mstep="-1" aria-label="Ralentir le métronome">−</button>
           <button type="button" class="sbpm" id="sessBpm" title="Ouvrir le métronome : mesure, subdivision, tempo progressif">♩ <b id="sessBpmN">92</b></button>
           <button type="button" class="mstep" data-mstep="1" aria-label="Accélérer le métronome">+</button>
+        </div>
+        <!-- Les outils de la séance : un rang de boutons, un tiroir à la fois,
+             et jamais un onglet à quitter pendant qu’on joue. -->
+        <div class="tools" id="sessTools" hidden>
+          <div class="tbar" id="sessToolBar">
+            <button type="button" class="tbtn" data-tool="kb" aria-pressed="false" aria-controls="toolKb">🎹 Clavier</button>
+            <button type="button" class="tbtn" data-tool="met" aria-pressed="false" aria-controls="toolMet">⏱ Mesure</button>
+            <button type="button" class="tbtn" data-tool="note" aria-pressed="false" aria-controls="toolNote">✎ Note</button>
+          </div>
+          <div class="tdrawer" id="toolKb" hidden>
+            <div class="kbwrap"><div class="kbfelt"></div><div class="kb sm" id="sessKB"></div></div>
+            <div class="row tight" style="margin-top:10px">
+              <button class="btn sm" id="sessScale">♪ La gamme</button>
+              <button class="btn sm ghost" id="sessCad">♪ I – IV – V – I</button>
+              <button class="btn sm ghost" id="sessKbMore">Tout le clavier</button>
+            </div>
+            <div class="sub" id="sessKbKey" style="margin-top:9px"></div>
+          </div>
+          <div class="tdrawer" id="toolMet" hidden>
+            <div class="row tight">
+              <div class="seg" id="sessBeats" role="group" aria-label="Mesure">
+                <button type="button" data-sb="2">2/4</button><button type="button" data-sb="3">3/4</button>
+                <button type="button" data-sb="4">4/4</button><button type="button" data-sb="5">5/4</button>
+                <button type="button" data-sb="6">6/8</button><button type="button" data-sb="7">7/8</button>
+              </div>
+            </div>
+            <div class="row tight" style="margin-top:9px">
+              <div class="seg" id="sessSub" role="group" aria-label="Subdivision">
+                <button type="button" data-ss="1">Noires</button><button type="button" data-ss="2">Croches</button>
+                <button type="button" data-ss="3">Triolets</button><button type="button" data-ss="4">Doubles</button>
+              </div>
+            </div>
+            <div class="row tight" style="margin-top:9px">
+              <button class="btn sm ghost" id="sessAcc" aria-pressed="true">Accent au 1er temps</button>
+              <button class="btn sm ghost" id="sessProg" aria-pressed="false">Montée progressive</button>
+              <button class="btn sm ghost" id="sessMetMore">Réglages complets</button>
+            </div>
+            <div class="sub" id="sessProgHint" style="margin-top:9px"></div>
+          </div>
+          <div class="tdrawer" id="toolNote" hidden>
+            <label class="fld">Une note, maintenant — elle t’attendra dans le bilan
+              <textarea id="sessNote" rows="2" placeholder="Mes. 17-24 main gauche à 60, le doigté du trait final…"></textarea>
+            </label>
+            <div class="row tight" style="margin-top:9px">
+              <button class="btn sm" id="sessNoteAdd">Ajouter au bilan</button>
+              <span class="sub" id="sessNoteMsg"></span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2157,8 +2226,114 @@ function paintSessMet(){
     l.children[i].className='lamp'+(i===0&&M.accent?' acc':'')+(on?' on':'');
   }
 }
+/* =========================================================
+   Les outils de la séance
+   Pendant la séance, l'écran devient le poste de travail : la carte du
+   minuteur passe devant, et tout ce dont on a besoin en jouant s'ouvre
+   dessous — le clavier, la mesure, une note pour le bilan. Aucun tiroir
+   n'a de moteur à lui : ils actionnent les réglages existants.
+   ========================================================= */
+var sessTool='';          /* '', 'kb', 'met' ou 'note' */
+var noteFlash=0;
+function toolId(n){return '#tool'+n.charAt(0).toUpperCase()+n.slice(1);}
+/* L'armure du morceau au programme, pour la nommer sous le clavier. */
+function focusKeySig(){
+  var k=focusKey();if(!k)return null;
+  var maj=(k.sc==='maj')?k.pc:((k.pc+3)%12);
+  for(var i=0;i<KEYS.length;i++)if(KEYS[i].pc===maj)return KEYS[i];
+  return null;
+}
+function buildSessKB(){
+  var el=$('#sessKB');if(!el)return;
+  buildKB(el,60,1,null,true);
+  var k=focusKey(),lbl=$('#sessKbKey'),cd=$('#sessCad');
+  if(cd)cd.textContent=(k&&k.sc!=='maj')?'♪ i – iv – V – i':'♪ I – IV – V – I';
+  if(!k){if(lbl)lbl.textContent='Le morceau au programme n’a pas de tonalité notée : clavier libre.';return;}
+  var sc=SCALES.filter(function(x){return x.id===k.sc;})[0]||SCALES[0];
+  highlight(el,sc.iv.map(function(iv){return (k.pc+iv)%12;}),((k.pc%12)+12)%12);
+  var e=focusKeySig(),arm=(e&&e.alt)?(e.alt+' '+(e.sign==='♯'?'dièse':'bémol')+(e.alt>1?'s':'')+' : '+altNames(e)+'. '):'';
+  if(lbl)lbl.innerHTML='<b>'+esc(k.name)+'</b> — '+arm+'La gamme est marquée sur les touches.';
+}
+function playSessScale(){
+  var k=focusKey(),pc=k?k.pc:0;
+  var sc=SCALES.filter(function(x){return x.id===(k?k.sc:'maj');})[0]||SCALES[0];
+  var notes=sc.iv.map(function(iv){return 60+pc+iv;});
+  playSeq(notes.concat([notes[0]+12]),0.22,0.6);
+}
+/* I – IV – V – I, ou i – iv – V – i en mineur : le V reste majeur, c'est lui
+   qui ramène à la tonique. De quoi se remettre l'oreille dans la tonalité du
+   morceau avant de reprendre. */
+function playSessCad(){
+  var c=ac();if(!c)return;
+  var k=focusKey(),pc=k?k.pc:0,mi=!!(k&&k.sc!=='maj');
+  var steps=[[0,mi?'m':'M'],[5,mi?'m':'M'],[7,'M'],[0,mi?'m':'M']];
+  var t=c.currentTime+0.05;
+  steps.forEach(function(st,i){
+    var ch=CHORDS.filter(function(x){return x.id===st[1];})[0];
+    var base=60+pc+st[0];
+    ch.iv.forEach(function(iv){playNote(base+iv,1.5,t+i*0.72,0.45);});
+    playNote(base-24,1.8,t+i*0.72,0.5);
+  });
+}
+/* Les réglages du tiroir passent par les champs de l'onglet Métronome : un
+   seul endroit décide, et la remise à l'heure de la mesure y est déjà. */
+function viaField(sel,set){
+  var el=$(sel);if(!el||!el.onchange)return;
+  set(el);el.onchange.call(el);paintSessTools();
+}
+function sessNoteCount(){
+  var el=$('#logNotes'),v=(el&&el.value)||'';
+  return v.split('\n').filter(function(l){return l.trim();}).length;
+}
+function addSessNote(){
+  var ta=$('#sessNote'),txt=((ta&&ta.value)||'').trim(),lg=$('#logNotes');
+  if(!txt||!lg){if(ta&&ta.focus)ta.focus();return;}
+  var b=(S.settings.routine||[])[T.bi];
+  /* La note se souvient du bloc où elle est née : relue le soir, elle situe. */
+  lg.value=(lg.value?lg.value.replace(/\s+$/,'')+'\n':'')+((b&&b.n&&!simpleMode())?b.n+' — ':'')+txt;
+  ta.value='';noteFlash=Date.now();paintSessTools();
+}
+function closeTools(){
+  sessTool='';
+  ['kb','met','note'].forEach(function(n){var d=$(toolId(n));if(d)d.hidden=true;});
+  $$('#sessToolBar .tbtn').forEach(function(b){b.setAttribute('aria-pressed','false');});
+}
+function openTool(name){
+  var was=sessTool;
+  closeTools();
+  if(was===name)return;   /* le même bouton referme : un seul geste pour les deux sens */
+  sessTool=name;
+  var d=$(toolId(name));if(d)d.hidden=false;
+  var b=$('#sessToolBar [data-tool="'+name+'"]');if(b)b.setAttribute('aria-pressed','true');
+  if(name==='kb')buildSessKB();   /* rebâti à l'ouverture : la tonalité du programme a pu changer */
+  paintSessTools();
+  if(name==='note'){var ta=$('#sessNote');if(ta&&ta.focus)ta.focus();}
+  if(d&&d.scrollIntoView)try{d.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}
+}
+function paintSessTools(){
+  var g=$('#seanceGrid'),el=$('#sessTools'),busy=sessionBusy();
+  if(g)g.classList.toggle('insess',busy);
+  if(!el)return;
+  el.hidden=!busy;
+  if(!busy){if(sessTool)closeTools();return;}
+  if(sessTool==='met'){
+    $$('#sessBeats button').forEach(function(b){b.setAttribute('aria-pressed',(+b.dataset.sb===M.beats)?'true':'false');});
+    $$('#sessSub button').forEach(function(b){b.setAttribute('aria-pressed',(+b.dataset.ss===M.sub)?'true':'false');});
+    $('#sessAcc').setAttribute('aria-pressed',M.accent?'true':'false');
+    $('#sessProg').setAttribute('aria-pressed',M.prog?'true':'false');
+    $('#sessProgHint').textContent=M.prog
+      ?('Le tempo monte de '+M.step+' bpm toutes les '+M.every+' mesures, jusqu’à '+M.max+'.')
+      :'Le tempo reste où tu le mets. Les paliers de la montée se règlent dans l’onglet Métronome.';
+  }
+  if(sessTool==='note'){
+    var n=sessNoteCount();
+    $('#sessNoteMsg').textContent=(Date.now()-noteFlash<1800)?'Noté — c’est dans le bilan.'
+      :(n?(n+(n>1?' notes attendent le bilan.':' note attend le bilan.')):'');
+  }
+}
 function paintMini(){
   paintSessMet();
+  paintSessTools();
   var t=$('#miniT');if(!t)return;
   var busy=sessionBusy(),r=S.settings.routine,b=r[T.bi]||r[0];
   t.hidden=!busy||!b;
@@ -4184,7 +4359,20 @@ function wire(){
   /* MIDI */
   $('#midiBtn').onclick=function(){ac();if(MI.on)bindInputs();else midiConnect(false);};
   $('#sessMetBtn').onclick=function(){if(M.on)metStop();else metStart();};
-  $('#sessBpm').onclick=function(){go('metronome');};
+  /* Le tempo ouvre le tiroir au lieu d’emmener dans un autre onglet. */
+  $('#sessBpm').onclick=function(){openTool('met');};
+  $$('#sessToolBar .tbtn').forEach(function(b){b.onclick=function(){openTool(b.dataset.tool);};});
+  $('#sessScale').onclick=playSessScale;
+  $('#sessCad').onclick=playSessCad;
+  $('#sessKbMore').onclick=function(){go('clavier');};
+  $$('#sessBeats button').forEach(function(b){b.onclick=function(){
+    viaField('#metBeats',function(el){el.value=b.dataset.sb;});};});
+  $$('#sessSub button').forEach(function(b){b.onclick=function(){
+    viaField('#metSub',function(el){el.value=b.dataset.ss;});};});
+  $('#sessAcc').onclick=function(){viaField('#metAccent',function(el){el.checked=!M.accent;});};
+  $('#sessProg').onclick=function(){viaField('#progOn',function(el){el.checked=!M.prog;});};
+  $('#sessMetMore').onclick=function(){go('metronome');};
+  $('#sessNoteAdd').onclick=addSessNote;
   $('#chipSnd').onclick=function(){
     acKick();
     /* la reprise est asynchrone : on confirme à l'oreille une fois revenu */

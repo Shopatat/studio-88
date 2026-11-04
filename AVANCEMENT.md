@@ -34,6 +34,7 @@ mémoire, et d'où tout cela vient.
 | 6 | Mener un morceau : un huitième thème de onze cours sur le répertoire (choisir, combien de front, un cours par état, les révisions espacées, laisser de côté, jouer devant, varier), le lien « Que faire à ce stade ? » sur chaque morceau et « Bien choisir un morceau » sur la carte d’ajout | **fait** |
 | 7 | S’exercer : un neuvième thème de huit cours sur les exercices (un par exercice, plus la lecture des scores), un cours sur les intervalles qui comble la seule leçon du parcours sans cours, le lien « À quoi sert cet exercice ? » sur la carte de l’onglet et « Comment lire ces chiffres ? » sous la réussite du journal | **fait** |
 | 8 | Le son qui disparaît, et la séance tout-en-un : réveil du contexte audio dans tous ses états (y compris l’« interrupted » de l’iPhone, qui ne se répare pas tout seul), pastille « son coupé » dans l’en-tête, et le métronome en bandeau sous la consigne, qui démarre sur le tempo du bloc et suit les blocs suivants | **fait** |
+| 9 | La séance en écran unique : pendant qu’elle tourne, le minuteur passe en pleine largeur et en premier, les réglages du programme s’effacent, et trois tiroirs s’ouvrent sous la consigne — clavier d’une octave avec la gamme et l’armure du morceau, réglages de mesure et de subdivision, note qui part droit dans le bilan | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -50,7 +51,7 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les huit étapes sont faites et poussées.
+**Rien en cours.** Les neuf étapes sont faites et poussées.
 
 76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
@@ -62,6 +63,27 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 9.** « Tout en un » veut dire : ne plus jamais quitter l’écran de la
+  séance pour un outil. La grille de l’onglet porte une classe `insess` tant
+  que `sessionBusy()` : `#nowCard` passe devant et prend toute la largeur,
+  `#focusCard` disparaît. Tout tient dans du CSS, aucun nœud n’est déplacé.
+- Les tiroirs n’ont pas de moteur à eux, par principe — c’est ce qui a rendu le
+  bandeau de métronome sûr à l’étape 8. Le clavier appelle `buildKB()` et
+  `highlight()`, les réglages de mesure passent par `viaField()`, qui écrit dans
+  le champ de l’onglet Métronome et rappelle son `onchange` : la remise à
+  l’heure de la mesure en marche y est déjà, et un seul endroit décide.
+- Un seul tiroir ouvert à la fois, et le même bouton referme : en jouant, on a
+  une main et deux secondes. `paintSessTools()` est appelée par `paintMini()`,
+  donc deux fois par seconde pendant la séance ; elle ne repeint que le tiroir
+  ouvert, et l’accusé « Noté » passe par un horodatage (`noteFlash`) plutôt que
+  par un `setTimeout` qu’un repaint écraserait.
+- La note va dans `#logNotes`, préfixée du nom du bloc (sauf en séance simple,
+  qui n’en a pas). Elle survit à une séance trop courte pour ouvrir le bilan :
+  le champ garde son texte jusqu’à la prochaine séance enregistrée.
+- `focusKeySig()` remonte du ton du morceau à l’entrée de `KEYS` pour nommer
+  l’armure — en mineur, en passant par la relative majeure (`+3` demi-tons).
+  La cadence devient `i – iv – V – i` en mineur, le V restant majeur.
 
 - **Étape 8, le son.** La panne venait d’un seul test : `ac()` ne réveillait le
   contexte que s’il était `suspended`. L’iPhone, lui, le met en `interrupted` dès
@@ -114,6 +136,8 @@ les 18 leçons reliées, aucun cours orphelin (en tenant compte des familles cal
   déjà, les tirages sont encore au hasard des douze tonalités.
 - Métronome, Clavier et Théorie sont les trois derniers onglets d’où aucun cours
   ne part, alors que les cours correspondants existent tous.
+- Les tiroirs de séance pourraient en accueillir un quatrième : le cours du bloc
+  en cours, lu sur place au lieu d’ouvrir la feuille par-dessus la séance.
 - Un favori ou un historique des cours lus — la bibliothèque commence à être grande.
 - Des cours liés aux morceaux eux-mêmes : une fiche par compositeur ou par époque,
   puisque « varier ce que tu joues » le demande sans rien proposer.
