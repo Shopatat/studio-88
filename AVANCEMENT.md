@@ -35,6 +35,7 @@ mémoire, et d'où tout cela vient.
 | 7 | S’exercer : un neuvième thème de huit cours sur les exercices (un par exercice, plus la lecture des scores), un cours sur les intervalles qui comble la seule leçon du parcours sans cours, le lien « À quoi sert cet exercice ? » sur la carte de l’onglet et « Comment lire ces chiffres ? » sous la réussite du journal | **fait** |
 | 8 | Le son qui disparaît, et la séance tout-en-un : réveil du contexte audio dans tous ses états (y compris l’« interrupted » de l’iPhone, qui ne se répare pas tout seul), pastille « son coupé » dans l’en-tête, et le métronome en bandeau sous la consigne, qui démarre sur le tempo du bloc et suit les blocs suivants | **fait** |
 | 9 | La séance en écran unique : pendant qu’elle tourne, le minuteur passe en pleine largeur et en premier, les réglages du programme s’effacent, et trois tiroirs s’ouvrent sous la consigne — clavier d’une octave avec la gamme et l’armure du morceau, réglages de mesure et de subdivision, note qui part droit dans le bilan | **fait** |
+| 10 | Le cours du bloc en tiroir : `openCours` scindé en un corps de cours réutilisable (`coursHTML` / `wireCoursBody`) et une feuille qui n’en est plus que l’un des hôtes, un quatrième outil de séance qui lit le cours du bloc sur place, suit les blocs, enchaîne les « à lire ensuite » et sait s’ouvrir en grand | **fait** |
 
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
@@ -51,7 +52,7 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les neuf étapes sont faites et poussées.
+**Rien en cours.** Les dix étapes sont faites et poussées.
 
 76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
@@ -63,6 +64,28 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 10.** Un cours ne s’affiche plus à un seul endroit : `coursHTML(c,inline)`
+  rend le corps, `wireCoursBody(root,c,onSee)` le câble, et la feuille superposée
+  comme le tiroir de séance s’en servent. Le paramètre `inline` retire ce qui
+  emmène ailleurs — « Ouvrir l’exercice », « Ouvrir <l’onglet> », « Ouvrir au
+  clavier » — parce qu’un tiroir de séance qui fait quitter la séance ne sert à
+  rien. `onSee` décide de l’enchaînement : la feuille enchaîne dans la feuille,
+  le tiroir dans le tiroir.
+- Piège rencontré : `buildKB()` réécrit le `className` de son élément. Le crochet
+  du clavier dans un cours est donc un attribut (`data-ckb`) et non une classe,
+  sinon il disparaît à la construction — sans rien casser, mais en rendant tout
+  contrôle ultérieur aveugle.
+- Le tiroir suit le bloc : `paintSessTools()` compare `helpFor(bloc)` au cours
+  affiché et recharge, sauf si on est parti lire autre chose par un « à lire
+  ensuite » (`sessCoursAuto`). Sans ce drapeau, le repaint deux fois par seconde
+  ramènerait de force au cours du bloc.
+- Le bouton disparaît quand le bloc n’a pas de cours (séance simple, bloc écrit
+  à la main) : `.tbtn[hidden]{display:none}` est nécessaire, `display` étant déjà
+  posé sur `.tbtn`.
+- Hauteur bornée (46 vh) sur grand écran pour garder le minuteur à l’écran ;
+  sur téléphone, le cours coule en entier — le minuteur est déjà dans la barre
+  du haut, et deux zones de défilement imbriquées sont ingérables au pouce.
 
 - **Étape 9.** « Tout en un » veut dire : ne plus jamais quitter l’écran de la
   séance pour un outil. La grille de l’onglet porte une classe `insess` tant
@@ -136,8 +159,10 @@ les 18 leçons reliées, aucun cours orphelin (en tenant compte des familles cal
   déjà, les tirages sont encore au hasard des douze tonalités.
 - Métronome, Clavier et Théorie sont les trois derniers onglets d’où aucun cours
   ne part, alors que les cours correspondants existent tous.
-- Les tiroirs de séance pourraient en accueillir un quatrième : le cours du bloc
-  en cours, lu sur place au lieu d’ouvrir la feuille par-dessus la séance.
+- La feuille superposée pourrait disparaître aussi de la bibliothèque, au profit
+  d’un cours qui s’ouvre dans la page : le corps est désormais rendu n’importe où.
+- Un favori ou un historique des cours lus, maintenant que les cours s’ouvrent
+  depuis la séance : ce qu’on relit souvent mériterait d’être à portée.
 - Un favori ou un historique des cours lus — la bibliothèque commence à être grande.
 - Des cours liés aux morceaux eux-mêmes : une fiche par compositeur ou par époque,
   puisque « varier ce que tu joues » le demande sans rien proposer.

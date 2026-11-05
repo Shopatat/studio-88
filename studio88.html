@@ -303,9 +303,22 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
   display:inline-flex;align-items:center;gap:6px;transition:color .15s,border-color .15s,background .15s}
 .tbtn:hover{color:var(--fg);border-color:var(--brass)}
 .tbtn[aria-pressed="true"]{color:var(--brass);background:var(--brass-w);border-color:var(--brass)}
+/* Un bouton d’outil absent vaut mieux qu’un bouton qui n’ouvre rien : les
+   blocs n’ont pas tous un cours. Il lui faut sa propre règle, « display » est
+   déjà posé plus haut. */
+.tbtn[hidden]{display:none}
 .tdrawer{margin-top:9px;padding:12px;border-radius:var(--r3);background:var(--inset);
   border:1px solid var(--line);animation:drawer .18s ease}
 @keyframes drawer{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* Le cours en tiroir : pas de croix à éviter, et une hauteur bornée pour que
+   le minuteur reste à l’écran au lieu d’être poussé trois pouces plus bas. */
+#toolCours .chead{padding-right:0}
+#sessCoursBody{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;padding-right:4px}
+/* Sur téléphone, le minuteur reste visible dans la barre du haut : le cours
+   coule alors en entier, plutôt qu'un cadre qui défile dans une page qui
+   défile — au pouce, on ne sait jamais lequel on pousse. */
+@media(max-width:600px){#sessCoursBody{max-height:none;overflow:visible;padding-right:0}}
+#sessCoursBody .cbody p{font-size:14px}
 /* Un interrupteur doit se voir allumé : les boutons des tiroirs qui gardent
    un état le portent, comme les segments. */
 .tdrawer .btn[aria-pressed="true"]{color:var(--brass);background:var(--brass-w);border-color:var(--brass)}
@@ -535,9 +548,17 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
              et jamais un onglet à quitter pendant qu’on joue. -->
         <div class="tools" id="sessTools" hidden>
           <div class="tbar" id="sessToolBar">
+            <button type="button" class="tbtn" data-tool="cours" aria-pressed="false" aria-controls="toolCours" hidden>📖 Le cours</button>
             <button type="button" class="tbtn" data-tool="kb" aria-pressed="false" aria-controls="toolKb">🎹 Clavier</button>
             <button type="button" class="tbtn" data-tool="met" aria-pressed="false" aria-controls="toolMet">⏱ Mesure</button>
             <button type="button" class="tbtn" data-tool="note" aria-pressed="false" aria-controls="toolNote">✎ Note</button>
+          </div>
+          <div class="tdrawer" id="toolCours" hidden>
+            <div class="row tight" style="margin-bottom:11px">
+              <button class="btn sm ghost" id="sessCoursBack" hidden>← Le cours du bloc</button>
+              <button class="btn sm ghost" id="sessCoursBig">Ouvrir en grand</button>
+            </div>
+            <div id="sessCoursBody"></div>
           </div>
           <div class="tdrawer" id="toolKb" hidden>
             <div class="kbwrap"><div class="kbfelt"></div><div class="kb sm" id="sessKB"></div></div>
@@ -2220,6 +2241,18 @@ function focusKeySig(){
   for(var i=0;i<KEYS.length;i++)if(KEYS[i].pc===maj)return KEYS[i];
   return null;
 }
+/* Le cours du bloc, lu sans rien couvrir : la feuille superposée masque le
+   minuteur et la consigne, c'est-à-dire ce qu'on lit le cours pour faire. */
+var sessCoursId='',sessCoursAuto=true;
+function blockCours(){return sessionBusy()?helpFor((S.settings.routine||[])[T.bi]):null;}
+function showSessCours(id,auto){
+  var c=coursById(id);if(!c)return;
+  sessCoursId=id;sessCoursAuto=!!auto;
+  $('#sessCoursBody').innerHTML=coursHTML(c,true);
+  wireCoursBody('#sessCoursBody',c,function(x){showSessCours(x,false);});
+  $('#sessCoursBack').hidden=sessCoursAuto;
+  $('#sessCoursBody').scrollTop=0;
+}
 function buildSessKB(){
   var el=$('#sessKB');if(!el)return;
   buildKB(el,60,1,null,true);
@@ -2283,6 +2316,7 @@ function openTool(name){
   var d=$(toolId(name));if(d)d.hidden=false;
   var b=$('#sessToolBar [data-tool="'+name+'"]');if(b)b.setAttribute('aria-pressed','true');
   if(name==='kb')buildSessKB();   /* rebâti à l'ouverture : la tonalité du programme a pu changer */
+  if(name==='cours'){var h=blockCours();if(h)showSessCours(h,true);}
   paintSessTools();
   if(name==='note'){var ta=$('#sessNote');if(ta&&ta.focus)ta.focus();}
   if(d&&d.scrollIntoView)try{d.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}
@@ -2293,6 +2327,14 @@ function paintSessTools(){
   if(!el)return;
   el.hidden=!busy;
   if(!busy){if(sessTool)closeTools();return;}
+  /* Le cours suit le bloc : au bloc suivant, le tiroir ouvert change de cours,
+     sauf si on est parti lire autre chose par un « à lire ensuite ». */
+  var hc=blockCours(),cb=$('#sessToolBar [data-tool="cours"]');
+  if(cb)cb.hidden=!hc;
+  if(sessTool==='cours'){
+    if(!hc)closeTools();
+    else if(sessCoursAuto&&hc!==sessCoursId)showSessCours(hc,true);
+  }
   if(sessTool==='met'){
     $$('#sessBeats button').forEach(function(b){b.setAttribute('aria-pressed',(+b.dataset.sb===M.beats)?'true':'false');});
     $$('#sessSub button').forEach(function(b){b.setAttribute('aria-pressed',(+b.dataset.ss===M.sub)?'true':'false');});
@@ -3751,37 +3793,44 @@ function goChord(pc,id){
   if(box&&box.scrollIntoView)try{box.scrollIntoView({block:'center'});}catch(e){}
 }
 
-/* --- La feuille superposée ------------------------------------------------ */
-var sheetBack=null;
-function openCours(id){
-  var c=coursById(id);if(!c)return;
-  var th=(COURS_TH.filter(function(t){return t[0]===c.th;})[0]||['','Cours'])[1];
-  var acts=[],fk=focusKey(),kb='',kpc=0,ksc=null;
+/* --- Le corps d'un cours, rendu où qu'il s'affiche ------------------------ */
+/* La feuille superposée n'est plus le seul hôte : le tiroir de la séance
+   affiche les mêmes cours sans rien couvrir. Les crochets du clavier sont donc
+   des classes et non des identifiants — les deux peuvent coexister — et les
+   actions qui emmènent ailleurs ne s'affichent que dans la feuille. */
+function coursKb(c){
+  var fk=focusKey(),pc=0,sc=null,ch=null;
   if(c.sc){
     /* « auto » : la gamme du morceau au programme, à défaut celle de Do. */
     var sid=(c.sc==='auto')?(fk?fk.sc:'maj'):c.sc;
-    kpc=(c.sc==='auto'&&fk)?fk.pc:0;
-    ksc=SCALES.filter(function(x){return x.id===sid;})[0]||null;
+    pc=(c.sc==='auto'&&fk)?fk.pc:0;
+    sc=SCALES.filter(function(x){return x.id===sid;})[0]||null;
   }
-  var kch=null;
   if(c.ch){
     /* « m7 » part de Do ; « 2:m7 » fixe la fondamentale, pour illustrer un Rem7. */
     var cp=String(c.ch).split(':'),cid=cp[cp.length-1];
-    if(cp.length>1)kpc=+cp[0]||0;
-    kch=CHORDS.filter(function(x){return x.id===cid;})[0]||null;
+    if(cp.length>1)pc=+cp[0]||0;
+    ch=CHORDS.filter(function(x){return x.id===cid;})[0]||null;
   }
-  if(ksc||kch)kb='<div class="ckb"><div class="kb sm" id="sheetKB"></div>'+
+  return (sc||ch)?{pc:pc,sc:sc,ch:ch}:null;
+}
+function coursHTML(c,inline){
+  var th=(COURS_TH.filter(function(t){return t[0]===c.th;})[0]||['','Cours'])[1];
+  var k=coursKb(c),kb='',acts=[];
+  if(k)kb='<div class="ckb"><div class="kb sm" data-ckb="1"></div>'+
     '<div class="row tight" style="margin-top:9px;align-items:center">'+
-      '<button class="btn sm" id="sheetPlay">♪ Jouer</button>'+
-      '<button class="btn sm ghost" id="sheetOpen">Ouvrir au clavier</button>'+
-      '<span class="sub">'+esc(pcName(kpc)+' '+(ksc?ksc.n:kch.n).toLowerCase())+'</span>'+
+      '<button class="btn sm ckbPlay">♪ Jouer</button>'+
+      (inline?'':'<button class="btn sm ghost ckbOpen">Ouvrir au clavier</button>')+
+      '<span class="sub">'+esc(pcName(k.pc)+' '+(k.sc?k.sc.n:k.ch.n).toLowerCase())+'</span>'+
     '</div></div>';
-  if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
-  if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':c.go==='journal'?'le journal':'le clavier')+'</button>');
+  /* En tiroir, on ne propose rien qui ferme la séance des yeux. */
+  if(!inline){
+    if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
+    if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':c.go==='journal'?'le journal':'le clavier')+'</button>');
+  }
   var see=(c.see||[]).filter(coursById);
-  $('#sheetBody').innerHTML=
-    '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
-    '<h2 class="ttl" id="sheetTitle" style="font-size:25px;margin:2px 0 0">'+esc(c.t)+'</h2>'+
+  return '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
+    '<h2 class="ttl" style="font-size:'+(inline?'19px':'25px')+';margin:2px 0 0">'+esc(c.t)+'</h2>'+
     (c.s?'<p class="sub" style="margin:6px 0 0;max-width:60ch">'+esc(c.s)+'</p>':'')+'</div>'+
     kb+
     '<div class="cbody">'+c.b.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div>'+
@@ -3790,22 +3839,35 @@ function openCours(id){
     (see.length?'<div style="margin-top:16px"><div class="eyebrow" style="margin-bottom:7px">À lire ensuite</div>'+
       '<div class="row tight">'+see.map(function(x){
         return '<button class="btn sm ghost" data-csee="'+x+'">'+esc(coursById(x).t)+'</button>';}).join('')+'</div></div>':'');
-  if((ksc||kch)&&$('#sheetKB')){
-    var kiv=ksc?ksc.iv:kch.iv;
-    buildKB($('#sheetKB'),60,1,null,true);
-    highlight($('#sheetKB'),kiv.map(function(iv){return (kpc+iv)%12;}),kpc%12);
-    $('#sheetPlay').onclick=ksc
-      ?function(){playSeq(ksc.iv.map(function(iv){return 60+kpc+iv;}).concat([60+kpc+12]),0.18,0.55);}
-      :function(){playChord(kch.iv.map(function(iv){return 60+kpc+iv;}),1.7);};
-    $('#sheetOpen').onclick=ksc
-      ?function(){goScale(kpc,ksc.id);}
-      :function(){goChord(kpc,kch.id);};
+}
+/* onSee : ce que fait un « à lire ensuite » — la feuille enchaîne, le tiroir
+   reste un tiroir. */
+function wireCoursBody(root,c,onSee){
+  /* un attribut, pas une classe : buildKB réécrit le className du crochet */
+  var k=coursKb(c),el=$(root+' [data-ckb]');
+  if(k&&el){
+    buildKB(el,60,1,null,true);
+    highlight(el,(k.sc?k.sc.iv:k.ch.iv).map(function(iv){return (k.pc+iv)%12;}),k.pc%12);
+    var p=$(root+' .ckbPlay');
+    if(p)p.onclick=k.sc
+      ?function(){playSeq(k.sc.iv.map(function(iv){return 60+k.pc+iv;}).concat([60+k.pc+12]),0.18,0.55);}
+      :function(){playChord(k.ch.iv.map(function(iv){return 60+k.pc+iv;}),1.7);};
+    var o=$(root+' .ckbOpen');
+    if(o)o.onclick=k.sc?function(){goScale(k.pc,k.sc.id);}:function(){goChord(k.pc,k.ch.id);};
   }
-  $$('#sheetBody [data-cgt]').forEach(function(b){b.onclick=function(){
+  $$(root+' [data-cgt]').forEach(function(b){b.onclick=function(){
     var t=b.dataset.cgt;closeCours();go(t);};});
-  $$('#sheetBody [data-cex]').forEach(function(b){b.onclick=function(){
+  $$(root+' [data-cex]').forEach(function(b){b.onclick=function(){
     var x=coursById(b.dataset.cex);closeCours();openDrill({drill:x.ex});};});
-  $$('#sheetBody [data-csee]').forEach(function(b){b.onclick=function(){openCours(b.dataset.csee);};});
+  $$(root+' [data-csee]').forEach(function(b){b.onclick=function(){onSee(b.dataset.csee);};});
+}
+
+/* --- La feuille superposée ------------------------------------------------ */
+var sheetBack=null;
+function openCours(id){
+  var c=coursById(id);if(!c)return;
+  $('#sheetBody').innerHTML=coursHTML(c,false);
+  wireCoursBody('#sheetBody',c,openCours);
   var sh=$('#sheet');
   if(sh.hidden){
     sheetBack=document.activeElement;
@@ -4350,6 +4412,8 @@ function wire(){
   $('#sessProg').onclick=function(){viaField('#progOn',function(el){el.checked=!M.prog;});};
   $('#sessMetMore').onclick=function(){go('metronome');};
   $('#sessNoteAdd').onclick=addSessNote;
+  $('#sessCoursBack').onclick=function(){var h=blockCours();if(h)showSessCours(h,true);};
+  $('#sessCoursBig').onclick=function(){if(sessCoursId)openCours(sessCoursId);};
   $('#chipSnd').onclick=function(){
     acKick();
     /* la reprise est asynchrone : on confirme à l'oreille une fois revenu */
