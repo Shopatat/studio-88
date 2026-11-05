@@ -351,6 +351,90 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .insess #focusCard{display:none}
 .insess #nowCard{order:-1}
 @media(min-width:760px){.insess #nowCard,.insess #routineCard{grid-column:1/-1}}
+/* Écran unique. « Tout en un » pris au mot : tant que la séance tourne et
+   qu'on est sur son onglet, la page ne défile plus du tout. Elle fait la
+   hauteur de l'écran, ce qui poussait vers le bas disparaît (le sous-titre
+   de la marque, les pastilles, le minuteur en double de la barre, la carte
+   du programme — passée dans un tiroir), et seul le tiroir ouvert défile,
+   à l'intérieur de son cadre. */
+body.solo{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+body.solo header{position:static;flex:0 0 auto}
+body.solo .hrow{padding-block:7px}
+body.solo .brand{font-size:19px}
+body.solo .brand small,body.solo #chipStreak,body.solo #chipToday,
+body.solo #chipSync,body.solo .mini{display:none}
+/* La marge auto de .wrap centre, mais fait aussi rétrécir un élément de
+   colonne flex sur son contenu : d’où la largeur imposée. */
+body.solo main{flex:1 1 auto;min-height:0;display:flex;padding-block:12px;width:100%}
+body.solo #t-seance,body.solo #seanceGrid{flex:1 1 auto;min-height:0;display:flex;align-items:stretch}
+body.solo #tipsCard,body.solo #routineCard{display:none}
+body.solo #nowCard{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+  overflow:hidden;padding:var(--s4)}
+/* Sur un très petit écran, plutôt que de rogner la consigne : elle défile
+   dans son cadre, le minuteur et les outils restent en place. */
+body.solo .nowMain{flex:0 1 auto;min-height:0;overflow:auto}
+body.solo .nowMain>.eyebrow{display:none}
+/* Une consigne très longue ne doit pas manger le tiroir : elle défile chez elle. */
+body.solo .task{max-height:26vh;overflow:auto}
+body.solo .tools{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+body.solo .tbar{flex:0 0 auto}
+body.solo .tbtn{flex:1 1 0;min-width:0;padding:8px 5px;font-size:12px;white-space:nowrap}
+body.solo .tbtn>i,body.solo .tbtn .lg{display:none}
+.tbtn .sh{display:none}
+body.solo .tbtn .sh{display:inline}
+/* Trop étroit pour cinq : on revient à deux rangs plutôt que de tronquer. */
+@media(max-width:340px){body.solo .tbtn{flex:1 1 90px}}
+body.solo .tdrawer{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+body.solo #sessCoursBody{max-height:none;overflow:visible;padding-right:0}
+body.solo .tdrawer{padding:10px}
+/* Un tiroir ouvert : le minuteur se fait petit pour que l'outil tienne en
+   entier. C'est l'outil qu'on regarde à ce moment-là, et l'heure reste
+   lisible de loin. Le « Comment on fait ? » de la consigne s'efface aussi :
+   le même cours s'ouvre par le premier bouton de la barre d'outils. */
+body.solo.tool .ring{width:62px;height:62px}
+body.solo.tool .timer{font-size:34px}
+body.solo.tool #nowTask .row{display:none}
+/* Le clavier du tiroir se montre, il ne se joue pas : une octave plus basse
+   suffit à lire une gamme, et c'est ce qui le fait tenir sous le minuteur. */
+body.solo .kb.sm{height:86px}
+body.solo .kbwrap{padding:8px 8px 9px}
+body.solo #sessKbKey{margin-top:6px}
+/* Mesure : trois rangs de segments, c'est le tiroir le plus haut. Il perd
+   quelques pixels partout plutôt que de défiler. */
+body.solo #toolMet .row{margin-top:7px}
+body.solo #toolMet .seg button{padding:6px 10px}
+body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
+/* Paysage, et tout écran bas : deux colonnes. Le minuteur et la consigne à
+   gauche, le tiroir ouvert à droite, sur toute la hauteur. */
+@media(orientation:landscape) and (max-height:620px){
+  body.solo #nowCard{flex-direction:row;gap:var(--s4);padding:10px}
+  /* La moitié de l'écran : c'est ce qu'il faut pour que Pause, Bloc suivant
+     et Terminer tiennent sur une ligne au lieu de deux. */
+  body.solo .nowMain{flex:0 0 50%;min-width:0;overflow:auto}
+  body.solo .tools{margin-top:0}
+  body.solo .ring{width:52px;height:52px}
+  body.solo .timer{font-size:27px}
+  body.solo .ribbon{display:none}
+  body.solo .task .tb{font-size:13.5px;line-height:1.5}
+  body.solo #nowTask{margin-top:10px}
+  body.solo .task{max-height:none}
+  body.solo main{padding-block:8px}
+  body.solo .hrow{padding-block:5px}
+  body.solo .brand{font-size:17px}
+  /* Un téléphone couché, c'est 375 px de haut : la barre d'onglets ne tient
+     pas en plus. Elle revient en reposant le téléphone droit, ou en
+     terminant la séance — c'est le prix d'un écran unique en paysage. */
+  body.solo .tabs{display:none}
+  body.solo #nowCard .row{margin-top:10px}
+  body.solo .task{padding:10px 12px}
+  body.solo .smet{margin-top:10px}
+}
+/* Le programme en tiroir : ce qui a été joué, ce qui tourne, ce qui vient. */
+.prow{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .pn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow.on .pn{font-weight:700;color:var(--fg)}
+.prow.done{opacity:.45}
 
 /* ---------- clavier ---------- */
 .kbwrap{background:linear-gradient(#2A2730,#15141A);border:1px solid #0B0A0E;border-radius:var(--r3);
@@ -539,6 +623,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
       </div>
 
       <div class="card" id="nowCard">
+        <div class="nowMain">
         <div class="eyebrow">Minuteur</div>
         <div class="row" style="gap:18px;align-items:center">
           <svg class="ring" id="ring" width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
@@ -567,14 +652,16 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <button type="button" class="sbpm" id="sessBpm" title="Ouvrir le métronome : mesure, subdivision, tempo progressif">♩ <b id="sessBpmN">92</b></button>
           <button type="button" class="mstep" data-mstep="1" aria-label="Accélérer le métronome">+</button>
         </div>
+        </div>
         <!-- Les outils de la séance : un rang de boutons, un tiroir à la fois,
              et jamais un onglet à quitter pendant qu’on joue. -->
         <div class="tools" id="sessTools" hidden>
           <div class="tbar" id="sessToolBar">
-            <button type="button" class="tbtn" data-tool="cours" aria-pressed="false" aria-controls="toolCours" hidden>📖 Le cours</button>
-            <button type="button" class="tbtn" data-tool="kb" aria-pressed="false" aria-controls="toolKb">🎹 Clavier</button>
-            <button type="button" class="tbtn" data-tool="met" aria-pressed="false" aria-controls="toolMet">⏱ Mesure</button>
-            <button type="button" class="tbtn" data-tool="note" aria-pressed="false" aria-controls="toolNote">✎ Note</button>
+            <button type="button" class="tbtn" data-tool="cours" aria-pressed="false" aria-controls="toolCours" hidden><i>📖</i> <span class="lg">Le cours</span><span class="sh">Cours</span></button>
+            <button type="button" class="tbtn" data-tool="kb" aria-pressed="false" aria-controls="toolKb"><i>🎹</i> Clavier</button>
+            <button type="button" class="tbtn" data-tool="met" aria-pressed="false" aria-controls="toolMet"><i>⏱</i> Mesure</button>
+            <button type="button" class="tbtn" data-tool="note" aria-pressed="false" aria-controls="toolNote"><i>✎</i> Note</button>
+            <button type="button" class="tbtn" data-tool="prog" aria-pressed="false" aria-controls="toolProg"><i>📋</i> <span class="lg">Programme</span><span class="sh">Plan</span></button>
           </div>
           <div class="tdrawer" id="toolCours" hidden>
             <div class="row tight" style="margin-bottom:11px">
@@ -612,6 +699,13 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
               <button class="btn sm ghost" id="sessMetMore">Réglages complets</button>
             </div>
             <div class="sub" id="sessProgHint" style="margin-top:9px"></div>
+          </div>
+          <div class="tdrawer" id="toolProg" hidden>
+            <div class="row" style="justify-content:space-between;align-items:baseline">
+              <div class="eyebrow" style="margin:0">Le programme</div>
+              <span class="sub num" id="sessPlanTot"></span>
+            </div>
+            <div id="sessPlan" style="margin-top:8px"></div>
           </div>
           <div class="tdrawer" id="toolNote" hidden>
             <label class="fld">Une note, maintenant — elle t’attendra dans le bilan
@@ -1691,6 +1785,7 @@ function go(id){
   if(id==='repertoire')renderPieces();
   if(id==='apprentissage')renderLearn();
   try{location.hash=id;}catch(e){}
+  paintSessTools();
   window.scrollTo(0,0);
 }
 /* Le bouton retour du navigateur, et le geste de retour en PWA, changent l'onglet. */
@@ -2328,7 +2423,7 @@ function addSessNote(){
 }
 function closeTools(){
   sessTool='';
-  ['kb','met','note'].forEach(function(n){var d=$(toolId(n));if(d)d.hidden=true;});
+  ['cours','kb','met','note','prog'].forEach(function(n){var d=$(toolId(n));if(d)d.hidden=true;});
   $$('#sessToolBar .tbtn').forEach(function(b){b.setAttribute('aria-pressed','false');});
 }
 function openTool(name){
@@ -2344,9 +2439,27 @@ function openTool(name){
   if(name==='note'){var ta=$('#sessNote');if(ta&&ta.focus)ta.focus();}
   if(d&&d.scrollIntoView)try{d.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}
 }
+/* Le programme, tel qu'on le lit en jouant : un rang par bloc, le bloc en
+   cours en gras, les blocs passés en retrait. */
+function paintSessPlan(){
+  var el=$('#sessPlan');if(!el)return;
+  var r=S.settings.routine||[],tot=0;
+  r.forEach(function(b){tot+=+b.m||0;});
+  el.innerHTML=r.length?r.map(function(b,i){
+    return '<div class="prow'+(i===T.bi?' on':'')+(i<T.bi?' done':'')+'">'+
+      '<span class="bi">'+(i+1)+'</span>'+
+      '<span class="pn">'+esc(b.n)+'</span>'+
+      '<span class="num sub">'+(+b.m)+' min</span></div>';
+  }).join(''):'<div class="sub">Séance libre : pas de blocs.</div>';
+  var t=$('#sessPlanTot');if(t)t.textContent=tot+' min au total';
+}
 function paintSessTools(){
   var g=$('#seanceGrid'),el=$('#sessTools'),busy=sessionBusy();
   if(g)g.classList.toggle('insess',busy);
+  /* L'écran unique ne vaut que sur l'onglet de la séance : ailleurs, la page
+     défile comme d'habitude. */
+  document.body.classList.toggle('solo',busy&&cur==='seance');
+  document.body.classList.toggle('tool',busy&&cur==='seance'&&!!sessTool);
   if(!el)return;
   el.hidden=!busy;
   if(!busy){if(sessTool)closeTools();return;}
@@ -2367,6 +2480,7 @@ function paintSessTools(){
       ?('Le tempo monte de '+M.step+' bpm toutes les '+M.every+' mesures, jusqu’à '+M.max+'.')
       :'Le tempo reste où tu le mets. Les paliers de la montée se règlent dans l’onglet Métronome.';
   }
+  if(sessTool==='prog')paintSessPlan();
   if(sessTool==='note'){
     var n=sessNoteCount();
     $('#sessNoteMsg').textContent=(Date.now()-noteFlash<1800)?'Noté — c’est dans le bilan.'

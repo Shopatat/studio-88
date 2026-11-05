@@ -37,6 +37,7 @@ mémoire, et d'où tout cela vient.
 | 9 | La séance en écran unique : pendant qu’elle tourne, le minuteur passe en pleine largeur et en premier, les réglages du programme s’effacent, et trois tiroirs s’ouvrent sous la consigne — clavier d’une octave avec la gamme et l’armure du morceau, réglages de mesure et de subdivision, note qui part droit dans le bilan | **fait** |
 | 10 | Le cours du bloc en tiroir : `openCours` scindé en un corps de cours réutilisable (`coursHTML` / `wireCoursBody`) et une feuille qui n’en est plus que l’un des hôtes, un quatrième outil de séance qui lit le cours du bloc sur place, suit les blocs, enchaîne les « à lire ensuite » et sait s’ouvrir en grand | **fait** |
 
+| 11 | L’écran unique pris au mot : la séance tient dans la hauteur de l’écran et la page ne défile plus, le programme passe dans un cinquième tiroir, les cinq outils tiennent sur une ligne, et le paysage d’un téléphone passe à deux colonnes sans barre d’onglets | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -52,7 +53,8 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les dix étapes sont faites et poussées.
+**Rien en cours.** Les onze étapes sont faites et poussées. La séance est un
+écran unique : elle ne défile plus, en portrait comme en paysage.
 
 76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
@@ -64,6 +66,27 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 11.** « Un écran » voulait dire : qui ne défile pas. `body.solo`
+  (séance en cours **et** onglet Séance) met la page en colonne flex de
+  `100dvh`, `overflow:hidden`, et chaque niveau jusqu’au tiroir porte
+  `min-height:0` — sans quoi un enfant de flex refuse de rétrécir sous son
+  contenu. Deux pièges rencontrés : la marge auto de `.wrap` fait rétrécir
+  `main` sur son contenu dans une colonne flex (d’où `width:100%`), et
+  `align-items:start`, hérité de `.g2` en grille, empêchait la carte de
+  prendre la hauteur offerte.
+- Le budget se compte en pixels : en 375×812 il reste environ 280 px au
+  tiroir. Les pictogrammes des boutons d’outils passent dans un `<i>` retiré
+  en écran unique, et les deux libellés les plus longs ont une forme courte
+  (`.lg` / `.sh`) : cinq boutons sur une ligne au lieu de deux rangs, trente-
+  huit pixels rendus au tiroir. Le reste vient du minuteur réduit quand un
+  tiroir est ouvert (`body.tool`) et du clavier à 86 px.
+- Un tiroir ouvert en cachait un autre : `closeTools()` ne fermait pas
+  `#toolCours`, absent de sa liste depuis l’étape 10. Le cours et le clavier
+  pouvaient donc être ouverts ensemble.
+- En paysage de téléphone (`max-height:620px`), la barre d’onglets s’efface :
+  375 px de haut ne tiennent pas une barre de plus. C’est assumé — reposer le
+  téléphone droit ou terminer la séance la ramène.
 
 - **Étape 10.** Un cours ne s’affiche plus à un seul endroit : `coursHTML(c,inline)`
   rend le corps, `wireCoursBody(root,c,onSee)` le câble, et la feuille superposée

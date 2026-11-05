@@ -12,7 +12,7 @@ le son, et tes données enregistrées sur ton appareil.
 | Onglet | À quoi ça sert |
 | --- | --- |
 | **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
-| **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Séance lancée, l'écran devient le poste de travail : le minuteur passe en pleine largeur, les réglages du programme s'effacent, et tout ce dont on a besoin en jouant s'ouvre dessous. Le métronome est sous la consigne : il démarre sur le tempo du bloc, suit les blocs suivants, et s'arrête avec la séance. Sous lui, quatre outils, un tiroir à la fois : **📖 Le cours** (le cours du bloc en cours, lu sur place ; il suit quand tu passes au bloc suivant, et « Ouvrir en grand » donne la feuille complète), **🎹 Clavier** (une octave, la gamme du morceau marquée sur les touches, son armure nommée, la gamme et la cadence à l'oreille), **⏱ Mesure** (mesure, subdivision, accent, montée progressive) et **✎ Note** (ce qui coince, noté sur l'instant, préfixé du bloc, qui t'attend dans le bilan). Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
+| **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Séance lancée, l'écran devient le poste de travail : le minuteur passe en pleine largeur, les réglages du programme s'effacent, et tout ce dont on a besoin en jouant s'ouvre dessous. Le métronome est sous la consigne : il démarre sur le tempo du bloc, suit les blocs suivants, et s'arrête avec la séance. Sous lui, cinq outils, un tiroir à la fois : **📖 Le cours** (le cours du bloc en cours, lu sur place ; il suit quand tu passes au bloc suivant, et « Ouvrir en grand » donne la feuille complète), **🎹 Clavier** (une octave, la gamme du morceau marquée sur les touches, son armure nommée, la gamme et la cadence à l'oreille), **⏱ Mesure** (mesure, subdivision, accent, montée progressive) **✎ Note** (ce qui coince, noté sur l'instant, préfixé du bloc, qui t'attend dans le bilan) et **📋 Plan** (le programme de la séance, le bloc en cours en gras). Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
 | **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 76 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. Chacun porte un lien **À quoi sert cet exercice ?** vers son cours. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
@@ -48,10 +48,24 @@ accents ignorés : « pedale » trouve « pédale ».
 
 Pendant une séance, changer d'onglet pour régler un tempo ou vérifier une note,
 c'est perdre de vue le minuteur, la consigne et le ruban — et souvent ne pas
-revenir. Dès que la séance tourne, l'écran se réorganise donc autour d'elle :
-carte du minuteur en pleine largeur et en premier, réglages du programme
-masqués (on ne refait pas sa séance en la jouant), et une barre d'outils sous
-la consigne.
+revenir. Dès que la séance tourne, l'écran se réorganise donc autour d'elle, et il
+tient en entier dans la hauteur de l'écran : la page ne défile plus du tout.
+La carte du minuteur prend toute la place, le sous-titre de la marque, les
+pastilles et le minuteur en double de la barre du haut disparaissent, les
+réglages du programme aussi (on ne refait pas sa séance en la jouant), et une
+barre d'outils s'installe sous la consigne. Le programme, lui, n'est pas perdu :
+il a son tiroir, **📋 Plan**, avec le bloc en cours en gras et les blocs passés
+en retrait.
+
+Tout est dimensionné pour que le tiroir ouvert tienne en entier : un tiroir qui
+défile à l'intérieur d'une page qui défile est ingérable au pouce. Quand un
+tiroir s'ouvre, le minuteur se fait petit — c'est l'outil qu'on regarde à ce
+moment-là. Seul le cours, qui est un texte, défile dans son cadre.
+
+Le téléphone couché n'a que 375 pixels de haut : en paysage, l'écran passe à
+deux colonnes — minuteur, consigne et métronome à gauche, outils à droite — et
+la barre d'onglets s'efface, faute de place. Elle revient en reposant le
+téléphone droit, ou en terminant la séance.
 
 Aucun tiroir n'a de moteur à lui. Le clavier est le composant de l'onglet
 Clavier, les réglages de mesure passent par les champs de l'onglet Métronome —
