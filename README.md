@@ -13,12 +13,12 @@ le son, et tes données enregistrées sur ton appareil.
 | --- | --- |
 | **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
 | **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Séance lancée, l'écran devient le poste de travail : le minuteur passe en pleine largeur, les réglages du programme s'effacent, et tout ce dont on a besoin en jouant s'ouvre dessous. Le métronome est sous la consigne : il démarre sur le tempo du bloc, suit les blocs suivants, et s'arrête avec la séance. Sous lui, cinq outils, un tiroir à la fois : **📖 Le cours** (le cours du bloc en cours, lu sur place ; il suit quand tu passes au bloc suivant, et « Ouvrir en grand » donne la feuille complète), **🎹 Clavier** (une octave, la gamme du morceau marquée sur les touches, son armure nommée, la gamme et la cadence à l'oreille), **⏱ Mesure** (mesure, subdivision, accent, montée progressive) **✎ Note** (ce qui coince, noté sur l'instant, préfixé du bloc, qui t'attend dans le bilan) et **📋 Plan** (le programme de la séance, le bloc en cours en gras). Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
-| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 76 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
+| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 84 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. Chacun porte un lien **À quoi sert cet exercice ?** vers son cours. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
-| **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables. |
-| **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. Et dix-huit consignes à tirer — trois notes seulement, rien qu'une note, question-réponse, finis sur la tierce, laisse une mesure vide — chacune avec un minuteur de 2, 3 ou 5 minutes. |
+| **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables, et **Improviser dans ce ton** qui emmène la tonalité choisie dans l'onglet Impro. |
+| **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. Et dix-huit consignes à tirer — trois notes seulement, rien qu'une note, question-réponse, finis sur la tierce, laisse une mesure vide — chacune avec un minuteur de 2, 3 ou 5 minutes. Treize cours d'improvisation sont rassemblés au bas de l'onglet. |
 | **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
 | **Journal** | Séances, totaux, moyenne, réussite par exercice sur 30 jours, ajout de séances passées, réglages. |
 
@@ -42,7 +42,7 @@ tonalité, c'est cette gamme-là qui s'affiche, pas celle de Do. Un cours d'acco
 même : l'accord dessiné, joué, et l'explorateur d'accords à un bouton.
 
 Dans l'autre sens, chacune des 18 leçons du parcours renvoie au cours qui
-l'approfondit, et un champ de recherche filtre les 76 pages sur leur texte entier,
+l'approfondit, et un champ de recherche filtre les 84 pages sur leur texte entier,
 accents ignorés : « pedale » trouve « pédale ».
 
 ## La séance, écran unique
@@ -122,6 +122,13 @@ qu'elle change quelque chose.
 La tourne appartient à son onglet : changer d'onglet l'arrête, avec le minuteur
 de la consigne, et lancer une tourne arrête le métronome — deux tempos à la
 fois, personne n'y arrive.
+
+Au bas de l'onglet, les treize cours du thème **Improviser** : par où commencer
+ce soir, la pentatonique au-dessus d'une grille, pourquoi la gamme change avec
+l'accord, la main gauche en trois notes, la basse qui marche, question-réponse,
+la respiration des phrases, relever à l'oreille, improviser sur un morceau de
+ton répertoire, jouer faux et s'en servir. Chacun ouvre l'onglet d'un bouton,
+pour essayer en lisant.
 
 ## Quand le son disparaît
 

@@ -935,6 +935,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <button class="btn sm" id="playCad">♪ I – IV – V – I</button>
           <button class="btn sm" id="playTwoFive">♪ ii – V – I</button>
           <button class="btn sm ghost" id="playScale2">♪ Gamme</button>
+          <button class="btn sm ghost" id="keyImpro">Improviser dans ce ton</button>
         </div>
         <div class="hr"></div>
         <p class="sub" id="keyTip"></p>
@@ -3437,7 +3438,7 @@ var COURS=[
      'Les quatre utiles en pratique : dorien (mineur, mais pas triste), mixolydien (majeur, mais qui ne conclut pas), lydien (majeur avec une quarte augmentée, cette couleur suspendue des musiques de film), phrygien (mineur avec une seconde abaissée, la couleur espagnole). Les trois autres sont la majeure et la mineure naturelle sous un autre nom, plus un mode inutilisable tel quel.',
      'Pour s’en servir, le raccourci qui marche : joue la gamme majeure de la tonalité, mais fais de la bonne note ta tonique, et reviens-y sans cesse. Un mode n’est pas une nouvelle gamme à apprendre, c’est une façon d’entendre celle que tu connais déjà.'],
   k:'Mêmes notes, autre tonique. Dorien mineur-clair, mixolydien majeur-bluesy, lydien suspendu, phrygien espagnol.',
-  sc:'dor',see:['gamme-majeure','pentatonique']},
+  sc:'dor',see:['mode-du-moment','gamme-majeure','pentatonique']},
 
  {id:'pentatonique',th:'gammes',t:'La pentatonique : cinq notes qui ne se trompent pas',
   s:'La gamme avec laquelle on peut commencer à improviser ce soir.',
@@ -3445,7 +3446,7 @@ var COURS=[
      'Sa version mineure est la même série démarrée trois demi-tons plus bas : la pentatonique mineure de la est faite des mêmes cinq notes que la pentatonique majeure de Do. Sur un morceau en mineur ou sur un blues, c’est celle-là qu’on prend.',
      'On la trouve partout dans le monde, et pas par imitation. Les cinq touches noires du piano en forment une à elles seules : joue n’importe quoi sur les seules noires, main gauche sur un Mi♭ grave. Ça sonne, toujours.'],
   k:'Cinq notes, aucun demi-ton, rien qui jure. Les touches noires du piano en forment une.',
-  sc:'pentM',see:['blues-gamme','modes']},
+  sc:'pentM',see:['penta-impro','blues-gamme','modes']},
 
  {id:'blues-gamme',th:'gammes',t:'La gamme blues et la note bleue',
   s:'La pentatonique mineure, plus une note qui ne devrait pas être là.',
@@ -3453,14 +3454,14 @@ var COURS=[
      'Mais ce qui fait le blues n’est pas la gamme, c’est le frottement : jouer cette gamme mineure par-dessus des accords majeurs. La tierce mineure de la mélodie contre la tierce majeure de l’accord produit cette tension permanente, ni majeure ni mineure, que le piano ne peut qu’approcher — la voix et la guitare, elles, glissent entre les deux.',
      'Au clavier, le tour de main classique consiste justement à jouer les deux tierces presque en même temps, la mineure venant mourir sur la majeure. C’est une imitation de glissé, et c’est l’idiome le plus reconnaissable du blues au piano.'],
   k:'Pentatonique mineure plus la quinte diminuée, qu’on traverse sans s’y poser. Le frottement mineur sur majeur fait le reste.',
-  sc:'blues',see:['pentatonique','modes','histoire-blues']},
+  sc:'blues',see:['penta-impro','pentatonique','modes','histoire-blues']},
 
  {id:'chromatique',th:'gammes',t:'La chromatique : les douze, dans l’ordre',
   s:'Pas une tonalité : un matériau, et un exercice.',
   b:['La gamme chromatique prend les douze demi-tons sans en choisir aucun. Elle n’a donc ni tonique, ni armure, ni couleur propre : c’est la matière brute, avant qu’une tonalité y découpe ses sept notes.',
      'En pratique elle sert à deux choses. Comme exercice, c’est le meilleur test d’égalité entre les doigts : le doigté standard met le pouce sur chaque blanche qui suit une noire, et le moindre défaut d’indépendance s’y entend. Comme matériau, elle fournit les notes de passage — ces notes étrangères à la tonalité qui relient deux notes voisines en glissant, et qui donnent au jazz comme au romantisme leur fluidité.'],
   k:'Les douze notes, sans tonique. Un exercice d’égalité, et un réservoir de notes de passage.',
-  sc:'chrom',see:['douze-notes','travailler-gamme']},
+  sc:'chrom',see:['note-hors-gamme','douze-notes','travailler-gamme']},
 
  {id:'transposer',th:'gammes',t:'Transposer : la même chose ailleurs',
   s:'Parce que ce sont les écarts qui comptent, pas les touches.',
@@ -3541,7 +3542,7 @@ var COURS=[
      'Le voicing le plus utile à connaître consiste à laisser tomber la fondamentale : si la main gauche ou une basse la joue, la droite n’a pas à la doubler. En ne gardant que la tierce et la septième — les deux notes qui définissent réellement la couleur — on obtient avec deux doigts un accord plus clair qu’avec quatre.',
      'Dernier réflexe : ne pas répéter la même disposition d’un accord à l’autre. Enchaîne-les en bougeant le moins possible et une suite d’accords devient une suite de voix qui se déplacent — toute la différence entre un piano qui accompagne et un piano qui tape des accords.'],
   k:'Écarte dans le grave, laisse tomber la fondamentale quand la gauche la joue, garde tierce et septième, bouge au plus court.',
-  see:['renversements','accompagner']},
+  see:['voicings-gauche','renversements','accompagner']},
 
  {id:'commencer-impro',th:'impro',t:'Improviser ce soir, sans rien savoir d’autre',
   s:'Une main qui tient, une main qui cherche.',
@@ -3549,7 +3550,7 @@ var COURS=[
      'Ce qui fait la différence dès la première minute, ce sont le rythme et le silence. Joue trois notes, arrête-toi, écoute, reprends. On joue trop de notes quand on débute parce que le silence fait peur — or c’est le silence qui transforme une suite de notes en phrase.',
      'Quand c’est confortable, change une seule chose : monte le bourdon d’un degré, passe sur les seules touches noires, ou impose-toi de ne jouer que quatre notes différentes pendant une minute. Les contraintes fabriquent des idées ; la liberté totale fabrique du remplissage.'],
   k:'Un bourdon à gauche, une pentatonique à droite, et des silences. Le reste est de la décoration.',
-  sc:'pentM',see:['pentatonique','question-reponse']},
+  sc:'pentM',see:['penta-impro','pentatonique','question-reponse'],go:'impro'},
 
  {id:'question-reponse',th:'impro',t:'Question, réponse',
   s:'La forme la plus courte qui fasse une phrase.',
@@ -3557,7 +3558,7 @@ var COURS=[
      'Deux façons de répondre : reprendre presque la même chose en changeant la fin, ou prendre le contre-pied — elle montait, tu descends. Répéter sans rien changer n’est pas une réponse mais un écho ; tout changer n’en est pas une non plus, c’est un nouveau sujet.',
      'L’exercice qui porte vite : deux mesures de question, deux mesures de réponse, et respecte la longueur même quand l’idée est mauvaise. La contrainte de durée apprend à finir ses phrases, ce qui est la chose la plus difficile en improvisation.'],
   k:'Monte et laisse en suspens, redescends et pose. Réponds en changeant la fin, ou en prenant le contre-pied.',
-  see:['commencer-impro','grille-blues','exo-echo']},
+  see:['phrase-souffle','commencer-impro','grille-blues','exo-echo'],go:'impro'},
 
  {id:'grille-blues',th:'impro',t:'La grille de blues en douze mesures',
   s:'Trois accords, un ordre fixe, un siècle de musique.',
@@ -3565,7 +3566,7 @@ var COURS=[
      'La particularité qui déroute : on y joue la pentatonique mineure par-dessus des accords majeurs. Ce frottement n’est pas une erreur, c’est le son même du blues. Tu peux donc improviser sur toute la grille avec une seule gamme, sans suivre les accords — ce qui en fait le terrain d’entraînement idéal.',
      'Pour l’entendre vraiment, joue la grille à la main gauche au métronome, lentement, en comptant les douze mesures à voix haute. Tant que la forme n’est pas automatique, la main droite n’a pas de place pour chercher.'],
   k:'I I I I · IV IV I I · V IV I I. Pentatonique mineure par-dessus, et des septièmes partout.',
-  ch:'7',see:['blues-gamme','ii-v-i']},
+  ch:'7',see:['blues-gamme','ii-v-i'],go:'impro'},
 
  {id:'ii-v-i',th:'impro',t:'Le ii-V-I',
   s:'Trois accords qui racontent une tonalité — et la moitié du jazz.',
@@ -3573,7 +3574,7 @@ var COURS=[
      'Sa puissance vient de ce qu’il se transporte : un standard de jazz n’est souvent qu’une suite de ii-V-I dans des tonalités successives. Reconnaître le motif, c’est lire une grille entière d’un coup d’œil au lieu de la déchiffrer accord par accord.',
      'Au clavier, la version à deux doigts : main gauche la fondamentale ; main droite la tierce et la septième de chaque accord. Tu verras qu’entre le ii et le V elles ne font que s’échanger, en bougeant d’un demi-ton. C’est ce minuscule mouvement qui fait tout le son du jazz.'],
   k:'Préparer, tendre, résoudre. Entre le ii et le V, tierce et septième s’échangent en bougeant d’un demi-ton.',
-  ch:'2:m7',see:['septiemes','cadences','voicings']},
+  ch:'2:m7',see:['septiemes','cadences','voicings'],go:'impro'},
 
  {id:'accompagner',th:'impro',t:'Accompagner une mélodie',
   s:'Ce que fait la main gauche pendant que quelqu’un chante.',
@@ -3581,8 +3582,75 @@ var COURS=[
      'Ensuite, les variantes : arpéger l’accord au lieu de le plaquer pour que ça respire, tenir l’accord et ne bouger que la basse, ou ne jouer que sur les contretemps, ce qui suffit à donner une impression de groove. Changer de formule à chaque couplet est la façon la plus simple de faire vivre trois minutes de chanson.',
      'La règle qui compte plus que les autres : laisser de la place. La mélodie occupe le milieu du clavier, alors la main gauche reste en bas et la droite évite la zone chantée. Un accompagnement ne se remarque que lorsqu’il est trop présent.'],
   k:'Basse sur le temps fort, accord sur les faibles, et surtout : laisse libre la zone de la mélodie.',
-  see:['voicings','degres']},
+  see:['walking-bass','voicings','degres'],go:'impro'},
 
+ {id:'penta-impro',th:'impro',t:'La pentatonique au-dessus d’une grille',
+  s:'Cinq notes qui ne trahissent pas, et ce qu’on en fait.',
+  sc:'pentm',
+  b:['La pentatonique mineure de la tonique passe sur les douze mesures d’un blues, sans exception : c’est pour ça qu’on la donne en premier. Les deux notes qu’elle n’a pas sont justement celles qui peuvent sonner faux selon l’accord. Cinq notes, zéro surveillance : tu peux enfin écouter ce que tu joues au lieu de vérifier.',
+     'Le danger n’est pas de se tromper, il est de tourner en rond. Trois remèdes, dans l’ordre : limite-toi à trois des cinq notes pendant un tour entier ; garde la même phrase et change seulement là où elle tombe dans la mesure ; et change de registre d’un tour à l’autre, le grave et l’aigu ne racontent pas la même chose.',
+     'La note qui manque, et qui fait tout : la quinte diminuée, entre la tierce et la quarte. Ajoutée à la pentatonique mineure, elle donne la gamme blues. Elle ne se tient pas, elle se traverse — on passe dessus en allant ailleurs, et c’est là qu’on reconnaît le blues.'],
+  k:'Cinq notes qui passent partout. Contre la monotonie : moins de notes, le même motif déplacé, un autre registre.',
+  see:['pentatonique','blues-gamme','grille-blues','commencer-impro'],go:'impro'},
+
+ {id:'mode-du-moment',th:'impro',t:'La gamme change avec l’accord',
+  s:'Pourquoi l’écran t’annonce un mode différent à chaque mesure.',
+  sc:'mixo',
+  b:['Sur un ii-V-I en do, les trois accords se jouent avec les notes de do majeur : rien ne change, sauf le point de départ. Depuis le ré, ces notes s’appellent dorien ; depuis le sol, mixolydien ; depuis le do, majeure. Ce ne sont pas trois gammes à apprendre, c’est une gamme et trois façons de s’y tenir.',
+     'Ce qui change vraiment, c’est où tu te poses. La même note est une arrivée sur un accord et une question sur le suivant : le si est la septième majeure de do, douce et posée, mais c’est la tierce de sol7, qui appelle. Jouer les modes, c’est viser les notes de l’accord en cours sur les temps forts et laisser le reste passer entre.',
+     'Deux cas sortent de la gamme du ton, et l’écran te le dit : un accord étranger à la tourne — on prend alors le mode qui lui ressemble, mixolydien sur une septième, dorien sur une mineure sept — et le V majeur d’une tonalité mineure, qui demande le phrygien dominant, cette gamme à seconde abaissée qu’on entend dans tout le flamenco.'],
+  k:'Un ii-V-I, c’est une seule gamme lue depuis trois endroits. Vise les notes de l’accord sur les temps forts.',
+  see:['modes','ii-v-i','degres','septiemes'],go:'impro'},
+
+ {id:'voicings-gauche',th:'impro',t:'La main gauche : fondamentale, tierce, septième',
+  s:'Trois notes suffisent à poser un accord, et quatre en mettent trop.',
+  ch:'7',
+  b:['Un accord de septième a quatre sons, mais la quinte ne dit rien : elle ne distingue ni le majeur du mineur, ni la septième de la sixte. Enlève-la. Restent la fondamentale, la tierce et la septième — trois notes qui nomment l’accord sans ambiguïté et qui laissent de la place à la main droite.',
+     'Mieux encore : laisse la fondamentale à la basse et ne joue que tierce et septième, autour du do du milieu. D’un accord au suivant, ces deux notes bougent d’un demi-ton ou pas du tout — la septième de l’un devient la tierce de l’autre. C’est cette économie qui fait qu’un accompagnement sonne lié au lieu de sauter.',
+     'Essaie sur un ii-V-I : sur ré mineur sept, joue fa et do ; sur sol sept, descends le do d’un demi-ton vers si et garde le fa ; sur do majeur sept, descends le fa vers mi et garde le si. Deux doigts, trois accords, et la grille entière est dite.'],
+  k:'Garde la tierce et la septième, laisse tomber la quinte. D’un accord au suivant, elles bougent d’un demi-ton.',
+  see:['voicings','septiemes','accompagner','ii-v-i'],go:'impro'},
+
+ {id:'walking-bass',th:'impro',t:'La basse qui marche',
+  s:'Une note par temps, et la grille avance toute seule.',
+  b:['Une walking bass, c’est une noire par temps, sans trou. Le squelette tient en trois décisions : le premier temps donne la fondamentale de l’accord, le dernier temps vise la fondamentale du suivant, et les deux du milieu remplissent. Tout le reste est du goût.',
+     'La manière la plus simple de remplir : fondamentale, quinte, octave, puis une note à un demi-ton de la fondamentale qui arrive — au-dessus ou au-dessous, peu importe. Cette dernière note est l’essentiel : c’est elle qui fait entendre le changement d’accord avant qu’il arrive, et qui donne l’impression que la basse tire la musique en avant.',
+     'Au piano, joue-la seule d’abord, main gauche, en comptant les quatre temps à voix haute. Quand elle tient sans réfléchir, ajoute la tierce et la septième de la main droite, sur les temps faibles. Tu accompagnes, à ce moment-là, et tu peux faire jouer quelqu’un d’autre dessus.'],
+  k:'Fondamentale sur le premier temps, approche à un demi-ton sur le dernier. Entre les deux, quinte et octave.',
+  see:['accompagner','voicings-gauche','degres'],go:'impro'},
+
+ {id:'phrase-souffle',th:'impro',t:'Une phrase, c’est une respiration',
+  s:'Pourquoi ce que tu joues ne s’arrête jamais, et comment y remédier.',
+  b:['Le défaut le plus répandu en improvisation n’est pas la fausse note, c’est le flot ininterrompu. On joue parce qu’on a peur du silence, et faute de respirer, personne ne peut suivre : une phrase qui ne finit pas ne veut rien dire. Un chanteur s’arrête parce qu’il doit reprendre son souffle ; au piano, rien ne t’y oblige, il faut donc le décider.',
+     'La contrainte qui corrige ça en une séance : deux mesures jouées, deux mesures de silence, pendant tout un tour. C’est long, deux mesures vides, et c’est précisément la leçon. Pendant ce silence, tu entends l’accompagnement, tu entends ce que tu viens de jouer, et la phrase suivante arrive d’elle-même au lieu d’être poussée.',
+     'L’autre bout du problème est la fin des phrases. Une phrase se termine sur une note de l’accord — la tierce ou la fondamentale font des arrivées nettes — et sur un temps, pas entre deux. Finir ailleurs laisse l’auditeur en suspens, ce qui est très bien une fois sur quatre et insupportable à chaque phrase.'],
+  k:'Deux mesures jouées, deux mesures vides. Finis sur une note de l’accord, sur un temps.',
+  see:['question-reponse','nuances','commencer-impro'],go:'impro'},
+
+ {id:'relever-oreille',th:'impro',t:'Relever à l’oreille',
+  s:'Voler quatre notes à quelqu’un, c’est ainsi qu’on apprend la langue.',
+  b:['Personne n’a jamais appris à parler en apprenant la grammaire d’abord. En musique non plus : les improvisateurs ont tous commencé par reproduire ce qu’ils entendaient. Relever, c’est prendre un passage court — quatre notes suffisent — et le retrouver au clavier sans partition, à l’oreille seule.',
+     'La méthode : écoute le passage en boucle jusqu’à pouvoir le chanter de mémoire, sans l’enregistrement. Tant que tu ne peux pas le chanter, le chercher au clavier ne sert à rien — tu tâtonnes au lieu d’entendre. Une fois chanté, cherche la première note, puis demande-toi pour chaque suivante : plus haut ou plus bas, voisine ou saut ? Deux questions, et le clavier répond.',
+     'Ce que tu relèves ne reste pas une citation. Rejoue-le dans une autre tonalité, à un autre endroit de la mesure, à l’envers, deux fois plus lentement. Au bout de ce travail, ce n’est plus la phrase de quelqu’un d’autre : c’est une tournure que tu as, et qui ressortira sans que tu la cherches.'],
+  k:'Chante-le avant de le chercher. Puis déplace-le : autre ton, autre place, autre vitesse.',
+  see:['exo-echo','par-coeur','question-reponse'],go:'impro'},
+
+ {id:'impro-sur-morceau',th:'impro',t:'Improviser sur un morceau que tu joues déjà',
+  s:'Le répertoire est la meilleure grille que tu aies.',
+  b:['Un morceau que tu connais par cœur t’offre quelque chose qu’aucune grille toute faite ne donne : tu en entends déjà l’harmonie, sans avoir à la lire. Prends-en huit mesures, joue la main gauche telle quelle, et remplace la main droite par ce que tu veux. Tu improvises, et sur un terrain que tu connais mieux que n’importe quel blues.',
+     'Commence par la mélodie elle-même, à peine modifiée : ajoute une note avant, enlève-en une, déplace une entrée d’un temps. C’est ce que faisaient les ornements au clavecin, et c’est le trajet le plus court entre jouer un morceau et en improviser une variante. Ensuite seulement, éloigne-toi de la mélodie.',
+     'Deux bénéfices qui n’ont rien à voir avec l’improvisation. Tu découvres l’harmonie du morceau de l’intérieur, ce qui aide à le mémoriser ; et tu t’entraînes à continuer après une faute, puisqu’il n’y a plus de texte à respecter. Un morceau qu’on sait improviser autour est un morceau qui ne s’effondre pas en public.'],
+  k:'Main gauche telle quelle, main droite libre. Commence par orner la mélodie avant de t’en éloigner.',
+  see:['varier-repertoire','ornements','plaisir','accompagner'],go:'impro'},
+
+ {id:'note-hors-gamme',th:'impro',t:'Jouer faux, et s’en servir',
+  s:'Une note n’est fausse que si on la laisse seule.',
+  sc:'chrom',
+  b:['Il n’existe pas de note fausse en soi : il existe des notes qui demandent à bouger et qu’on a laissées en plan. Une note hors de la gamme, suivie d’un demi-ton vers une note de l’accord, ne s’entend pas comme une erreur — elle s’entend comme une approche, et c’est l’un des ressorts les plus courants du jazz.',
+     'L’exercice est délibérément inconfortable : joue exprès une note qui n’est pas dans la gamme, laisse-la une fraction de seconde, puis résous-la d’un demi-ton. Fais-le dix fois. Ce que tu apprends, ce n’est pas la note, c’est le réflexe — celui qui te fera rattraper une vraie faute au lieu de t’arrêter.',
+     'Ce réflexe vaut au-delà de l’improvisation. Dans un morceau travaillé, la faute n’est jamais la note : c’est l’arrêt qui suit. Quelqu’un qui sait enchaîner après une note fausse joue devant les autres sans crainte ; quelqu’un qui s’arrête à chaque accroc ne jouera jamais que seul.'],
+  k:'Une note hors gamme, puis un demi-ton vers une note de l’accord. Ce qui s’entend, c’est l’arrêt, pas la note.',
+  see:['chromatique','commencer-impro','jouer-devant','jeu-continu'],go:'impro'},
  {id:'compter',th:'rythme',t:'Compter : mesures, temps, subdivisions',
   s:'Ce que veut dire 3/4, et pourquoi on compte à voix haute.',
   b:['Les deux chiffres du début ne sont pas une fraction. Celui du haut dit combien de temps contient une mesure, celui du bas quelle figure vaut un temps : en 3/4, trois noires par mesure ; en 6/8, six croches, qu’on ressent presque toujours comme deux grands temps de trois. Le premier temps de chaque mesure est naturellement accentué, et c’est ce qui fait qu’une valse est une valse.',
@@ -3773,7 +3841,7 @@ var COURS=[
      'Trois époques dans ton répertoire font donc progresser plus vite que trois pièces du même compositeur, même si les trois pièces sont plus difficiles. Les faiblesses se révèlent par contraste : on découvre qu’on dépend de la pédale en jouant du Bach, et qu’on ne compte pas vraiment en jouant une syncope.',
      'Garde en plus un morceau facile et beau, toujours disponible, que tu joues pour rien. C’est lui qui fait revenir au piano les jours sans courage.'],
   k:'Trois époques valent mieux que trois pièces du même compositeur : les faiblesses se voient par contraste.',
-  see:['pedale','grille-blues','histoire-piano','plaisir'],go:'repertoire'},
+  see:['impro-sur-morceau','pedale','grille-blues','histoire-piano','plaisir'],go:'repertoire'},
 
  {id:'echauffement',th:'travail',t:'S’échauffer',
   s:'Trois minutes qui changent la demi-heure qui suit.',
@@ -3947,7 +4015,7 @@ var COURS=[
      'La bonne tactique : ne cherche pas pendant l’écoute. Écoute jusqu’au bout, chante la phrase intérieurement une fois, puis joue. Partir à la recherche de la première note avant la fin de la phrase fait perdre tout le reste.',
      'Quand tu rates, réécoute au lieu de deviner. Et si cinq phrases de quatre notes passent sans faute, c’est le signe que tu peux commencer à improviser des réponses : l’exercice et le jeu se rejoignent là.'],
   k:'Écoute jusqu’au bout, chante la phrase intérieurement, puis joue. On retient des groupes, pas des notes isolées.',
-  ex:{k:'echo'},see:['question-reponse','par-coeur','exo-score']},
+  ex:{k:'echo'},see:['relever-oreille','question-reponse','par-coeur','exo-score']},
 
  {id:'exo-keysig',th:'exo',t:'L’exercice d’armures',
   s:'Combien d’altérations, et lesquelles. Ce qu’on lit avant la première note.',
@@ -4065,7 +4133,7 @@ function coursHTML(c,inline){
   /* En tiroir, on ne propose rien qui ferme la séance des yeux. */
   if(!inline){
     if(c.ex)acts.push('<button class="btn sm" data-cex="'+c.id+'">Ouvrir l’exercice</button>');
-    if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':c.go==='journal'?'le journal':'le clavier')+'</button>');
+    if(c.go)acts.push('<button class="btn sm ghost" data-cgt="'+c.go+'">Ouvrir '+(c.go==='theorie'?'la théorie':c.go==='metronome'?'le métronome':c.go==='exercices'?'les exercices':c.go==='repertoire'?'le répertoire':c.go==='seance'?'la séance':c.go==='journal'?'le journal':c.go==='impro'?'l’improvisation':'le clavier')+'</button>');
   }
   var see=(c.see||[]).filter(coursById);
   return '<div class="chead"><div class="eyebrow" style="margin:0">'+esc(th)+'</div>'+
@@ -4672,6 +4740,12 @@ function wire(){
   /* théorie */
   $('#playCad').onclick=function(){playCad([0,3,4,0]);};
   $('#playTwoFive').onclick=function(){playCad([1,4,0]);};
+  /* Le cercle des quintes mène à l'impro : la tonique y est déjà choisie. */
+  $('#keyImpro').onclick=function(){
+    S.settings.impro=S.settings.impro||{};
+    S.settings.impro.key=KEYS[curKey].pc;
+    saveSettings();go('impro');
+  };
   $('#playScale2').onclick=function(){var n=keyScaleNotes(KEYS[curKey].pc);playSeq(n.concat([n[0]+12]),0.22,0.6);};
   /* exercices */
   $$('#drillSeg button').forEach(function(b){b.onclick=function(){setDrill(b.dataset.d);};});

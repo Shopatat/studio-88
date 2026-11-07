@@ -40,6 +40,7 @@ mémoire, et d'où tout cela vient.
 | 11 | L’écran unique pris au mot : la séance tient dans la hauteur de l’écran et la page ne défile plus, le programme passe dans un cinquième tiroir, les cinq outils tiennent sur une ligne, et le paysage d’un téléphone passe à deux colonnes sans barre d’onglets | **fait** |
 | 12 | L’onglet **Impro** : neuf tournes jouées en boucle (moteur à programmation anticipée, quatre styles d’accompagnement, décompte d’une mesure), la grille qui s’allume mesure par mesure, et le clavier qui montre soit la gamme de la tourne soit celle de l’accord du moment, trouvée par rotation de la gamme de la grille | **fait** |
 | 13 | Les consignes d’impro : dix-huit contraintes tirées sans répétition (sac vidé avant d’être rempli) et un minuteur de 2, 3 ou 5 minutes avec carillon, sous la grille qui tourne | **fait** |
+| 14 | Huit cours d’improvisation de plus (treize en tout), les liens croisés depuis les gammes, l’harmonie et le répertoire, le bouton « Ouvrir l’improvisation » sur leurs feuilles, et « Improviser dans ce ton » depuis le cercle des quintes | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -55,19 +56,31 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les onze étapes sont faites et poussées. La séance est un
-écran unique : elle ne défile plus, en portrait comme en paysage.
+**Rien en cours.** Les quatorze étapes sont faites et poussées. L’onglet
+**Impro** est complet : neuf tournes jouées en boucle, dix-huit consignes
+à tirer et treize cours.
 
-76 cours en neuf thèmes. On y entre de sept façons : le lien « Comment on fait ? » d’un
+84 cours en neuf thèmes. On y entre de huit façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
 choisir un morceau » de la carte d’ajout, le « À quoi sert cet exercice ? » de la carte
-d’un exercice, la bibliothèque de l’onglet Apprentissage, sa recherche, et le « Lire le
-cours » de chaque leçon du parcours. Le journal ajoute « Comment lire ces chiffres ? »
+d’un exercice, la bibliothèque de l’onglet Apprentissage, sa recherche, le « Lire le
+cours » de chaque leçon du parcours, et la liste du thème Improviser au bas
+de l’onglet Impro. Le journal ajoute « Comment lire ces chiffres ? »
 sous la réussite par exercice. Aucun cours n’est orphelin, aucun lien « à lire ensuite »
 ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 17e,
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 14.** Les huit nouveaux cours évitent de refaire ceux des gammes :
+  « la pentatonique » reste dans *Gammes et tonalités*, « la pentatonique
+  au-dessus d’une grille » dit ce qu’on en fait, et chacun renvoie à l’autre.
+  Même partage pour les modes et pour les voicings.
+- `go:'impro'` ouvre l’onglet depuis la feuille d’un cours : le ternaire des
+  libellés attendait une valeur de plus. Les cinq cours d’impro déjà là l’ont
+  reçu aussi.
+- Le script de vérification a servi à ça : il a signalé deux cours orphelins
+  (aucun `see` ne menait à eux) avant le commit.
 
 - **Étape 13.** Le tirage des consignes est un sac, pas un tirage au sort :
   on mélange les dix-huit index, on les sort un par un, et on ne remélange
