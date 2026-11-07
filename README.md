@@ -16,7 +16,7 @@ le son, et tes données enregistrées sur ton appareil.
 | **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 84 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. Chacun porte un lien **À quoi sert cet exercice ?** vers son cours. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
-| **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
+| **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. Deux réglages y vivent pour cohabiter avec une autre appli : laisser l'autre sonner, et ne pas doubler les notes reçues du clavier. |
 | **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables, et **Improviser dans ce ton** qui emmène la tonalité choisie dans l'onglet Impro. |
 | **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. Et dix-huit consignes à tirer — trois notes seulement, rien qu'une note, question-réponse, finis sur la tierce, laisse une mesure vide — chacune avec un minuteur de 2, 3 ou 5 minutes. Treize cours d'improvisation sont rassemblés au bas de l'onglet. |
 | **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
@@ -129,6 +129,51 @@ l'accord, la main gauche en trois notes, la basse qui marche, question-réponse,
 la respiration des phrases, relever à l'oreille, improviser sur un morceau de
 ton répertoire, jouer faux et s'en servir. Chacun ouvre l'onglet d'un bouton,
 pour essayer en lisant.
+
+## Sur iPad, à côté d'une autre appli
+
+L'écran d'un iPad 12,9 pouces en paysage fait 1366 points de large, et son
+écran partagé en découpe 507, 678 ou 860 selon l'endroit où l'on pose la
+poignée. Rien dans la feuille de style ne vise un appareil : ce sont des
+largeurs, et la fenêtre d'un ordinateur les traverse aussi.
+
+Au-delà de 1200 points, la colonne de texte s'élargit à 1240. Au-delà de 1180,
+l'onglet Impro passe à trois cartes de front — la grille, les notes, la
+consigne — au lieu de deux et une ligne en dessous. Au-delà de 1100, le
+clavier grandit : sur une tablette, la touche est visée au doigt.
+
+La séance en écran unique se comporte à l'inverse du téléphone couché. Là-bas,
+375 points de haut obligeaient à tout rapetisser ; ici la hauteur ne manque
+pas, mais tout empiler laisserait la carte vide. Donc deux colonnes, sans rien
+réduire : minuteur, consigne, métronome et **le programme à demeure** à
+gauche, les outils à droite. Le tiroir 📋 Plan disparaît de la barre, puisque
+ce qu'il contient est déjà sous les yeux ; les quatre autres retrouvent leurs
+libellés longs, et le clavier du tiroir passe à 210 points de haut.
+
+### Jouer pendant qu'une autre appli sonne
+
+iOS décide du sort du son d'une page d'après le type de session audio qu'elle
+déclare. Studio 88 déclarait `playback` : le son passe même quand l'appareil
+est en silencieux, mais **les autres applis sont mises en pause**. À côté d'une
+appli de piano, le premier clic de métronome aurait coupé l'instrument.
+
+Deux cases dans l'onglet Clavier, sous « Jouer pendant qu'une autre appli
+sonne » :
+
+- **Laisser l'autre appli sonner** passe la session en `ambient` : les deux
+  sons se mélangent, au prix de suivre le réglage silencieux de l'appareil.
+- **Ne pas sonner les notes reçues du clavier** : les touches s'allument, les
+  exercices comptent, mais rien n'est joué — le son vient de l'instrument ou
+  de l'autre appli, et pas deux fois.
+
+### Le MIDI sur iPhone et iPad
+
+Il n'y en a pas. Safari ne met pas en œuvre l'API Web MIDI, et changer de
+navigateur n'y fait rien : sur iOS, tous utilisent le moteur d'Apple. Sur
+macOS il existe une extension tierce qui l'ajoute ; sur iPhone et iPad, non.
+L'appli le dit maintenant en toutes lettres au lieu de renvoyer vers Chrome.
+Un clavier MIDI branché sur un ordinateur, dans Chrome, Edge, Opera ou
+Firefox, fonctionne comme avant.
 
 ## Quand le son disparaît
 

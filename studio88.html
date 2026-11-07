@@ -128,6 +128,15 @@ main{padding-block:var(--s5) 64px}
 [hidden]{display:none!important}
 .grid{display:grid;gap:var(--s4)}
 @media(min-width:760px){.g2{grid-template-columns:1fr 1fr;align-items:start}.g2 .span{grid-column:1/-1}}
+/* ---------- le grand écran, et l’écran partagé ----------
+   Un iPad 12,9 en paysage donne 1366 points de large, et son écran partagé
+   en découpe 507, 678 ou 860 selon la poignée. Rien ici ne vise un appareil :
+   ce sont des largeurs, et la fenêtre d’un ordinateur les traverse aussi. */
+@media(min-width:1200px){.wrap{max-width:1240px}}
+/* Trois cartes de front quand la place est là, deux sinon — la troisième
+   prenant alors toute la ligne plutôt que de laisser un trou. */
+@media(min-width:760px) and (max-width:1179px){.g3w>.wide3{grid-column:1/-1}}
+@media(min-width:1180px){.g3w{grid-template-columns:1fr 1fr 1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r4);padding:var(--s5);
   box-shadow:var(--shadow);min-width:0}
 .card.flat{box-shadow:none;background:transparent;border:0;padding:0}
@@ -383,6 +392,32 @@ body.solo #toolMet .seg button{padding:6px 10px}
 body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
 /* Paysage, et tout écran bas : deux colonnes. Le minuteur et la consigne à
    gauche, le tiroir ouvert à droite, sur toute la hauteur. */
+/* Écran unique sur une tablette couchée : la hauteur ne manque pas, mais la
+   largeur est telle que tout empiler laisse la carte presque vide. Deux
+   colonnes, sans rien rapetisser — c’est l’inverse du téléphone couché. */
+@media(orientation:landscape) and (min-width:1000px) and (min-height:700px){
+  body.solo #nowCard{flex-direction:row;gap:var(--s5);align-items:stretch}
+  body.solo .nowMain{flex:0 0 44%;min-width:0;overflow:auto}
+  body.solo .tools{margin-top:0}
+  body.solo .task{max-height:none}
+  body.solo .ring{width:96px;height:96px}
+  body.solo .timer{font-size:46px}
+  body.solo.tool .ring{width:96px;height:96px}
+  body.solo.tool .timer{font-size:46px}
+  body.solo.tool #nowTask .row{display:flex}
+  body.solo .tbtn{font-size:13.5px;padding:10px 9px}
+  body.solo .tbtn .lg{display:inline}
+  body.solo .tbtn .sh{display:none}
+  body.solo .kb.sm{height:210px}
+  /* La hauteur est là : autant que le tiroir s’en serve plutôt que de
+     laisser un vide sous lui. */
+  body.solo #toolNote .fld{display:flex;flex-direction:column;height:100%}
+  body.solo #toolNote textarea{flex:1 1 auto;min-height:120px;resize:none}
+  body.solo #toolNote{display:flex;flex-direction:column}
+  body.solo #toolNote>.fld{flex:1 1 auto;min-height:0}
+  body.solo .planside{display:block;margin-top:var(--s4)}
+  body.solo .tbtn[data-tool="prog"]{display:none}
+}
 @media(orientation:landscape) and (max-height:620px){
   body.solo #nowCard{flex-direction:row;gap:var(--s4);padding:10px}
   /* La moitié de l'écran : c'est ce qu'il faut pour que Pause, Bloc suivant
@@ -419,6 +454,7 @@ body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
 .imbar.on .ic{color:var(--brass)}
 .imbar.on .idg{color:var(--brass)}
 @media(max-width:380px){.imgrid{gap:4px}.imbar{padding:7px 2px 6px}.imbar .ic{font-size:13.5px}}
+.planside{display:none}
 .prow{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid var(--line)}
 .prow:last-child{border-bottom:0}
 .prow .pn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -431,6 +467,9 @@ body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
 .kbfelt{height:5px;border-radius:3px;background:linear-gradient(#8E2437,#5A1523);margin-bottom:9px}
 .kb{position:relative;height:150px;user-select:none;touch-action:none}
 .kb.sm{height:112px}
+/* Le clavier grandit avec l’écran : sur une tablette, la touche est visée
+   au doigt et non à la souris. */
+@media(min-width:1100px){.kb{height:188px}.kb.sm{height:134px}}
 .key{position:absolute;top:0;border:1px solid var(--kb-line);cursor:pointer;padding:0;display:flex;align-items:flex-end;justify-content:center}
 .key.w{bottom:0;background:linear-gradient(#FEFDFB,#E9E5DC);border-radius:0 0 6px 6px;
   box-shadow:inset 0 -4px 6px -4px rgba(0,0,0,.3);z-index:1;font-size:9.5px;font-weight:700;color:#625D53;padding-bottom:6px}
@@ -640,6 +679,15 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <button type="button" class="mstep" data-mstep="-1" aria-label="Ralentir le métronome">−</button>
           <button type="button" class="sbpm" id="sessBpm" title="Ouvrir le métronome : mesure, subdivision, tempo progressif">♩ <b id="sessBpmN">92</b></button>
           <button type="button" class="mstep" data-mstep="1" aria-label="Accélérer le métronome">+</button>
+        </div>
+        <!-- Sur un grand écran couché, la place ne manque pas : le programme
+             s’affiche à demeure et son tiroir disparaît de la barre. -->
+        <div class="planside" id="sessPlanSide">
+          <div class="row" style="justify-content:space-between;align-items:baseline">
+            <div class="eyebrow" style="margin:0">Le programme</div>
+            <span class="sub num" id="sessPlanTot2"></span>
+          </div>
+          <div id="sessPlan2" style="margin-top:6px"></div>
         </div>
         </div>
         <!-- Les outils de la séance : un rang de boutons, un tiroir à la fois,
@@ -887,6 +935,19 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         </div>
         <div class="sub" id="midiLast" style="margin-top:10px">Aucune note reçue.</div>
       </details>
+
+      <details class="tuck">
+        <summary>Jouer pendant qu’une autre appli sonne</summary>
+        <p class="sub">Sur iPad, Studio 88 peut tourner à côté d’une appli de piano, dans l’écran partagé. Deux réglages pour que les deux cohabitent.</p>
+        <label class="sub" style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;cursor:pointer">
+          <input type="checkbox" id="sMix" style="width:auto;margin-top:3px">
+          <span><b>Laisser l’autre appli sonner</b><br>Sans ce réglage, le premier son de Studio 88 met l’autre appli en pause : c’est ainsi qu’iOS traite une page qui joue de la musique. En l’activant, les deux sons se mélangent — mais Studio 88 se tait alors quand l’appareil est en mode silencieux.</span>
+        </label>
+        <label class="sub" style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;cursor:pointer">
+          <input type="checkbox" id="sMidiMute" style="width:auto;margin-top:3px">
+          <span><b>Ne pas sonner les notes reçues du clavier</b><br>Quand ton instrument ou une autre appli produit déjà le son, Studio 88 se contente de regarder : les touches s’allument, les exercices comptent, mais rien n’est joué deux fois.</span>
+        </label>
+      </details>
     </div>
   </section>
 
@@ -928,7 +989,7 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
         <h1 class="ttl">Une grille qui tourne, et tu joues dessus</h1>
         <p class="sub" style="max-width:58ch">Choisis une tourne, une tonique, un tempo : l’accompagnement est joué pour toi, en boucle, et tu improvises par-dessus. Le clavier montre les notes qui passent, la grille dit où tu en es. Il n’y a rien à réussir ici : tu écoutes, tu cherches, tu recommences.</p>
       </div>
-      <div class="grid g2">
+      <div class="grid g2 g3w">
         <div class="card">
           <div class="eyebrow">La grille</div>
           <div class="row">
@@ -974,23 +1035,23 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <div class="hr"></div>
           <p class="sub" id="imTip"></p>
         </div>
-      </div>
-      <div class="card" id="imConsCard">
-        <div class="row" style="justify-content:space-between;align-items:baseline">
-          <div class="eyebrow" style="margin:0">Une consigne</div>
-          <span class="sub num" id="imConsN"></span>
-        </div>
-        <h2 class="ttl" id="imConsT" style="font-size:22px;margin-top:4px">—</h2>
-        <p class="sub" id="imConsD" style="max-width:62ch"></p>
-        <div class="row" style="margin-top:13px;align-items:center">
-          <button class="btn" id="imConsNew">Une autre</button>
-          <div class="seg" id="imConsLen" role="group" aria-label="Durée de la consigne">
-            <button type="button" data-cl="2">2 min</button>
-            <button type="button" data-cl="3">3 min</button>
-            <button type="button" data-cl="5">5 min</button>
+        <div class="card wide3" id="imConsCard">
+          <div class="row" style="justify-content:space-between;align-items:baseline">
+            <div class="eyebrow" style="margin:0">Une consigne</div>
+            <span class="sub num" id="imConsN"></span>
           </div>
-          <button class="btn sm ghost" id="imConsGo">▶ Minuteur</button>
-          <span class="chip num" id="imConsTime" hidden>0:00</span>
+          <h2 class="ttl" id="imConsT" style="font-size:22px;margin-top:4px">—</h2>
+          <p class="sub" id="imConsD" style="max-width:62ch"></p>
+          <div class="row" style="margin-top:13px;align-items:center">
+            <button class="btn" id="imConsNew">Une autre</button>
+            <div class="seg" id="imConsLen" role="group" aria-label="Durée de la consigne">
+              <button type="button" data-cl="2">2 min</button>
+              <button type="button" data-cl="3">3 min</button>
+              <button type="button" data-cl="5">5 min</button>
+            </div>
+            <button class="btn sm ghost" id="imConsGo">▶ Minuteur</button>
+            <span class="chip num" id="imConsTime" hidden>0:00</span>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -1396,6 +1457,7 @@ var RECIPES={
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
             focus:{piece:'',len:30,mode:'guide'},nextTips:'',lastBackup:'',
+            mix:false,midiMute:false,
             metro:{bpm:92,beats:4,sub:1,accent:true},
             impro:{grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false,clen:3}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
@@ -1554,8 +1616,17 @@ var AC=null;
 /* iOS 16.4+ : par défaut une page web passe par la session audio « ambient »,
    que le petit bouton silencieux de l’iPhone coupe. En déclarant « playback »,
    le son sort même en mode silencieux, comme dans une appli de musique. */
+/* iOS décide du sort du son d’une page d’après le type de session déclaré.
+   « playback » sonne même quand l’appareil est en silencieux, mais il met en
+   pause les autres applis : branché sur un piano dont le son vient d’ailleurs,
+   le premier clic de métronome couperait l’instrument. « ambient » se mélange
+   au reste, au prix de suivre le réglage silencieux. C’est un choix, pas un
+   réglage par défaut : il dépend de ce qui tourne à côté. */
 function audioOut(){
-  try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
+  try{
+    if(navigator.audioSession)
+      navigator.audioSession.type=(S.settings.mix?'ambient':'playback');
+  }catch(e){}
 }
 /* Le contexte audio peut mourir sous nos pieds, et c'est la panne la plus
    déroutante : l'écran continue, le minuteur tourne, mais plus un son.
@@ -1751,7 +1822,10 @@ function visibleKB(){
 function flashMidi(m){var el=visibleKB();if(el&&el._map[m])el._map[m].classList.add('hit');}
 function unflashMidi(m){var el=visibleKB();if(el&&el._map[m])el._map[m].classList.remove('hit');}
 function noteOn(m,vel){
-  startVoice(m,vel);flashMidi(m);
+  /* Le son peut venir de l’instrument lui-même ou d’une autre appli : dans
+     ce cas Studio 88 regarde les notes sans les doubler. */
+  if(!S.settings.midiMute)startVoice(m,vel);
+  flashMidi(m);
   MI.last={m:m,v:vel};paintMidiLast();
   var el=visibleKB();
   if(el&&el._press)el._press(m,el._map[m]);
@@ -1773,6 +1847,13 @@ function onMidi(e){
   else if(st===0xb0&&(d[1]===120||d[1]===123))allNotesOff();
 }
 function midiMsg(t){var e=$('#midiMsg');if(e)e.textContent=t;}
+/* Un iPad moderne se présente comme un Mac : le nombre de points de contact
+   est ce qui les distingue. */
+function isApple(){
+  var u=navigator.userAgent||'';
+  return /iPad|iPhone|iPod/.test(u)||
+         (/Macintosh/.test(u)&&(navigator.maxTouchPoints||0)>1);
+}
 function paintMidiLast(){
   var e=$('#midiLast');if(!e||!MI.last)return;
   e.innerHTML='Dernière note : <span class="num">'+noteName(MI.last.m)+'</span> · vélocité <span class="num">'+
@@ -1798,7 +1879,9 @@ function bindInputs(){
 }
 function midiConnect(auto){
   if(!(navigator&&navigator.requestMIDIAccess)){
-    if(!auto)midiMsg('Ce navigateur ne propose pas le MIDI (Web MIDI). Chrome, Edge ou Opera le gèrent ; Safari et Firefox non.');
+    if(!auto)midiMsg(isApple()
+      ?'Safari ne propose pas le MIDI (Web MIDI), sur iPhone comme sur iPad, et changer de navigateur n’y fait rien : ils utilisent tous le moteur d’Apple. Sur ordinateur, Chrome, Edge, Opera et Firefox le gèrent.'
+      :'Ce navigateur ne propose pas le MIDI (Web MIDI). Chrome, Edge, Opera et Firefox le gèrent ; Safari non.');
     return;
   }
   var p;
@@ -2521,17 +2604,19 @@ function openTool(name){
 }
 /* Le programme, tel qu'on le lit en jouant : un rang par bloc, le bloc en
    cours en gras, les blocs passés en retrait. */
+/* Le même programme à deux endroits : dans le tiroir sur un téléphone, à
+   demeure dans la colonne de gauche sur un grand écran couché. */
 function paintSessPlan(){
-  var el=$('#sessPlan');if(!el)return;
   var r=S.settings.routine||[],tot=0;
   r.forEach(function(b){tot+=+b.m||0;});
-  el.innerHTML=r.length?r.map(function(b,i){
+  var html=r.length?r.map(function(b,i){
     return '<div class="prow'+(i===T.bi?' on':'')+(i<T.bi?' done':'')+'">'+
       '<span class="bi">'+(i+1)+'</span>'+
       '<span class="pn">'+esc(b.n)+'</span>'+
       '<span class="num sub">'+(+b.m)+' min</span></div>';
   }).join(''):'<div class="sub">Séance libre : pas de blocs.</div>';
-  var t=$('#sessPlanTot');if(t)t.textContent=tot+' min au total';
+  ['#sessPlan','#sessPlan2'].forEach(function(id){var e=$(id);if(e)e.innerHTML=html;});
+  ['#sessPlanTot','#sessPlanTot2'].forEach(function(id){var e=$(id);if(e)e.textContent=tot+' min au total';});
 }
 function paintSessTools(){
   var g=$('#seanceGrid'),el=$('#sessTools'),busy=sessionBusy();
@@ -2560,7 +2645,7 @@ function paintSessTools(){
       ?('Le tempo monte de '+M.step+' bpm toutes les '+M.every+' mesures, jusqu’à '+M.max+'.')
       :'Le tempo reste où tu le mets. Les paliers de la montée se règlent dans l’onglet Métronome.';
   }
-  if(sessTool==='prog')paintSessPlan();
+  paintSessPlan();   /* le tiroir ou la colonne : l’un des deux est visible */
   if(sessTool==='note'){
     var n=sessNoteCount();
     $('#sessNoteMsg').textContent=(Date.now()-noteFlash<1800)?'Noté — c’est dans le bilan.'
@@ -4682,6 +4767,17 @@ function wire(){
   $('#labelBtn').onclick=function(){S.settings.labels=!S.settings.labels;saveSettings();renderClavier();};
   /* MIDI */
   $('#midiBtn').onclick=function(){ac();if(MI.on)bindInputs();else midiConnect(false);};
+  /* Cohabitation avec une autre appli */
+  $('#sMix').checked=!!S.settings.mix;
+  $('#sMix').onchange=function(){
+    S.settings.mix=this.checked;saveSettings();
+    audioOut();            /* le type de session se change en marche */
+  };
+  $('#sMidiMute').checked=!!S.settings.midiMute;
+  $('#sMidiMute').onchange=function(){
+    S.settings.midiMute=this.checked;saveSettings();
+    if(this.checked)allNotesOff();   /* une note tenue ne reste pas coincée */
+  };
   $('#sessMetBtn').onclick=function(){if(M.on)metStop();else metStart();};
   /* Le tempo ouvre le tiroir au lieu d’emmener dans un autre onglet. */
   $('#sessBpm').onclick=function(){openTool('met');};

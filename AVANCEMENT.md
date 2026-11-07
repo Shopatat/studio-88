@@ -41,6 +41,8 @@ mémoire, et d'où tout cela vient.
 | 12 | L’onglet **Impro** : neuf tournes jouées en boucle (moteur à programmation anticipée, quatre styles d’accompagnement, décompte d’une mesure), la grille qui s’allume mesure par mesure, et le clavier qui montre soit la gamme de la tourne soit celle de l’accord du moment, trouvée par rotation de la gamme de la grille | **fait** |
 | 13 | Les consignes d’impro : dix-huit contraintes tirées sans répétition (sac vidé avant d’être rempli) et un minuteur de 2, 3 ou 5 minutes avec carillon, sous la grille qui tourne | **fait** |
 | 14 | Huit cours d’improvisation de plus (treize en tout), les liens croisés depuis les gammes, l’harmonie et le répertoire, le bouton « Ouvrir l’improvisation » sur leurs feuilles, et « Improviser dans ce ton » depuis le cercle des quintes | **fait** |
+| 15 | Cohabiter avec une autre appli : session audio `ambient` au choix (sans quoi iOS met l’autre appli en pause), notes MIDI reçues sans les doubler, et un message juste sur l’absence de Web MIDI dans Safari | **fait** |
+| 16 | L’iPad 12,9 en paysage : colonne à 1240 au-delà de 1200, trois cartes de front dans l’impro au-delà de 1180, clavier plus haut au-delà de 1100, et la séance en écran unique à deux colonnes avec le programme à demeure | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -56,9 +58,9 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les quatorze étapes sont faites et poussées. L’onglet
-**Impro** est complet : neuf tournes jouées en boucle, dix-huit consignes
-à tirer et treize cours.
+**Rien en cours.** Les seize étapes sont faites et poussées. L’onglet
+**Impro** est complet, et l’appli tient dans l’écran partagé d’un iPad
+sans couper le son de l’appli d’à côté.
 
 84 cours en neuf thèmes. On y entre de huit façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
@@ -71,6 +73,27 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 15.** Vérifié avant de coder : Safari n’a pas le Web MIDI, sur
+  iPhone comme sur iPad (caniuse, octobre 2026, « non supporté » jusqu’à iOS
+  27.2 ; la page d’état de WebKit est retirée). Aucun navigateur iOS n’y
+  change rien, ils partagent le moteur d’Apple. L’extension qui l’ajoute
+  n’existe que sur macOS. Le message de l’appli le dit maintenant.
+- `audioSession.type` était figé sur `playback`. C’est ce qui donne le son
+  en mode silencieux, mais c’est aussi ce qui met les autres applis en
+  pause : dans un écran partagé avec une appli de piano, le métronome aurait
+  coupé l’instrument. Le réglage `mix` bascule en `ambient`, qui se mélange
+  mais suit le bouton silencieux. Il se change en marche, sans recharger.
+- **Étape 16.** Les largeurs visées viennent de l’écran partagé d’iPadOS
+  (507, 678, 860) et du plein écran (1366). Aucune détection d’appareil :
+  des requêtes de média, que la fenêtre d’un ordinateur traverse aussi.
+- La règle du clavier plus haut, écrite près des autres largeurs, ne passait
+  pas : `.kb.sm{height:112px}` est définie plus bas dans le fichier, à
+  spécificité égale. Déplacée juste après sa règle de base.
+- En écran unique sur grand écran couché, le programme s’affiche à demeure
+  dans la colonne de gauche et son tiroir disparaît de la barre. Les deux
+  listes sont peintes par la même fonction, appelée à chaque bloc : l’une
+  des deux seulement est visible.
 
 - **Étape 14.** Les huit nouveaux cours évitent de refaire ceux des gammes :
   « la pentatonique » reste dans *Gammes et tonalités*, « la pentatonique
