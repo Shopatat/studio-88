@@ -62,6 +62,16 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 **Impro** est complet, et l’appli tient dans l’écran partagé d’un iPad
 sans couper le son de l’appli d’à côté.
 
+**Le chantier iPad s’arrête là, et c’est volontaire.** Ce qui est fait reste
+(les largeurs, les deux réglages de cohabitation) et ne coûte rien : les deux
+cases sont décochées par défaut, donc rien ne change sur l’iPhone. Mais l’iPad
+ne sera pas utilisé pour jouer : posé sur le pupitre, il prend la place de la
+partition papier, et la seule façon de l’y installer serait de numériser les
+partitions. Refusé, pour une raison qui vaut pour tout le reste de l’appli :
+**brancher, lancer, jouer.** Un pas de préparation en plus et on ne joue plus.
+L’usage réel reste l’iPhone posé à côté de la partition. Donc pas de lecteur
+de partition, pas de scan, pas d’import PDF — inutile de le reproposer.
+
 84 cours en neuf thèmes. On y entre de huit façons : le lien « Comment on fait ? » d’un
 bloc de séance, le « Que faire à ce stade ? » d’un morceau du répertoire, le « Bien
 choisir un morceau » de la carte d’ajout, le « À quoi sert cet exercice ? » de la carte
