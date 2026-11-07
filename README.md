@@ -18,6 +18,7 @@ le son, et tes données enregistrées sur ton appareil.
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
 | **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables. |
+| **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. |
 | **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
 | **Journal** | Séances, totaux, moyenne, réussite par exercice sur 30 jours, ajout de séances passées, réglages. |
 
@@ -77,6 +78,35 @@ d'onglet ; les « à lire ensuite » s'ouvrent dans le tiroir, et un retour ram�
 au cours du bloc. La note, elle,
 va droit dans les notes du bilan, précédée du nom du bloc où elle est née :
 relue le soir, elle situe.
+
+## Improviser sur une grille
+
+L'onglet **Impro** joue ce qu'on n'a pas : quelqu'un qui tient l'accompagnement
+pendant que tu cherches. Une tourne, une tonique, un tempo, et ça boucle — avec
+une mesure de décompte pour entrer dedans.
+
+Ce qui s'affiche pendant que ça tourne n'est pas décoratif : la mesure en cours
+s'allume dans la grille, l'accord du moment est écrit en grand, le suivant est
+annoncé, et le clavier marque les notes qui passent. Deux lectures au choix :
+**la gamme de la tourne** (une seule gamme pour tout le tour, ce qu'on joue
+quand on débute) ou **l'accord du moment** (la gamme change avec l'accord, ce
+qu'on entend quand on avance).
+
+Cette seconde lecture ne sort pas d'une table toute faite : si l'accord tient
+entier dans la gamme de la tourne, c'est cette gamme-là qui s'affiche, lue
+depuis la fondamentale de l'accord — le ii d'un ii-V-I donne le dorien, le V
+donne le mixolydien, et ce sont les mêmes notes. Le cas qui mérite une
+exception est le V majeur d'une tonalité mineure : ni la gamme du ton ni le
+mixolydien n'y conviennent, c'est le **phrygien dominant** — la couleur du
+flamenco, et celle du blues mineur.
+
+Les noms de notes suivent la même exigence : une gamme s'écrit avec une lettre
+par degré. Le ♭3 de fa est un la♭ et non un sol♯, parce que la lettre « la »
+vient après « sol ». La liste des toniques est écrite comme les accords qu'elle
+produit : on y choisit mi♭, pas ré♯.
+
+La tourne appartient à son onglet : changer d'onglet l'arrête, et lancer une
+tourne arrête le métronome — deux tempos à la fois, personne n'y arrive.
 
 ## Quand le son disparaît
 

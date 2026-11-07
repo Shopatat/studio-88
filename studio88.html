@@ -407,6 +407,18 @@ body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
   body.solo .smet{margin-top:10px}
 }
 /* Le programme en tiroir : ce qui a été joué, ce qui tourne, ce qui vient. */
+/* ---------- impro : la grille qui tourne ---------- */
+.imgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.imbar{border:1px solid var(--line);border-radius:var(--r2);background:var(--inset);
+  padding:9px 4px 8px;text-align:center;min-width:0;transition:background .12s,border-color .12s}
+.imbar .ic{font-family:var(--f-disp);font-size:15px;font-weight:600;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imbar .idg{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imbar.on{background:var(--brass-w);border-color:var(--brass)}
+.imbar.on .ic{color:var(--brass)}
+.imbar.on .idg{color:var(--brass)}
+@media(max-width:380px){.imgrid{gap:4px}.imbar{padding:7px 2px 6px}.imbar .ic{font-size:13.5px}}
 .prow{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid var(--line)}
 .prow:last-child{border-bottom:0}
 .prow .pn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -907,6 +919,68 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
     </div>
   </section>
 
+  <!-- =============== IMPRO =============== -->
+  <section id="t-impro" role="tabpanel" aria-label="Improviser" hidden>
+    <div class="stack">
+      <div class="card">
+        <div class="eyebrow">Improviser</div>
+        <h1 class="ttl">Une grille qui tourne, et tu joues dessus</h1>
+        <p class="sub" style="max-width:58ch">Choisis une tourne, une tonique, un tempo : l’accompagnement est joué pour toi, en boucle, et tu improvises par-dessus. Le clavier montre les notes qui passent, la grille dit où tu en es. Il n’y a rien à réussir ici : tu écoutes, tu cherches, tu recommences.</p>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <div class="eyebrow">La grille</div>
+          <div class="row">
+            <label class="fld" style="flex:1 1 190px">Tourne<select id="imGrid"></select></label>
+            <label class="fld" style="flex:0 0 112px">Tonique<select id="imKey"></select></label>
+          </div>
+          <p class="sub" id="imAbout" style="margin-top:9px"></p>
+          <div class="imgrid" id="imBars" style="margin-top:12px"></div>
+          <div class="hr"></div>
+          <div class="row" style="align-items:center">
+            <button class="btn primary" id="imBtn">▶ Lancer</button>
+            <label class="fld" style="flex:0 0 104px">Tempo<input type="number" id="imBpm" min="40" max="200" step="2" inputmode="numeric"></label>
+            <span class="chip">mesure <b class="num" id="imBar">—</b></span>
+          </div>
+          <div class="seg" id="imStyle" role="group" aria-label="Accompagnement" style="margin-top:11px">
+            <button type="button" data-is="tenu">Accords tenus</button>
+            <button type="button" data-is="pompe">Pompe</button>
+            <button type="button" data-is="arp">Arpèges</button>
+            <button type="button" data-is="basse">Basse seule</button>
+          </div>
+          <label class="sub" style="display:inline-flex;align-items:center;gap:7px;margin-top:11px;cursor:pointer">
+            <input type="checkbox" id="imMet" style="width:auto"> Clic sur les temps
+          </label>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:baseline">
+            <div style="min-width:0">
+              <div class="eyebrow" style="margin:0">Maintenant</div>
+              <h2 class="ttl" id="imChord" style="font-size:29px;margin-top:3px">—</h2>
+            </div>
+            <div class="sub" id="imNext" style="text-align:right"></div>
+          </div>
+          <div class="seg" id="imView" role="group" aria-label="Notes montrées" style="margin-top:10px">
+            <button type="button" data-iv="grille">La gamme de la tourne</button>
+            <button type="button" data-iv="accord">L’accord du moment</button>
+          </div>
+          <div class="kbwrap" style="margin-top:12px"><div class="kb sm" id="imKb"></div></div>
+          <p class="sub" id="imNotes" style="margin-top:10px"></p>
+          <div class="row tight" style="margin-top:10px">
+            <button class="btn sm" id="imPlayScale">♪ Écouter la gamme</button>
+            <button class="btn sm ghost" id="imPlayChord">♪ L’accord</button>
+          </div>
+          <div class="hr"></div>
+          <p class="sub" id="imTip"></p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Pour comprendre ce que tu joues</div>
+        <div class="row tight" id="imCours"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- =============== APPRENTISSAGE =============== -->
   <section id="t-apprentissage" role="tabpanel" aria-label="Apprentissage" hidden>
     <div class="stack">
@@ -1142,6 +1216,7 @@ var SCALES=[
  {id:'mixo',n:'Mixolydien',iv:[0,2,4,5,7,9,10],deg:['1','2','3','4','5','6','♭7']},
  {id:'lyd',n:'Lydien',iv:[0,2,4,6,7,9,11],deg:['1','2','3','♯4','5','6','7']},
  {id:'phry',n:'Phrygien',iv:[0,1,3,5,7,8,10],deg:['1','♭2','♭3','4','5','♭6','♭7']},
+ {id:'phrydom',n:'Phrygien dominant',iv:[0,1,4,5,7,8,10],deg:['1','♭2','3','4','5','♭6','♭7']},
  {id:'pentM',n:'Pentatonique majeure',iv:[0,2,4,7,9],deg:['1','2','3','5','6']},
  {id:'pentm',n:'Pentatonique mineure',iv:[0,3,5,7,10],deg:['1','♭3','4','5','♭7']},
  {id:'blues',n:'Blues',iv:[0,3,5,6,7,10],deg:['1','♭3','4','♭5','5','♭7']},
@@ -1302,7 +1377,8 @@ var RECIPES={
 var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
             focus:{piece:'',len:30,mode:'guide'},nextTips:'',lastBackup:'',
-            metro:{bpm:92,beats:4,sub:1,accent:true}},
+            metro:{bpm:92,beats:4,sub:1,accent:true},
+            impro:{grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
 var DB=null, LS='studio88.v1', PEND='studio88.pending', pending={}, localOk=true;
@@ -1318,6 +1394,7 @@ function loadLocal(){
     S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
     if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
     if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
+    if(!S.settings.impro)S.settings.impro={grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false};
     S.pieces=o.pieces||[];S.sessions=o.sessions||[];S.drills=o.drills||{};
     S.learn=(o.learn&&o.learn.done)?o.learn:{done:{}};return true;
   }catch(e){return false;}
@@ -1424,6 +1501,7 @@ function initStore(){
         S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
         if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
         if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
+        if(!S.settings.impro)S.settings.impro={grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false};
       }
       S.pieces=mergeList('pieces/',S.pieces,r[1].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
       S.sessions=mergeList('sessions/',S.sessions,r[2].docs.map(function(d){return Object.assign({id:d.id},d.data());}));
@@ -1647,7 +1725,7 @@ function stopVoice(m,fast){
 }
 function allNotesOff(){Object.keys(VOX).forEach(function(m){stopVoice(+m,true);unflashMidi(+m);});MI.sust={};MI.pedal=false;}
 function visibleKB(){
-  var sels=['#t-exercices:not([hidden]) .kb','#t-clavier:not([hidden]) .kb'];
+  var sels=['#t-exercices:not([hidden]) .kb','#t-clavier:not([hidden]) .kb','#t-impro:not([hidden]) .kb'];
   for(var i=0;i<sels.length;i++){var el=document.querySelector(sels[i]);if(el&&el._map)return el;}
   return null;
 }
@@ -1722,7 +1800,8 @@ function midiConnect(auto){
    6. Onglets
    ========================================================= */
 var TABS=[['today','Aujourd’hui'],['seance','Séance'],['apprentissage','Apprentissage'],['exercices','Exercices'],
- ['metronome','Métronome'],['clavier','Clavier'],['theorie','Théorie'],['repertoire','Répertoire'],['journal','Journal']];
+ ['metronome','Métronome'],['clavier','Clavier'],['theorie','Théorie'],['impro','Impro'],
+ ['repertoire','Répertoire'],['journal','Journal']];
 var cur='today';
 function buildTabs(){
   var n=$('#tabs');n.innerHTML='';
@@ -1745,6 +1824,9 @@ function buildTabs(){
   TABS.forEach(function(t){var s=$('#t-'+t[0]);if(s)s.setAttribute('aria-labelledby','tab-'+t[0]);});
 }
 function go(id){
+  /* La tourne est liée à son onglet : on ne laisse pas un accompagnement
+     jouer tout seul derrière une autre page. */
+  if(id!=='impro'&&IM&&IM.on)imStop();
   cur=id;
   TABS.forEach(function(t){
     var sec=$('#t-'+t[0]);if(sec)sec.hidden=(t[0]!==id);
@@ -1761,6 +1843,7 @@ function go(id){
   if(id==='seance'){renderRoutine();renderTips();}
   if(id==='repertoire')renderPieces();
   if(id==='apprentissage')renderLearn();
+  if(id==='impro')renderImpro();
   try{location.hash=id;}catch(e){}
   paintSessTools();
   window.scrollTo(0,0);
@@ -2499,7 +2582,7 @@ function requestLock(){
   try{if('wakeLock' in navigator&&!T.lock){navigator.wakeLock.request('screen').then(function(l){T.lock=l;}).catch(function(){});}}catch(e){}
 }
 function releaseLock(){
-  if(T.on||M.on)return;   /* l'autre minuteur peut encore avoir besoin de l'écran */
+  if(T.on||M.on||(IM&&IM.on))return;   /* l'autre minuteur peut encore avoir besoin de l'écran */
   try{if(T.lock){T.lock.release();T.lock=null;}}catch(e){}
 }
 /* Safari en onglet ignore « user-scalable=no » ; il écoute en revanche ses
@@ -4394,6 +4477,7 @@ function applyImport(st){
   S.settings.routine=cleanRoutine(S.settings.routine)||cloneRoutine(DEF_ROUTINE);
   if(!S.settings.metro)S.settings.metro={bpm:92,beats:4,sub:1,accent:true};
   if(!S.settings.focus)S.settings.focus={piece:'',len:30,mode:'guide'};
+  if(!S.settings.impro)S.settings.impro={grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false};
   S.pieces=(st.pieces||[]).filter(function(p){return p&&p.id;});
   S.sessions=(st.sessions||[]).filter(function(x){return x&&x.id;});
   S.drills=st.drills||{};
@@ -4559,6 +4643,7 @@ function wire(){
   $('#jAdd').onclick=addPast;
   $('#sGoal').onchange=function(){S.settings.goal=clamp(+this.value||20,5,300);saveSettings();renderToday();renderJournal();};
   $('#sNames').onchange=function(){S.settings.names=this.value;saveSettings();renderAll();};
+  imSetup();
   /* sauvegarde */
   $('#bkDl').onclick=doExport;
   $('#bkCopy').onclick=doCopy;
@@ -4579,6 +4664,300 @@ function playCad(degs){
     ch.iv.forEach(function(iv){playNote(base+iv,1.5,t+i*0.72,0.45);});
     playNote(base-24,1.8,t+i*0.72,0.5);
   });
+}
+
+/* =========================================================
+   16 bis. Improviser : une grille qui tourne
+   ---------------------------------------------------------
+   Même principe que le métronome : le son est programmé un peu à l’avance
+   (look-ahead), et l’écran est repeint au moment où le son sort, pas quand
+   on le programme. Une mesure se joue en quatre temps ; toutes les tournes
+   sont à quatre temps, ce qui suffit à couvrir ce qu’on improvise dessus.
+   Une mesure = [demi-tons depuis la tonique, accord, degré affiché].
+   ========================================================= */
+var IM_GRIDS=[
+ {id:'blues12',n:'Blues en douze mesures',sc:'pentm',bpm:84,see:'grille-blues',
+  h:'La grille de tout le monde : trois accords, douze mesures, et de quoi y passer sa vie. Les quatre premières posent, les deux suivantes montent au IV, les quatre dernières ramènent à la maison.',
+  tip:'Une seule gamme passe sur les douze mesures : la pentatonique mineure de la tonique. Commence par trois de ses notes, et sers-toi des silences — le blues se joue autant par ce qu’on ne joue pas.',
+  bars:[[0,'7','I7'],[0,'7','I7'],[0,'7','I7'],[0,'7','I7'],
+        [5,'7','IV7'],[5,'7','IV7'],[0,'7','I7'],[0,'7','I7'],
+        [7,'7','V7'],[5,'7','IV7'],[0,'7','I7'],[7,'7','V7']]},
+ {id:'ii-v-i',n:'Le ii-V-I',sc:'maj',bpm:100,see:'ii-v-i',
+  h:'Les trois accords qui ouvrent la moitié des standards : le ii prépare, le V tire, le I se pose. Deux mesures pour arriver, deux pour respirer.',
+  tip:'La gamme majeure de la tonique passe sur les trois accords. Ce qui change, c’est où tu te poses : sur le V, la septième de l’accord appelle la tierce du I — descends d’un demi-ton et tu es arrivé.',
+  bars:[[2,'m7','ii m7'],[7,'7','V7'],[0,'M7','I maj7'],[0,'M7','I maj7']]},
+ {id:'anatole',n:'L’anatole',sc:'maj',bpm:104,
+  h:'Le tour de passe-passe des années trente : I, vi, ii, V, et ça repart. Des centaines de chansons tiennent sur ces quatre mesures.',
+  tip:'Une seule gamme, quatre couleurs. Essaie de ne changer qu’une note par mesure : c’est le mouvement intérieur qui s’entend, pas la gymnastique.',
+  bars:[[0,'M7','I maj7'],[9,'m7','vi m7'],[2,'m7','ii m7'],[7,'7','V7']]},
+ {id:'pop',n:'Les quatre accords',sc:'maj',bpm:96,
+  h:'I, V, vi, IV : la grille des quatre accords, celle de la moitié des chansons que tu connais par cœur.',
+  tip:'La gamme majeure, sans se poser de question. Cherche plutôt les rythmes : la même phrase décalée d’un demi-temps devient une autre phrase.',
+  bars:[[0,'M','I'],[7,'M','V'],[9,'m','vi'],[5,'M','IV']]},
+ {id:'annees50',n:'La ronde des années cinquante',sc:'maj',bpm:88,
+  h:'I, vi, IV, V : la ronde des slows américains. Elle tourne toute seule, c’est fait pour.',
+  tip:'Chante une phrase de quatre mesures, puis joue-la. Ce que tu chantes tient dans la gamme majeure presque toujours — c’est le meilleur professeur d’impro que tu aies.',
+  bars:[[0,'M','I'],[9,'m','vi'],[5,'M','IV'],[7,'M','V']]},
+ {id:'dorien',n:'Vamp dorien',sc:'dor',bpm:92,
+  h:'Deux accords, et on reste. Pas de retour à la maison : ce qu’on écoute ici, c’est la couleur du mode.',
+  tip:'Le dorien, c’est le mineur avec une sixte majeure — c’est elle qui l’empêche d’être triste. Pose-toi dessus assez longtemps pour l’entendre.',
+  bars:[[0,'m7','i m7'],[0,'m7','i m7'],[5,'7','IV7'],[5,'7','IV7']]},
+ {id:'andalou',n:'La descente andalouse',sc:'min',bpm:94,min:1,
+  h:'i, ♭VII, ♭VI, V : la descente qui fait tout le flamenco, et une bonne part du rock espagnol.',
+  tip:'Le mineur naturel descend avec la grille. Sur la dernière mesure, l’accord majeur demande la septième haussée : monte d’un demi-ton la note juste avant la tonique, et la descente se referme.',
+  bars:[[0,'m','i'],[10,'M','♭VII'],[8,'M','♭VI'],[7,'M','V']]},
+ {id:'bluesmin',n:'Blues mineur',sc:'pentm',bpm:76,min:1,
+  h:'Le blues en mineur : les mêmes douze mesures, une couleur plus sombre, et deux accords de septième qui tombent à la fin.',
+  tip:'La pentatonique mineure passe partout. Les deux septièmes de la fin sont le moment où la grille te pousse : suis-les plutôt que de rester sur place.',
+  bars:[[0,'m7','i m7'],[0,'m7','i m7'],[0,'m7','i m7'],[0,'m7','i m7'],
+        [5,'m7','iv m7'],[5,'m7','iv m7'],[0,'m7','i m7'],[0,'m7','i m7'],
+        [8,'7','♭VI7'],[7,'7','V7'],[0,'m7','i m7'],[7,'7','V7']]},
+ {id:'pedale',n:'Une seule couleur',sc:'maj',bpm:72,
+  h:'Un accord, et rien d’autre. Pas de grille à suivre : de quoi écouter tranquillement ce que chaque note fait à l’accord.',
+  tip:'Joue une note, écoute-la, puis une autre. Ici tu as le temps : c’est l’exercice le plus simple de cet onglet, et le plus instructif.',
+  bars:[[0,'M7','I maj7'],[0,'M7','I maj7'],[0,'M7','I maj7'],[0,'M7','I maj7']]}
+];
+/* La gamme qui va de soi sur un accord pris seul. */
+var IM_MODE={'7':'mixo','9':'mixo','M':'maj','M7':'maj','6':'maj','m':'dor','m7':'dor',
+             'sus2':'mixo','sus4':'mixo','m7b5':'phry','dim':'phry','dim7':'chrom','aug':'lyd'};
+var IM_TIP={
+ '7':'Un accord de septième appelle : sa ♭7 tire vers l’accord suivant. Elle ne demande pas à être évitée, elle demande à bouger.',
+ '9':'La neuvième est déjà dans l’accord : tu peux t’y poser sans que ça sonne comme une erreur.',
+ 'M7':'Une couleur posée. Tu peux t’arrêter sur la tierce ou la septième sans que ça demande à partir ailleurs.',
+ 'M':'Trois notes seulement, donc beaucoup de place. Essaie de chanter avant de jouer.',
+ '6':'La sixte adoucit : c’est l’accord de fin des chansons anciennes.',
+ 'm7':'Le mode dorien. La sixte majeure est la note qui change tout — écoute-la contre l’accord.',
+ 'm':'Reste près de la tierce mineure : c’est elle qui donne la couleur, le reste tourne autour.',
+ 'm7b5':'Un accord en déséquilibre : il ne se repose jamais. Joue-le en passant.',
+ 'dim7':'Rien n’y est stable, tout y est symétrique. La même phrase fonctionne de trois demi-tons en trois demi-tons.'
+};
+var IM={on:false,gen:0,next:0,beat:0,bar:0,cur:0,timer:null,bpm:84,grid:'blues12',key:0,
+        style:'tenu',view:'grille',met:false,count:0,sc:null,scRoot:0};
+
+function imGrid(){return IM_GRIDS.filter(function(g){return g.id===IM.grid;})[0]||IM_GRIDS[0];}
+function imBarAt(i){var b=imGrid().bars;return b[((i%b.length)+b.length)%b.length];}
+function imChordOf(b){
+  var ch=CHORDS.filter(function(c){return c.id===b[1];})[0]||CHORDS[0];
+  return {pc:((IM.key+b[0])%12+12)%12,ch:ch,deg:b[2]};
+}
+/* Un nom d’accord s’écrit comme on écrit une tonalité : mi♭ et non ré♯,
+   la♭ et non sol♯, mais fa♯ et non sol♭. */
+function imRootFlat(pc){return flatFor(pc,'maj');}
+/* Choisir « ré♯ » pour voir s'afficher « mi♭7 » : la liste des toniques
+   s'écrit comme les accords qu'elle va produire. */
+function imKeyOptions(){
+  var out=[],i;
+  for(i=0;i<12;i++)out.push({v:String(i),n:pcName(i,imRootFlat(i))});
+  return out;
+}
+function imName(x){return chordName(x.ch,x.pc,imRootFlat(x.pc));}
+/* Une gamme s’écrit avec une lettre par degré : le ♭3 de fa est un la♭, pas
+   un sol♯, parce que la lettre « la » vient après « sol ». On part de la
+   lettre de la fondamentale et on avance d’une lettre par degré ; l’écart
+   avec la note réelle donne l’altération. */
+var IM_ALT=['♭♭','♭','','♯','♯♯'];
+function imLetterOf(pc,flat){
+  var i;
+  for(i=0;i<7;i++)if(LET_SEMI[i]===pc)return i;
+  for(i=0;i<7;i++){
+    if(flat&&((LET_SEMI[i]-1+12)%12)===pc)return i;   /* la♭ : la lettre du dessus */
+    if(!flat&&((LET_SEMI[i]+1)%12)===pc)return i;     /* sol♯ : celle du dessous */
+  }
+  return -1;
+}
+function imSpell(rootPc,flat,deg,pc){
+  pc=((pc%12)+12)%12;
+  var n=parseInt(String(deg).replace(/[^0-9]/g,''),10);
+  var rl=imLetterOf(((rootPc%12)+12)%12,flat);
+  if(!n||rl<0)return pcName(pc,flat);
+  var li=(rl+n-1)%7,d=((pc-LET_SEMI[li])%12+12)%12;
+  if(d>6)d-=12;
+  if(d<-2||d>2)return pcName(pc,flat);   /* triple altération : on renonce */
+  return letterName(li)+IM_ALT[d+2];
+}
+/* L’accord reste dans la même octave quelle que soit la tonique : sans ça,
+   changer de ton ferait sauter l’accompagnement d’une octave. */
+function imVoicing(x){
+  var base=48+x.pc;if(base>59)base-=12;
+  return x.ch.iv.map(function(iv){return base+iv;});
+}
+function imScale(id){return SCALES.filter(function(y){return y.id===id;})[0]||SCALES[0];}
+function imGridPcs(){
+  var b=imScale(imGrid().sc);
+  return b.iv.map(function(iv){return (IM.key+iv)%12;});
+}
+/* Si l’accord est tout entier dans la gamme de la tourne, la bonne gamme sur
+   cet accord n’est pas une autre gamme : c’est la même, lue depuis sa
+   fondamentale. On la reconnaît à ses intervalles. */
+function imRotate(root){
+  var pcs=imGridPcs();
+  var iv=pcs.map(function(p){return ((p-root)%12+12)%12;}).sort(function(a,b){return a-b;});
+  if(iv[0]!==0)return null;
+  var sig=iv.join(',');
+  return SCALES.filter(function(y){return y.iv.join(',')===sig;})[0]||null;
+}
+function imScaleNow(){
+  var g=imGrid(),x=imChordOf(imBarAt(IM.cur));
+  if(IM.view!=='accord')return {root:IM.key,sc:imScale(g.sc)};
+  var pcs=imGridPcs();
+  var dedans=x.ch.iv.filter(function(iv){return pcs.indexOf((x.pc+iv)%12)>=0;}).length===x.ch.iv.length;
+  if(dedans){var r=imRotate(x.pc);if(r)return {root:x.pc,sc:r};}
+  /* Le V majeur d’une tonalité mineure : ni la gamme du ton, ni le mixolydien.
+     C’est le phrygien dominant — la couleur du flamenco et du blues mineur. */
+  if(g.min&&((x.pc-IM.key)%12+12)%12===7&&
+     (x.ch.id==='M'||x.ch.id==='7'||x.ch.id==='9'))return {root:x.pc,sc:imScale('phrydom')};
+  return {root:x.pc,sc:imScale(IM_MODE[x.ch.id]||'maj')};
+}
+
+function imPlay(bar,beat,when){
+  var x=imChordOf(imBarAt(bar)),v=imVoicing(x),bass=v[0]-12,spb=60/IM.bpm;
+  if(IM.met)click(when,beat===0?2:1);
+  if(IM.style==='tenu'){
+    if(beat===0){v.forEach(function(m){playNote(m,spb*3.6,when,0.30);});playNote(bass,spb*3.8,when,0.46);}
+    if(beat===2)playNote(bass+7,spb*1.8,when,0.34);
+  }else if(IM.style==='pompe'){
+    if(beat===0)playNote(bass,spb*1.5,when,0.46);
+    if(beat===2)playNote(bass+7,spb*1.5,when,0.42);
+    if(beat===1||beat===3)v.forEach(function(m){playNote(m,spb*0.6,when,0.28);});
+  }else if(IM.style==='arp'){
+    var seq=[v[0],v[1]||v[0],v[2]||v[0],v[3]||v[1]||v[0]];
+    playNote(seq[beat],spb*1.2,when,0.34);
+    if(beat===0)playNote(bass,spb*3.6,when,0.42);
+  }else{
+    /* Basse seule : à toi les accords. Le quatrième temps approche la
+       fondamentale suivante d’un demi-ton, comme une walking bass. */
+    var nb=imVoicing(imChordOf(imBarAt(bar+1)))[0]-12;
+    var app=(nb===bass)?bass+10:(nb>bass?nb-1:nb+1);
+    playNote([bass,bass+7,bass+12,app][beat],spb*1.05,when,0.46);
+  }
+}
+/* Repeindre quand le son sort, et seulement si la boucle est encore celle-là. */
+function imAt(bar,ms){
+  var g=IM.gen;
+  setTimeout(function(){
+    if(IM.gen!==g||!IM.on)return;
+    IM.cur=bar;paintImBars();paintImNow();
+    var e=$('#imBar');if(e)e.textContent=String((bar%imGrid().bars.length)+1);
+  },Math.max(0,ms));
+}
+function imSched(){
+  var c=ac();if(!c)return;
+  if(c.state!=='running'){try{c.resume();}catch(e){}IM.next=c.currentTime+0.06;return;}
+  /* Veille, appel entrant : on repart au début d’une mesure plutôt que de
+     rattraper les temps manqués. */
+  if(IM.next<c.currentTime-0.3){IM.next=c.currentTime+0.06;IM.beat=0;IM.count=0;}
+  var spb=60/IM.bpm,guard=0;
+  while(IM.next<c.currentTime+0.18&&guard++<32){
+    if(IM.count>0){click(IM.next,IM.count===4?2:1);IM.count--;IM.next+=spb;continue;}
+    imPlay(IM.bar,IM.beat,IM.next);
+    if(IM.beat===0)imAt(IM.bar,(IM.next-c.currentTime)*1000);
+    IM.beat++;
+    if(IM.beat>=4){IM.beat=0;IM.bar++;}
+    IM.next+=spb;
+  }
+}
+function imStart(){
+  var c=ac();if(!c)return;
+  if(M.on)metStop();   /* deux tempos à la fois, personne n’y arrive */
+  IM.on=true;IM.gen++;IM.beat=0;IM.bar=0;IM.cur=0;IM.count=4;   /* une mesure de décompte */
+  IM.next=c.currentTime+0.12;
+  var b=$('#imBtn');b.textContent='■ Arrêter';b.classList.remove('primary');
+  var e=$('#imBar');if(e)e.textContent='…';
+  requestLock();paintImBars();paintImNow();
+  IM.timer=setInterval(imSched,25);
+}
+function imStop(){
+  IM.on=false;IM.gen++;
+  if(IM.timer){clearInterval(IM.timer);IM.timer=null;}
+  hushClicks();
+  var b=$('#imBtn');if(b){b.textContent='▶ Lancer';b.classList.add('primary');}
+  var e=$('#imBar');if(e)e.textContent='—';
+  releaseLock();paintImBars();paintImNow();
+}
+
+function paintImBars(){
+  var el=$('#imBars');if(!el)return;
+  var g=imGrid(),cur=IM.on?(IM.cur%g.bars.length):-1;
+  el.innerHTML=g.bars.map(function(b,i){
+    var x=imChordOf(b);
+    return '<div class="imbar'+(i===cur?' on':'')+'">'+
+      '<div class="ic">'+esc(imName(x))+'</div>'+
+      '<div class="idg">'+esc(b[2])+'</div></div>';
+  }).join('');
+}
+function paintImNow(){
+  var g=imGrid(),i=IM.on?(IM.cur%g.bars.length):0;
+  var x=imChordOf(g.bars[i]),nx=imChordOf(g.bars[(i+1)%g.bars.length]);
+  var e=$('#imChord');if(!e)return;
+  e.textContent=imName(x);
+  $('#imNext').innerHTML=(g.bars.length>1&&nx.pc===x.pc&&nx.ch.id===x.ch.id)
+    ?'<span class="sub">on y reste</span>'
+    :'puis <b>'+esc(imName(nx))+'</b>';
+  var y=imScaleNow();
+  IM.sc=y.sc;IM.scRoot=y.root;
+  highlight($('#imKb'),y.sc.iv.map(function(iv){return (y.root+iv)%12;}),((y.root%12)+12)%12);
+  var rf=imRootFlat(y.root);
+  $('#imNotes').innerHTML='<b>'+esc(y.sc.n+' de '+pcName(y.root,rf))+'</b> — '+
+    esc(y.sc.iv.map(function(iv,i){return imSpell(y.root,rf,y.sc.deg[i],y.root+iv);}).join(' · '));
+  $('#imTip').textContent=(IM.view==='accord')
+    ?(IM_TIP[x.ch.id]||'Écoute l’accord, puis cherche la note qui te plaît dedans.')
+    :g.tip;
+}
+function imSave(){
+  S.settings.impro={grid:IM.grid,key:IM.key,bpm:IM.bpm,style:IM.style,view:IM.view,met:IM.met};
+  saveSettings();
+}
+function renderImpro(){
+  var st=S.settings.impro||{};
+  IM.grid=st.grid||'blues12';IM.key=((+st.key||0)%12+12)%12;
+  IM.style=st.style||'tenu';IM.view=st.view||'grille';IM.met=!!st.met;
+  if(!IM.on){IM.bpm=clamp(+st.bpm||imGrid().bpm,40,200);IM.cur=0;}
+  var gs=$('#imGrid');
+  gs.innerHTML=IM_GRIDS.map(function(g){return '<option value="'+g.id+'">'+esc(g.n)+'</option>';}).join('');
+  gs.value=IM.grid;
+  fillSelect($('#imKey'),imKeyOptions(),String(IM.key));
+  $('#imBpm').value=IM.bpm;
+  $('#imMet').checked=IM.met;
+  $$('#imStyle button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.is===IM.style?'true':'false');});
+  $$('#imView button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.iv===IM.view?'true':'false');});
+  buildKB($('#imKb'),48,2,null,true);   /* deux octaves depuis le do grave */
+  $('#imAbout').textContent=imGrid().h;
+  var cs=COURS.filter(function(c){return c.th==='impro';});
+  $('#imCours').innerHTML=cs.map(function(c){return coursBtn(c.id,c.t);}).join('');
+  wireCoursBtns('#imCours');
+  paintImBars();paintImNow();
+}
+function imSetup(){
+  $('#imGrid').onchange=function(){
+    IM.grid=this.value;var g=imGrid();
+    IM.bpm=g.bpm;$('#imBpm').value=g.bpm;   /* chaque tourne a son allure */
+    IM.cur=0;IM.bar=0;IM.beat=0;
+    $('#imAbout').textContent=g.h;
+    imSave();paintImBars();paintImNow();
+  };
+  $('#imKey').onchange=function(){IM.key=((+this.value||0)%12+12)%12;imSave();paintImBars();paintImNow();};
+  $('#imBpm').onchange=function(){IM.bpm=clamp(+this.value||84,40,200);this.value=IM.bpm;imSave();};
+  $('#imMet').onchange=function(){IM.met=this.checked;imSave();};
+  $$('#imStyle button').forEach(function(b){b.onclick=function(){
+    IM.style=b.dataset.is;
+    $$('#imStyle button').forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false');});
+    imSave();
+  };});
+  $$('#imView button').forEach(function(b){b.onclick=function(){
+    IM.view=b.dataset.iv;
+    $$('#imView button').forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false');});
+    imSave();paintImNow();
+  };});
+  $('#imBtn').onclick=function(){if(IM.on)imStop();else imStart();};
+  $('#imPlayScale').onclick=function(){
+    var sc=IM.sc||SCALES[0],r=IM.scRoot||0;
+    var ns=sc.iv.map(function(iv){return 60+r+iv;});ns.push(72+r);
+    playSeq(ns,0.21);
+  };
+  $('#imPlayChord').onclick=function(){
+    var x=imChordOf(imBarAt(IM.cur)),v=imVoicing(x);
+    playChord(v.concat([v[0]-12]),2);
+  };
 }
 
 /* =========================================================

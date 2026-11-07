@@ -38,6 +38,7 @@ mémoire, et d'où tout cela vient.
 | 10 | Le cours du bloc en tiroir : `openCours` scindé en un corps de cours réutilisable (`coursHTML` / `wireCoursBody`) et une feuille qui n’en est plus que l’un des hôtes, un quatrième outil de séance qui lit le cours du bloc sur place, suit les blocs, enchaîne les « à lire ensuite » et sait s’ouvrir en grand | **fait** |
 
 | 11 | L’écran unique pris au mot : la séance tient dans la hauteur de l’écran et la page ne défile plus, le programme passe dans un cinquième tiroir, les cinq outils tiennent sur une ligne, et le paysage d’un téléphone passe à deux colonnes sans barre d’onglets | **fait** |
+| 12 | L’onglet **Impro** : neuf tournes jouées en boucle (moteur à programmation anticipée, quatre styles d’accompagnement, décompte d’une mesure), la grille qui s’allume mesure par mesure, et le clavier qui montre soit la gamme de la tourne soit celle de l’accord du moment, trouvée par rotation de la gamme de la grille | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -66,6 +67,26 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 12.** L’accompagnement réutilise la technique du métronome : on
+  programme le son une fraction de seconde à l’avance et on repeint l’écran
+  au moment où il sort (`setTimeout` gardé par un numéro de génération), pas
+  quand on le programme. `IM` est un état séparé de `M` : lancer une tourne
+  arrête le métronome, et changer d’onglet arrête la tourne.
+- La gamme sur un accord n’est pas une table d’accords vers gammes. Si
+  l’accord tient dans la gamme de la tourne, on affiche cette gamme-là lue
+  depuis la fondamentale de l’accord : on la reconnaît en comparant la
+  signature des intervalles à celles de `SCALES`. La seule exception codée en
+  dur est le V majeur d’une grille mineure (`min:1`) : phrygien dominant,
+  mode ajouté à `SCALES` pour l’occasion. Sans le drapeau `min`, le V d’un
+  blues majeur recevait lui aussi le phrygien dominant, ce qui est faux.
+- Trois orthographes se sont succédé avant la bonne. Une gamme s’écrit avec
+  une lettre par degré : on part de la lettre de la fondamentale, on avance
+  d’une lettre par degré, et l’écart avec la note réelle donne l’altération
+  (`imSpell`). `flatFor` seul ne suffit pas : il décide par tonalité, pas par
+  note, et affichait « la♯ » dans un mixolydien de do.
+- `noteOptions()` écrit les douze notes avec des dièses : la liste des
+  toniques de l’impro a la sienne, pour qu’on y choisisse mi♭ et non ré♯.
 
 - **Étape 11.** « Un écran » voulait dire : qui ne défile pas. `body.solo`
   (séance en cours **et** onglet Séance) met la page en colonne flex de
