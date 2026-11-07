@@ -18,7 +18,7 @@ le son, et tes données enregistrées sur ton appareil.
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. |
 | **Théorie** | Cercle des quintes cliquable : armure, gamme, les sept accords du ton, cadences jouables. |
-| **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. |
+| **Impro** | Une grille qui tourne et un accompagnement joué pour toi : neuf tournes (blues en douze mesures, ii-V-I, anatole, les quatre accords, la ronde des années cinquante, vamp dorien, descente andalouse, blues mineur, une seule couleur), les douze toniques, le tempo, et quatre façons d'accompagner — accords tenus, pompe sur 2 et 4, arpèges, basse seule. La grille s'allume mesure par mesure, le clavier montre les notes qui passent, au choix la gamme de la tourne ou celle de l'accord du moment. Et dix-huit consignes à tirer — trois notes seulement, rien qu'une note, question-réponse, finis sur la tierce, laisse une mesure vide — chacune avec un minuteur de 2, 3 ou 5 minutes. |
 | **Répertoire** | Tes morceaux avec état, tonalité, tempo actuel vers tempo cible, passages à surveiller, et une fréquence de révision par état (2 à 21 jours). C'est d'ici que part la séance du jour. |
 | **Journal** | Séances, totaux, moyenne, réussite par exercice sur 30 jours, ajout de séances passées, réglages. |
 
@@ -105,8 +105,23 @@ par degré. Le ♭3 de fa est un la♭ et non un sol♯, parce que la lettre « 
 vient après « sol ». La liste des toniques est écrite comme les accords qu'elle
 produit : on y choisit mi♭, pas ré♯.
 
-La tourne appartient à son onglet : changer d'onglet l'arrête, et lancer une
-tourne arrête le métronome — deux tempos à la fois, personne n'y arrive.
+## Une consigne, et le reste vient
+
+Improviser devant une liberté totale ne produit rien ; devant trois notes, si.
+Sous la grille, dix-huit consignes se tirent une par une — *trois notes, pas
+une de plus*, *rien qu'une note*, *question, réponse*, *finis sur la tierce*,
+*commence après le temps*, *laisse une mesure vide*, *chante d'abord*, *deux
+fois moins de notes*. Chacune dit en une phrase ce qu'elle cherche à te faire
+entendre.
+
+Le tirage vide un sac avant de le remplir : tu auras fait le tour des dix-huit
+avant d'en revoir une. À côté, un minuteur de 2, 3 ou 5 minutes, avec le
+carillon au bout — le temps de tenir une contrainte assez longtemps pour
+qu'elle change quelque chose.
+
+La tourne appartient à son onglet : changer d'onglet l'arrête, avec le minuteur
+de la consigne, et lancer une tourne arrête le métronome — deux tempos à la
+fois, personne n'y arrive.
 
 ## Quand le son disparaît
 

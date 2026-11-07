@@ -39,6 +39,7 @@ mémoire, et d'où tout cela vient.
 
 | 11 | L’écran unique pris au mot : la séance tient dans la hauteur de l’écran et la page ne défile plus, le programme passe dans un cinquième tiroir, les cinq outils tiennent sur une ligne, et le paysage d’un téléphone passe à deux colonnes sans barre d’onglets | **fait** |
 | 12 | L’onglet **Impro** : neuf tournes jouées en boucle (moteur à programmation anticipée, quatre styles d’accompagnement, décompte d’une mesure), la grille qui s’allume mesure par mesure, et le clavier qui montre soit la gamme de la tourne soit celle de l’accord du moment, trouvée par rotation de la gamme de la grille | **fait** |
+| 13 | Les consignes d’impro : dix-huit contraintes tirées sans répétition (sac vidé avant d’être rempli) et un minuteur de 2, 3 ou 5 minutes avec carillon, sous la grille qui tourne | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -67,6 +68,16 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 13.** Le tirage des consignes est un sac, pas un tirage au sort :
+  on mélange les dix-huit index, on les sort un par un, et on ne remélange
+  qu’une fois le sac vide. Une consigne ne revient donc jamais avant que les
+  autres soient passées, et le dernier tirage d’un sac ne peut pas répéter le
+  premier du suivant.
+- Le minuteur de la consigne est indépendant de `T` (la séance) et de `M` (le
+  métronome) : il n’a ni verrou d’écran ni audio programmé, seulement une
+  date de fin et un carillon. Arrêté à la main il disparaît ; arrivé à zéro
+  il reste à 0:00, pour qu’on voie pourquoi le carillon a sonné.
 
 - **Étape 12.** L’accompagnement réutilise la technique du métronome : on
   programme le son une fraction de seconde à l’avance et on repeint l’écran

@@ -974,6 +974,24 @@ button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
           <p class="sub" id="imTip"></p>
         </div>
       </div>
+      <div class="card" id="imConsCard">
+        <div class="row" style="justify-content:space-between;align-items:baseline">
+          <div class="eyebrow" style="margin:0">Une consigne</div>
+          <span class="sub num" id="imConsN"></span>
+        </div>
+        <h2 class="ttl" id="imConsT" style="font-size:22px;margin-top:4px">—</h2>
+        <p class="sub" id="imConsD" style="max-width:62ch"></p>
+        <div class="row" style="margin-top:13px;align-items:center">
+          <button class="btn" id="imConsNew">Une autre</button>
+          <div class="seg" id="imConsLen" role="group" aria-label="Durée de la consigne">
+            <button type="button" data-cl="2">2 min</button>
+            <button type="button" data-cl="3">3 min</button>
+            <button type="button" data-cl="5">5 min</button>
+          </div>
+          <button class="btn sm ghost" id="imConsGo">▶ Minuteur</button>
+          <span class="chip num" id="imConsTime" hidden>0:00</span>
+        </div>
+      </div>
       <div class="card">
         <div class="eyebrow">Pour comprendre ce que tu joues</div>
         <div class="row tight" id="imCours"></div>
@@ -1378,7 +1396,7 @@ var S={
   settings:{names:'fr',goal:20,labels:true,octaves:2,theme:'',routine:cloneRoutine(DEF_ROUTINE),
             focus:{piece:'',len:30,mode:'guide'},nextTips:'',lastBackup:'',
             metro:{bpm:92,beats:4,sub:1,accent:true},
-            impro:{grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false}},
+            impro:{grid:'blues12',key:0,bpm:84,style:'tenu',view:'grille',met:false,clen:3}},
   pieces:[], sessions:[], drills:{}, learn:{done:{}}
 };
 var DB=null, LS='studio88.v1', PEND='studio88.pending', pending={}, localOk=true;
@@ -1827,6 +1845,7 @@ function go(id){
   /* La tourne est liée à son onglet : on ne laisse pas un accompagnement
      jouer tout seul derrière une autre page. */
   if(id!=='impro'&&IM&&IM.on)imStop();
+  if(id!=='impro'&&IC&&IC.on)imConsStop();
   cur=id;
   TABS.forEach(function(t){
     var sec=$('#t-'+t[0]);if(sec)sec.hidden=(t[0]!==id);
@@ -4903,8 +4922,67 @@ function paintImNow(){
     ?(IM_TIP[x.ch.id]||'Écoute l’accord, puis cherche la note qui te plaît dedans.')
     :g.tip;
 }
+/* ---------------------------------------------------------------------
+   Les consignes : une contrainte, et le reste vient tout seul. Improviser
+   devant une liberté totale ne produit rien ; devant trois notes, si.
+   --------------------------------------------------------------------- */
+var IM_CONS=[
+ {t:'Trois notes, pas une de plus',d:'Choisis trois notes de la gamme et ne joue qu’elles pendant tout un tour. Ce qui manque en matière revient en rythme et en placement.'},
+ {t:'Rien qu’une note',d:'Une seule note, tout le tour. Il ne te reste que le rythme, le silence et la nuance — c’est là qu’on entend ce qui fait une phrase.'},
+ {t:'Question, réponse',d:'Deux mesures qui demandent, deux mesures qui répondent. La réponse reprend le rythme de la question et finit plus bas.'},
+ {t:'Finis sur la tierce',d:'Chaque phrase se termine sur la tierce de l’accord en cours. C’est la note qui dit majeur ou mineur : elle sonne comme une arrivée.'},
+ {t:'Commence après le temps',d:'Aucune phrase ne commence sur le premier temps. Entre en retard, systématiquement : la grille continue sans toi, et c’est ce décalage qui respire.'},
+ {t:'Laisse une mesure vide',d:'Joue une mesure, tais-toi la suivante. Le silence fait partie de ce que l’auditeur entend — et il te laisse le temps d’écouter où en est la grille.'},
+ {t:'Une seule main',d:'Main droite seule pendant tout un tour, main gauche seule au tour suivant. La gauche improvise mal parce qu’on ne la laisse jamais faire.'},
+ {t:'Que des blanches',d:'Rien de plus court qu’une blanche. On ne peut plus se cacher derrière la vitesse : chaque note est exposée.'},
+ {t:'Monte, puis redescends',d:'Une phrase qui ne fait que monter, la suivante que descendre. Le contour s’entend de loin, bien avant les notes exactes.'},
+ {t:'Par degrés voisins',d:'Interdiction de sauter : on se déplace de note en note dans la gamme. C’est le chant, pas l’arpège.'},
+ {t:'Rien que des sauts',d:'L’inverse : aucun déplacement de note à note, uniquement des sauts de tierce ou plus. Les phrases deviennent anguleuses, et souvent plus intéressantes.'},
+ {t:'La même phrase à chaque tour',d:'Rejoue la même phrase, inchangée, à chaque passage. Elle changera de sens toute seule, à mesure que les accords passent dessous.'},
+ {t:'Chante d’abord',d:'Chante une phrase à voix haute, puis cherche-la au clavier. Ce que tu chantes, tu peux le jouer : c’est le trajet le plus court entre l’oreille et les doigts.'},
+ {t:'Vole une phrase',d:'Prends quatre notes d’un morceau que tu connais par cœur et sers-t’en comme matière : retourne-les, étire-les, déplace-les.'},
+ {t:'Une note fausse, assumée',d:'Joue volontairement une note hors de la gamme, puis rattrape-la d’un demi-ton. Une note n’est fausse que si on la laisse seule.'},
+ {t:'Change de registre',d:'Un tour entier dans le grave, le suivant deux octaves plus haut. Le registre est une couleur, au même titre que les notes.'},
+ {t:'Deux fois moins de notes',d:'Rejoue ce que tu viens de jouer en enlevant la moitié des notes. Ce qui reste est presque toujours meilleur.'},
+ {t:'Termine quand l’accord change',d:'Chaque phrase s’arrête pile au changement d’accord. On apprend à sentir la grille sans avoir à la compter.'}
+];
+/* Un sac qu’on vide avant de le remplir : pas deux fois la même consigne
+   avant d’avoir fait le tour. */
+var IC={bag:[],i:-1,on:false,end:0,timer:null,len:3};
+function imConsDraw(){
+  if(!IC.bag.length)IC.bag=shuffle(IM_CONS.map(function(c,i){return i;}));
+  var n=IC.bag.pop();
+  if(n===IC.i&&IC.bag.length)n=IC.bag.pop();
+  IC.i=n;paintCons();
+}
+function paintCons(){
+  var c=IM_CONS[IC.i]||IM_CONS[0],t=$('#imConsT');if(!t)return;
+  t.textContent=c.t;$('#imConsD').textContent=c.d;
+  $('#imConsN').textContent=IM_CONS.length+' consignes en tout';
+}
+function imConsFmt(sec){return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);}
+function imConsTick(){
+  var left=Math.max(0,Math.round((IC.end-Date.now())/1000));
+  var e=$('#imConsTime');if(e)e.textContent=imConsFmt(left);
+  if(left<=0){imConsStop(true);chime();}
+}
+function imConsStart(){
+  if(IC.timer)clearInterval(IC.timer);
+  IC.on=true;IC.end=Date.now()+IC.len*60000;
+  var e=$('#imConsTime');if(e)e.hidden=false;
+  $('#imConsGo').textContent='■ Arrêter';
+  imConsTick();IC.timer=setInterval(imConsTick,250);
+}
+/* Arrêté à la main, le décompte disparaît ; arrivé à zéro, il reste affiché. */
+function imConsStop(fini){
+  IC.on=false;
+  if(IC.timer){clearInterval(IC.timer);IC.timer=null;}
+  var b=$('#imConsGo');if(b)b.textContent='▶ Minuteur';
+  var e=$('#imConsTime');if(e&&!fini)e.hidden=true;
+}
 function imSave(){
-  S.settings.impro={grid:IM.grid,key:IM.key,bpm:IM.bpm,style:IM.style,view:IM.view,met:IM.met};
+  S.settings.impro={grid:IM.grid,key:IM.key,bpm:IM.bpm,style:IM.style,view:IM.view,
+                    met:IM.met,clen:IC.len};
   saveSettings();
 }
 function renderImpro(){
@@ -4922,6 +5000,9 @@ function renderImpro(){
   $$('#imView button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.iv===IM.view?'true':'false');});
   buildKB($('#imKb'),48,2,null,true);   /* deux octaves depuis le do grave */
   $('#imAbout').textContent=imGrid().h;
+  IC.len=[2,3,5].indexOf(+st.clen)>=0?+st.clen:3;
+  $$('#imConsLen button').forEach(function(b){b.setAttribute('aria-pressed',+b.dataset.cl===IC.len?'true':'false');});
+  if(IC.i<0)imConsDraw();else paintCons();
   var cs=COURS.filter(function(c){return c.th==='impro';});
   $('#imCours').innerHTML=cs.map(function(c){return coursBtn(c.id,c.t);}).join('');
   wireCoursBtns('#imCours');
@@ -4949,6 +5030,14 @@ function imSetup(){
     imSave();paintImNow();
   };});
   $('#imBtn').onclick=function(){if(IM.on)imStop();else imStart();};
+  $('#imConsNew').onclick=imConsDraw;
+  $('#imConsGo').onclick=function(){if(IC.on)imConsStop();else imConsStart();};
+  $$('#imConsLen button').forEach(function(b){b.onclick=function(){
+    IC.len=+b.dataset.cl;
+    $$('#imConsLen button').forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false');});
+    if(IC.on)imConsStart();   /* changer la durée en route, c'est repartir dessus */
+    imSave();
+  };});
   $('#imPlayScale').onclick=function(){
     var sc=IM.sc||SCALES[0],r=IM.scRoot||0;
     var ns=sc.iv.map(function(iv){return 60+r+iv;});ns.push(72+r);
