@@ -134,6 +134,10 @@ button.chip{cursor:pointer;transition:color .15s,border-color .15s}
    l’essentiel par la couleur de son point. Sans lui, les pastilles et le
    mini-lecteur tiennent sur une seule ligne au lieu de deux. */
 @media (max-width:420px){.syncw{display:none}#chipSync{padding:4px 9px}}
+/* Pendant une séance, le mini-lecteur s’ajoute à la ligne. Le compteur du
+   jour ne bouge pas avant le bilan — il cède la place à l’horloge qui,
+   elle, avance, et revient dès la séance terminée. */
+@media (max-width:560px){body.ensess #chipToday,body.ensess .syncw{display:none}}
 /* Sur un téléphone, l’en-tête occupait un quart de l’écran à demeure. Dès
    qu’on descend dans la page, le titre s’efface : les pastilles, le
    mini-lecteur et les onglets restent, le reste est rendu à ce qu’on lit. */
@@ -1762,6 +1766,7 @@ function playNote(m,dur,when,vel){
     var o=c.createOscillator();o.type=p[1];o.frequency.value=f*p[0];
     var pg=c.createGain();pg.gain.value=p[2];
     o.connect(pg);pg.connect(g);o.start(when);o.stop(when+dur+0.05);
+    if(NOTEBAG)bagPush(NOTEBAG,o);
   });
 }
 function playSeq(notes,step,dur){
@@ -1787,6 +1792,16 @@ function click(when,kind){
   o.onended=function(){var i=CLK.indexOf(o);if(i>=0)CLK.splice(i,1);};
 }
 var CLK=[];   /* clics programmés à l'avance, qu'on doit pouvoir faire taire */
+/* Les voix de la tourne, programmées elles aussi à l’avance : un accord tenu
+   dure trois temps et demi, et « Arrêter » doit l’arrêter lui aussi. Un sac
+   à part, pour ne pas couper au passage l’extrait d’un cours ou le carillon
+   de fin de bloc. */
+var IMV=[],NOTEBAG=null;
+function bagPush(bag,o){
+  bag.push(o);
+  o.onended=function(){var i=bag.indexOf(o);if(i>=0)bag.splice(i,1);};
+}
+function hushBag(bag){bag.forEach(function(o){try{o.stop();}catch(e){}});bag.length=0;}
 function hushClicks(){CLK.forEach(function(o){try{o.stop();}catch(e){}});CLK=[];}
 function chime(){var c=ac();if(!c)return;var t=c.currentTime+0.02;[72,76,79,84].forEach(function(m,i){playNote(m,1.6,t+i*0.13,0.5);});}
 
@@ -2458,9 +2473,17 @@ function renderRoutine(){
     }
     saveSettings();renderRoutine();};});
   $$('#routineEdit [data-rd]').forEach(function(el){el.onclick=function(){
-    S.settings.routine.splice(+el.dataset.rd,1);
+    var i=+el.dataset.rd,busy=sessionBusy(),etait=(busy&&i===T.bi);
+    S.settings.routine.splice(i,1);
     if(!S.settings.routine.length)S.settings.routine=[{n:'Travail',m:20,d:'',bpm:0}];
+    if(i<T.bi)T.bi--;   /* un bloc d’avant s’en va : on reste sur le même */
     T.bi=clamp(T.bi,0,S.settings.routine.length-1);
+    if(etait){
+      /* le bloc en cours a disparu : son remplaçant repart entier */
+      T.left=(+S.settings.routine[T.bi].m)*60;
+      if(T.on)T.end=Date.now()+T.left*1000;
+      paintTimer();metFollowBlock();
+    }
     saveSettings();renderRoutine();};});
   renderBlocks();
 }
@@ -2695,6 +2718,7 @@ function paintSessTools(){
   /* L'écran unique ne vaut que sur l'onglet de la séance : ailleurs, la page
      défile comme d'habitude. */
   document.body.classList.toggle('solo',busy&&cur==='seance');
+  document.body.classList.toggle('ensess',busy);
   document.body.classList.toggle('tool',busy&&cur==='seance'&&!!sessTool);
   if(!el)return;
   el.hidden=!busy;
@@ -2758,7 +2782,7 @@ function requestLock(){
   try{if('wakeLock' in navigator&&!T.lock){navigator.wakeLock.request('screen').then(function(l){T.lock=l;}).catch(function(){});}}catch(e){}
 }
 function releaseLock(){
-  if(T.on||M.on||(IM&&IM.on))return;   /* l'autre minuteur peut encore avoir besoin de l'écran */
+  if(T.on||M.on||(IM&&IM.on)||(IC&&IC.on))return;   /* l'autre minuteur peut encore avoir besoin de l'écran */
   try{if(T.lock){T.lock.release();T.lock=null;}}catch(e){}
 }
 /* Safari en onglet ignore « user-scalable=no » ; il écoute en revanche ses
@@ -2769,7 +2793,8 @@ ZOOM_GESTURES.forEach(function(ev){
 });
 /* iOS reprend le verrou d'écran dès que la page passe en arrière-plan : on le redemande au retour. */
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&(T.on||M.on)){T.lock=null;requestLock();}
+  if(document.visibilityState==='visible'&&
+     (T.on||M.on||(IM&&IM.on)||(IC&&IC.on))){T.lock=null;requestLock();}
 });
 function stopTimer(finished){
   clearInterval(T.tick);T.on=false;
@@ -5075,6 +5100,7 @@ function imScaleNow(){
 
 function imPlay(bar,beat,when){
   var x=imChordOf(imBarAt(bar)),v=imVoicing(x),bass=v[0]-12,spb=60/IM.bpm;
+  NOTEBAG=IMV;   /* tout ce qui suit appartient à la tourne */
   if(IM.met)click(when,beat===0?2:1);
   if(IM.style==='tenu'){
     if(beat===0){v.forEach(function(m){playNote(m,spb*3.6,when,0.30);});playNote(bass,spb*3.8,when,0.46);}
@@ -5094,6 +5120,7 @@ function imPlay(bar,beat,when){
     var app=(nb===bass)?bass+10:(nb>bass?nb-1:nb+1);
     playNote([bass,bass+7,bass+12,app][beat],spb*1.05,when,0.46);
   }
+  NOTEBAG=null;
 }
 /* Repeindre quand le son sort, et seulement si la boucle est encore celle-là. */
 function imAt(bar,ms){
@@ -5133,7 +5160,7 @@ function imStart(){
 function imStop(){
   IM.on=false;IM.gen++;
   if(IM.timer){clearInterval(IM.timer);IM.timer=null;}
-  hushClicks();
+  hushClicks();hushBag(IMV);
   var b=$('#imBtn');if(b){b.textContent='▶ Lancer';b.classList.add('primary');}
   var e=$('#imBar');if(e)e.textContent='—';
   releaseLock();paintImBars();paintImNow();
@@ -5216,6 +5243,7 @@ function imConsStart(){
   IC.on=true;IC.end=Date.now()+IC.len*60000;
   var e=$('#imConsTime');if(e)e.hidden=false;
   $('#imConsGo').textContent='■ Arrêter';
+  requestLock();   /* on joue : l’écran reste allumé */
   imConsTick();IC.timer=setInterval(imConsTick,250);
 }
 /* Arrêté à la main, le décompte disparaît ; arrivé à zéro, il reste affiché. */
@@ -5223,6 +5251,7 @@ function imConsStop(fini){
   IC.on=false;
   if(IC.timer){clearInterval(IC.timer);IC.timer=null;}
   var b=$('#imConsGo');if(b)b.textContent='▶ Minuteur';
+  releaseLock();
   var e=$('#imConsTime');if(e&&!fini)e.hidden=true;
 }
 function imSave(){

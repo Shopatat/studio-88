@@ -44,6 +44,7 @@ mémoire, et d'où tout cela vient.
 | 15 | Cohabiter avec une autre appli : session audio `ambient` au choix (sans quoi iOS met l’autre appli en pause), notes MIDI reçues sans les doubler, et un message juste sur l’absence de Web MIDI dans Safari | **fait** |
 | 16 | L’iPad 12,9 en paysage : colonne à 1240 au-delà de 1200, trois cartes de front dans l’impro au-delà de 1180, clavier plus haut au-delà de 1100, et la séance en écran unique à deux colonnes avec le programme à demeure | **fait** |
 | 17 | Fluidité et ergonomie : en-tête qui s’efface en descendant (196 → 105 points), pastilles sur une ligne, place gardée par onglet, survol réservé aux pointeurs et retour d’appui au doigt, page vraiment figée sous la feuille d’un cours | **fait** |
+| 18 | Chasse aux bugs : les voix de la tourne se taisent avec elle, le verrou d’écran couvre la tourne et la consigne, la suppression d’un bloc pendant la séance ne décale plus le minuteur, et l’en-tête reste compact pendant qu’on joue | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -59,9 +60,10 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les dix-sept étapes sont faites et poussées. La
+**Rien en cours.** Les dix-huit étapes sont faites et poussées. La
 dix-septième a rendu un dixième de l’écran du téléphone à ce qu’on y
-lit, et remplacé le survol par un vrai retour d’appui.
+lit ; la dix-huitième a corrigé quatre défauts, dont un
+accompagnement qui sonnait trois secondes après son bouton d’arrêt.
 
 **Le chantier iPad s’arrête là, et c’est volontaire.** Ce qui est fait reste
 (les largeurs, les deux réglages de cohabitation) et ne coûte rien : les deux
@@ -84,6 +86,32 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 18.** Quatre défauts trouvés, tous vérifiés dans le navigateur
+  avant et après correction. Le reste de la revue n’a rien donné : dix
+  onglets et dix feuilles de cours sans « undefined » ni « NaN », aucun
+  débordement horizontal, aucune erreur JavaScript, les textes de
+  l’utilisateur correctement échappés, la routine impossible à vider.
+- `hushClicks` ne faisait taire que les clics, inscrits dans `CLK`. Les notes
+  de l’accompagnement viennent de `playNote`, qui n’inscrivait rien : un
+  accord tenu (3,6 temps) sonnait encore trois secondes après « Arrêter ».
+  Un second sac, `IMV`, rempli seulement pendant `imPlay` — couper toutes
+  les notes aurait aussi coupé l’extrait d’un cours ou le carillon de fin de
+  bloc. Vérifié en détournant `OscillatorNode.stop` : zéro coupure pendant la
+  lecture, trois à l’arrêt, soit la dernière note encore vivante.
+- iOS reprend le verrou d’écran dès que la page passe en arrière-plan. Le
+  retour ne le redemandait que pour le minuteur et le métronome : une tourne
+  lancée, un coup d’œil à une autre appli, et l’écran s’éteignait en pleine
+  improvisation. Le minuteur de consigne ne demandait rien du tout.
+- Supprimer un bloc pendant la séance : l’index était seulement ramené dans
+  les bornes. En supprimant un bloc d’avant, on glissait sur le suivant sans
+  le voir ; en supprimant celui en cours, le décompte continuait sur une
+  durée disparue. Désormais on reste sur le même bloc, et un bloc en cours
+  supprimé laisse son remplaçant repartir entier.
+- Suite de l’étape 17 : pendant une séance, le mini-lecteur s’ajoutait à la
+  ligne des pastilles et la faisait repasser à deux lignes, juste au moment
+  où l’écran sert le plus. Le compteur du jour, qui ne bouge pas avant le
+  bilan, cède la place à l’horloge qui, elle, avance.
 
 - **Étape 17.** Mesuré avant de toucher à quoi que ce soit : l’en-tête
   faisait 196 points sur 812, et la barre d’onglets cachait six onglets sur

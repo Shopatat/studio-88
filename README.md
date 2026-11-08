@@ -154,7 +154,10 @@ qu'elle change quelque chose.
 
 La tourne appartient à son onglet : changer d'onglet l'arrête, avec le minuteur
 de la consigne, et lancer une tourne arrête le métronome — deux tempos à la
-fois, personne n'y arrive.
+fois, personne n'y arrive. « Arrêter » coupe aussi les notes déjà programmées :
+un accord tenu dure trois temps et demi, et il se taisait trois secondes après
+le bouton. L'écran reste allumé tant qu'une tourne ou un minuteur de consigne
+tourne, y compris au retour d'une autre application.
 
 Au bas de l'onglet, les treize cours du thème **Improviser** : par où commencer
 ce soir, la pentatonique au-dessus d'une grille, pourquoi la gamme change avec
