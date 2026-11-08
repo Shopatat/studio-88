@@ -43,6 +43,7 @@ mémoire, et d'où tout cela vient.
 | 14 | Huit cours d’improvisation de plus (treize en tout), les liens croisés depuis les gammes, l’harmonie et le répertoire, le bouton « Ouvrir l’improvisation » sur leurs feuilles, et « Improviser dans ce ton » depuis le cercle des quintes | **fait** |
 | 15 | Cohabiter avec une autre appli : session audio `ambient` au choix (sans quoi iOS met l’autre appli en pause), notes MIDI reçues sans les doubler, et un message juste sur l’absence de Web MIDI dans Safari | **fait** |
 | 16 | L’iPad 12,9 en paysage : colonne à 1240 au-delà de 1200, trois cartes de front dans l’impro au-delà de 1180, clavier plus haut au-delà de 1100, et la séance en écran unique à deux colonnes avec le programme à demeure | **fait** |
+| 17 | Fluidité et ergonomie : en-tête qui s’efface en descendant (196 → 105 points), pastilles sur une ligne, place gardée par onglet, survol réservé aux pointeurs et retour d’appui au doigt, page vraiment figée sous la feuille d’un cours | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -58,9 +59,9 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les seize étapes sont faites et poussées. L’onglet
-**Impro** est complet, et l’appli tient dans l’écran partagé d’un iPad
-sans couper le son de l’appli d’à côté.
+**Rien en cours.** Les dix-sept étapes sont faites et poussées. La
+dix-septième a rendu un dixième de l’écran du téléphone à ce qu’on y
+lit, et remplacé le survol par un vrai retour d’appui.
 
 **Le chantier iPad s’arrête là, et c’est volontaire.** Ce qui est fait reste
 (les largeurs, les deux réglages de cohabitation) et ne coûte rien : les deux
@@ -83,6 +84,25 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 17.** Mesuré avant de toucher à quoi que ce soit : l’en-tête
+  faisait 196 points sur 812, et la barre d’onglets cachait six onglets sur
+  dix. La barre garde son défilement — elle a déjà ses ombres de bord et
+  l’onglet actif s’y amène tout seul — mais l’en-tête se replie.
+- Les règles de survol sont enveloppées **sur place**, une par une. Les
+  regrouper en un seul bloc à la fin changeait l’ordre de la cascade :
+  `.btn:hover` serait passé après `.btn.primary`, et le bouton doré aurait
+  pâli au survol.
+- Première version du repli : chaque ouverture de feuille décalait la page de
+  45 points. En figeant la page, le défilement retombe à zéro, l’en-tête se
+  redéployait derrière la feuille, et le navigateur rattrapait la hauteur
+  retrouvée. Deux garde-fous : l’en-tête ne bouge pas tant que la page est
+  figée, et il prend sa taille d’arrivée **avant** un changement d’onglet.
+- La séance en écran unique est exclue du repli (`body.lower:not(.solo)`) :
+  elle ne défile pas, elle hériterait de l’état laissé par la page
+  précédente et montrerait son titre une fois sur deux.
+- À 320 points de large les pastilles tiennent encore sur deux lignes. Les
+  faire tenir demanderait de rogner l’objectif du jour ; laissé tel quel.
 
 - **Étape 15.** Vérifié avant de coder : Safari n’a pas le Web MIDI, sur
   iPhone comme sur iPad (caniuse, octobre 2026, « non supporté » jusqu’à iOS

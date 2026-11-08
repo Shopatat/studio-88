@@ -105,7 +105,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
   border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--fg2)}
 .chip b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600}
 button.chip{cursor:pointer;transition:color .15s,border-color .15s}
-button.chip:hover{border-color:var(--line2);color:var(--fg)}
+@media (hover:hover){button.chip:hover{border-color:var(--line2);color:var(--fg)}}
 .chip.flame{color:var(--brass);background:var(--brass-w)}
 /* Le son interrompu n'est pas une panne de l'appli : la pastille le dit, et
    la toucher suffit à le rendre — comme n'importe quel autre geste. */
@@ -113,7 +113,7 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .chip.flame b{color:var(--brass)}
 .iconbtn{background:var(--inset);border:1px solid transparent;border-radius:999px;width:32px;height:32px;
   display:grid;place-items:center;font-size:14px;color:var(--fg2);transition:color .15s,background .15s}
-.iconbtn:hover{color:var(--brass);background:var(--brass-w)}
+@media (hover:hover){.iconbtn:hover{color:var(--brass);background:var(--brass-w)}}
 /* Mini-lecteur : la séance et le métronome restent à portée de doigt depuis tous les onglets. */
 .mini{display:flex;gap:6px;align-items:center}
 .mgrp{display:inline-flex;align-items:center;gap:1px;background:var(--inset);border:1px solid transparent;
@@ -122,14 +122,25 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .mgrp button{background:none;border:0;padding:0}
 .mbtn{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;font-size:10px;
   background:linear-gradient(var(--brass2),var(--brass))!important;color:var(--on-brass);transition:filter .15s}
-.mbtn:hover{filter:brightness(1.08)}
+@media (hover:hover){.mbtn:hover{filter:brightness(1.08)}}
 .mlbl{padding:0 8px!important;height:28px;font-size:12px;font-weight:600;color:var(--fg2);white-space:nowrap;
   display:inline-flex;align-items:center;gap:6px;transition:color .15s}
 .mlbl b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600}
-.mlbl:hover,.mstep:hover{color:var(--brass)}
+@media (hover:hover){.mlbl:hover,.mstep:hover{color:var(--brass)}}
 .mname{max-width:13ch;overflow:hidden;text-overflow:ellipsis}
 .mstep{width:24px;height:28px;border-radius:999px;font-size:15px;line-height:1;color:var(--fg2)}
 @media (max-width:600px){.mini .mname,.mini .mstep{display:none}}
+/* Le mot ne tient pas sur la ligne d’un téléphone, et la pastille dit déjà
+   l’essentiel par la couleur de son point. Sans lui, les pastilles et le
+   mini-lecteur tiennent sur une seule ligne au lieu de deux. */
+@media (max-width:420px){.syncw{display:none}#chipSync{padding:4px 9px}}
+/* Sur un téléphone, l’en-tête occupait un quart de l’écran à demeure. Dès
+   qu’on descend dans la page, le titre s’efface : les pastilles, le
+   mini-lecteur et les onglets restent, le reste est rendu à ce qu’on lit. */
+@media (max-width:760px){
+  body.lower:not(.solo) .brand,body.lower:not(.solo) .hspace{display:none}
+  body.lower:not(.solo) .hrow{padding-block:7px}
+}
 /* le dégradé local révèle une ombre au bord dès qu'il reste des onglets à faire défiler */
 .tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   background:
@@ -140,7 +151,7 @@ button.chip:hover{border-color:var(--line2);color:var(--fg)}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{background:none;border:0;padding:10px 13px 11px;font-size:13.5px;font-weight:600;color:var(--fg2);
   white-space:nowrap;position:relative;transition:color .15s}
-.tabs button:hover{color:var(--fg)}
+@media (hover:hover){.tabs button:hover{color:var(--fg)}}
 .tabs button::after{content:"";position:absolute;left:11px;right:11px;bottom:0;height:2px;border-radius:2px 2px 0 0;
   background:var(--brass);transform:scaleX(0);transition:transform .18s ease}
 .tabs button[aria-selected="true"]{color:var(--fg)}
@@ -176,22 +187,34 @@ main{padding-block:var(--s5) 64px}
 .hr{height:1px;background:var(--line);border:0;margin:var(--s4) 0}
 .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:500;letter-spacing:-.01em}
 
+/* Il n’y a pas de survol au doigt. iOS applique quand même ces règles au
+   premier appui, puis laisse la commande allumée jusqu’au geste suivant —
+   d’où ces boutons qui restent dorés derrière soi. Chacune est donc
+   enveloppée, là où elle est écrite, d’une requête qui la réserve aux
+   appareils munis d’un vrai pointeur. Au doigt, le retour vient de l’appui
+   lui-même, et s’éteint avec lui. */
+@media (hover:none){
+  .crow:active,.item:active,.tbtn:active,button.dot:active,.seg button:active,
+  button.chip:active,.iconbtn:active,.lhead:active,.tabs button:active,
+  .sbpm:active,.mlbl:active,.mstep:active{background:var(--brass-w);border-color:var(--brass);color:var(--fg)}
+  .mbtn:active{filter:brightness(1.12)}
+}
 /* ---------- commandes ---------- */
 .btn{background:var(--btn);border:1px solid var(--line2);border-radius:var(--r2);padding:8px 14px;
   font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px;line-height:1.35;
   box-shadow:0 1px 1.5px rgba(0,0,0,.04);transition:border-color .15s,background .15s,transform .08s,box-shadow .15s}
-.btn:hover{border-color:var(--brass);background:var(--brass-w)}
+@media (hover:hover){.btn:hover{border-color:var(--brass);background:var(--brass-w)}}
 .btn:active{transform:translateY(1px);box-shadow:none}
 .btn.primary{background:linear-gradient(180deg,var(--brass),var(--brass-d));border-color:var(--brass-d);
   color:var(--on-brass);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 1px 2px rgba(0,0,0,.2)}
-.btn.primary:hover{filter:brightness(1.06);border-color:var(--brass-d)}
+@media (hover:hover){.btn.primary:hover{filter:brightness(1.06);border-color:var(--brass-d)}}
 .btn.ghost{background:transparent;border-color:var(--line)}
-.btn.ghost:hover{background:var(--brass-w);border-color:var(--brass)}
+@media (hover:hover){.btn.ghost:hover{background:var(--brass-w);border-color:var(--brass)}}
 .btn.sm{padding:5px 10px;font-size:12.5px;border-radius:var(--r1)}
 .btn.wide{width:100%;justify-content:center}
 .btn[disabled]{opacity:.42;cursor:not-allowed;box-shadow:none}
 .btn.danger{color:var(--felt)}
-.btn.danger:hover{border-color:var(--felt);background:var(--felt-w)}
+@media (hover:hover){.btn.danger:hover{border-color:var(--felt);background:var(--felt-w)}}
 input[type=text],input[type=number],input[type=date],select,textarea{background:var(--bg);border:1px solid var(--line2);
   border-radius:var(--r2);padding:8px 11px;font-size:14px;width:100%;min-width:0;
   transition:border-color .15s,box-shadow .15s}
@@ -205,7 +228,7 @@ input[type=checkbox]{accent-color:var(--brass)}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:var(--r2);overflow:hidden;background:var(--bg);flex-wrap:wrap}
 .seg button{background:none;border:0;padding:7px 12px;font-size:13px;font-weight:600;color:var(--fg2);
   transition:color .15s,background .15s}
-.seg button:hover{color:var(--fg)}
+@media (hover:hover){.seg button:hover{color:var(--fg)}}
 .seg button[aria-pressed="true"]{background:var(--panel);color:var(--fg);box-shadow:inset 0 -2px 0 var(--brass)}
 .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:11px;
   font-weight:700;letter-spacing:.02em;border:1px solid var(--line);background:var(--inset);white-space:nowrap}
@@ -235,7 +258,7 @@ input[type=checkbox]{accent-color:var(--brass)}
 .list{display:flex;flex-direction:column;gap:7px}
 .item{display:flex;gap:var(--s3);align-items:flex-start;background:var(--bg);border:1px solid var(--line);
   border-radius:var(--r3);padding:11px 13px;min-width:0;transition:border-color .15s}
-.item:hover{border-color:var(--line2)}
+@media (hover:hover){.item:hover{border-color:var(--line2)}}
 .item .grow{flex:1 1 auto;min-width:0}
 .item .nm{font-weight:600;line-height:1.35}
 .item .mt{font-size:12.5px;color:var(--fg2);line-height:1.45}
@@ -261,7 +284,7 @@ input[type=checkbox]{accent-color:var(--brass)}
 /* cours : la bibliothèque et sa feuille superposée */
 .crow{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--bg);
   border:1px solid var(--line);border-radius:var(--r3);padding:11px 13px;transition:border-color .15s}
-.crow:hover{border-color:var(--brass)}
+@media (hover:hover){.crow:hover{border-color:var(--brass)}}
 .crow .ct{font-weight:600;font-size:14px}
 .crow .cs{font-size:12.5px;color:var(--fg2);line-height:1.45}
 .sheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center}
@@ -276,7 +299,10 @@ input[type=checkbox]{accent-color:var(--brass)}
 .chead{padding-right:48px}
 .ckb{margin-top:16px}
 .cbody p{font-size:14.5px;line-height:1.68;max-width:62ch;margin-top:14px}
-body.noscroll{overflow:hidden}
+/* overflow:hidden ne suffit pas à iOS : la page continue de glisser derrière
+   la feuille. On la fige vraiment, en gardant sa hauteur de défilement pour
+   la lui rendre à la fermeture. */
+body.noscroll{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 details.tuck{border:1px dashed var(--line2);border-radius:var(--r3);padding:12px 15px}
 details.tuck>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--fg2);list-style:none}
 details.tuck>summary::-webkit-details-marker{display:none}
@@ -325,7 +351,7 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .smet .lamp{height:22px;border-radius:8px}
 .sbpm{padding:0 10px;height:30px;border-radius:999px;font-size:13px;font-weight:600;
   color:var(--fg2);background:none;border:0;white-space:nowrap;transition:color .15s}
-.sbpm:hover{color:var(--brass)}
+@media (hover:hover){.sbpm:hover{color:var(--brass)}}
 /* Les outils de la séance : des boutons francs, et un seul tiroir ouvert.
    On reste sur l'écran de la séance, le minuteur sous les yeux. */
 .tools{margin-top:var(--s4)}
@@ -333,7 +359,7 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 .tbtn{flex:1 1 auto;min-width:96px;justify-content:center;background:var(--btn);border:1px solid var(--line2);
   border-radius:var(--r2);padding:9px 12px;font-size:13px;font-weight:600;color:var(--fg2);
   display:inline-flex;align-items:center;gap:6px;transition:color .15s,border-color .15s,background .15s}
-.tbtn:hover{color:var(--fg);border-color:var(--brass)}
+@media (hover:hover){.tbtn:hover{color:var(--fg);border-color:var(--brass)}}
 .tbtn[aria-pressed="true"]{color:var(--brass);background:var(--brass-w);border-color:var(--brass)}
 /* Un bouton d’outil absent vaut mieux qu’un bouton qui n’ouvre rien : les
    blocs n’ont pas tous un cours. Il lui faut sa propre règle, « display » est
@@ -515,7 +541,7 @@ body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
 .ans{background:var(--panel);border:1px solid var(--line2);border-radius:var(--r2);padding:12px 9px;font-weight:600;
   font-size:14.5px;text-align:center;box-shadow:0 1px 1.5px rgba(0,0,0,.04);
   transition:border-color .15s,background .15s,transform .08s}
-.ans:hover{border-color:var(--brass);background:var(--brass-w)}
+@media (hover:hover){.ans:hover{border-color:var(--brass);background:var(--brass-w)}}
 .ans:active{transform:translateY(1px)}
 .ans.good{background:var(--good);border-color:var(--good);color:var(--panel)}
 .ans.bad{background:var(--felt);border-color:var(--felt);color:#FFF4F5}
@@ -526,13 +552,13 @@ body.solo #sessProgHint{margin-top:6px;font-size:12.5px}
 .cof{width:100%;max-width:430px;margin:0 auto;display:block;aspect-ratio:1/1;height:auto}
 .cof text{font-family:var(--f-body);font-weight:600}
 .cof .seg-maj{cursor:pointer;transition:opacity .15s}
-.cof .seg-maj:hover{opacity:.78}
+@media (hover:hover){.cof .seg-maj:hover{opacity:.78}}
 .scaledots{display:flex;gap:6px;flex-wrap:wrap}
 .dot{border:1px solid var(--line);background:var(--bg);border-radius:var(--r1);padding:6px 9px;text-align:center;min-width:48px}
 .dot .d1{font-size:13.5px;font-weight:700;line-height:1.2}
 .dot .d2{font-size:10px;color:var(--fg2);font-family:var(--f-mono);letter-spacing:.04em}
 button.dot{transition:border-color .15s,background .15s}
-button.dot:hover{border-color:var(--brass);background:var(--brass-w)}
+@media (hover:hover){button.dot:hover{border-color:var(--brass);background:var(--brass-w)}}
 .badges{display:flex;gap:8px;flex-wrap:wrap}
 .badge{border:1px solid var(--line);background:var(--bg);border-radius:var(--r2);padding:8px 11px;font-size:12px;
   font-weight:600;display:flex;gap:8px;align-items:center;color:var(--fg2)}
@@ -1504,7 +1530,9 @@ function loadLocal(){
   }catch(e){return false;}
 }
 function setSync(txt,cls){
-  var c=$('#chipSync');c.textContent='● '+txt;c.style.color=cls||'';
+  var c=$('#chipSync');
+  c.innerHTML='●<span class="syncw"> '+esc(txt)+'</span>';
+  c.style.color=cls||'';
   c.title='Où sont enregistrées tes données : '+txt;
   c.setAttribute('aria-label','Enregistrement : '+txt+' — voir le détail');
 }
@@ -1928,6 +1956,20 @@ var TABS=[['today','Aujourd’hui'],['seance','Séance'],['apprentissage','Appre
  ['metronome','Métronome'],['clavier','Clavier'],['theorie','Théorie'],['impro','Impro'],
  ['repertoire','Répertoire'],['journal','Journal']];
 var cur='today';
+/* Un aller-retour au clavier ne doit pas renvoyer en haut d’une liste de
+   quatre-vingts cours : chaque onglet garde l’endroit où on l’a laissé. */
+var tabScroll={};
+function scrollY(){return window.pageYOffset||document.documentElement.scrollTop||0;}
+/* Deux seuils, et non un : sans cet écart l’en-tête clignoterait au moindre
+   tremblement du doigt autour du point de bascule. */
+var lowered=false;
+function headerLower(){
+  if(document.body.classList.contains('noscroll'))return;   /* page figée : rien ne bouge */
+  var y=scrollY();
+  if(!lowered&&y>140){lowered=true;document.body.classList.add('lower');}
+  else if(lowered&&y<60){lowered=false;document.body.classList.remove('lower');}
+}
+window.addEventListener('scroll',headerLower,{passive:true});
 function buildTabs(){
   var n=$('#tabs');n.innerHTML='';
   TABS.forEach(function(t,i){
@@ -1949,6 +1991,8 @@ function buildTabs(){
   TABS.forEach(function(t){var s=$('#t-'+t[0]);if(s)s.setAttribute('aria-labelledby','tab-'+t[0]);});
 }
 function go(id){
+  var same=(cur===id);
+  if(!same)tabScroll[cur]=scrollY();
   /* La tourne est liée à son onglet : on ne laisse pas un accompagnement
      jouer tout seul derrière une autre page. */
   if(id!=='impro'&&IM&&IM.on)imStop();
@@ -1972,7 +2016,10 @@ function go(id){
   if(id==='impro')renderImpro();
   try{location.hash=id;}catch(e){}
   paintSessTools();
-  window.scrollTo(0,0);
+  var y=same?0:(tabScroll[id]||0);
+  lowered=(y>140);
+  document.body.classList.toggle('lower',lowered);
+  window.scrollTo(0,y);
 }
 /* Le bouton retour du navigateur, et le geste de retour en PWA, changent l'onglet. */
 window.addEventListener('hashchange',function(){
@@ -2259,7 +2306,8 @@ function renderFocus(){
   }
   if(!S.pieces.length){
     info.innerHTML='Ajoute ce que tu travailles dans <b>Répertoire</b> — l’appli construira alors la séance autour de ce morceau, de son état d’avancement et de son tempo. '+
-      '<button class="btn sm ghost" id="focusGo" style="margin-top:8px">Aller au répertoire</button>';
+      '<div class="row tight" style="margin-top:10px">'+
+      '<button class="btn sm ghost" id="focusGo">Aller au répertoire</button></div>';
     var g=$('#focusGo');if(g)g.onclick=function(){go('repertoire');};
     return;
   }
@@ -4255,7 +4303,7 @@ function wireCoursBody(root,c,onSee){
 }
 
 /* --- La feuille superposée ------------------------------------------------ */
-var sheetBack=null;
+var sheetBack=null,sheetY=0;
 function openCours(id){
   var c=coursById(id);if(!c)return;
   $('#sheetBody').innerHTML=coursHTML(c,false);
@@ -4263,7 +4311,9 @@ function openCours(id){
   var sh=$('#sheet');
   if(sh.hidden){
     sheetBack=document.activeElement;
+    sheetY=scrollY();
     sh.hidden=false;
+    document.body.style.top=(-sheetY)+'px';
     document.body.classList.add('noscroll');
   }
   $('#sheetPane').scrollTop=0;
@@ -4274,6 +4324,8 @@ function closeCours(){
   if(sh.hidden)return;
   sh.hidden=true;
   document.body.classList.remove('noscroll');
+  document.body.style.top='';
+  window.scrollTo(0,sheetY);
   if(sheetBack&&sheetBack.focus)try{sheetBack.focus();}catch(e){}
   sheetBack=null;
 }

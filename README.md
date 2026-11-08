@@ -45,6 +45,39 @@ Dans l'autre sens, chacune des 18 leçons du parcours renvoie au cours qui
 l'approfondit, et un champ de recherche filtre les 84 pages sur leur texte entier,
 accents ignorés : « pedale » trouve « pédale ».
 
+## L'écran d'un téléphone, rendu à ce qu'on lit
+
+L'en-tête occupait 196 points sur les 812 d'un iPhone, en permanence : le
+titre, les pastilles, le mini-lecteur et les onglets, soit un quart de
+l'écran pour savoir où l'on est. Il en fait 105 une fois qu'on est descendu
+dans la page.
+
+Deux changements, et aucun ne retire quoi que ce soit :
+
+- Les pastilles tiennent sur une seule ligne au lieu de deux. Celle de
+  l'enregistrement garde son point coloré et perd son mot sous 420 points de
+  large : la couleur dit déjà l'état, et la toucher mène toujours au détail.
+- Dès qu'on descend de 140 points, le titre s'efface. Il revient quand on
+  remonte à moins de 60. Deux seuils différents, parce qu'avec un seul la
+  barre clignoterait au moindre tremblement du doigt. La séance en écran
+  unique garde le sien, elle qui ne défile pas.
+
+Chaque onglet retient aussi l'endroit où on l'a laissé. Aller vérifier un
+accord au clavier et revenir ne renvoie plus en haut d'une liste de
+quatre-vingt-quatre cours.
+
+## Le doigt n'est pas une souris
+
+Un écran tactile n'a pas de survol, mais iOS applique quand même les règles
+de survol au premier appui — puis les laisse allumées jusqu'au geste suivant.
+D'où ces boutons qui restaient dorés derrière soi. Les dix-sept règles
+concernées sont maintenant réservées aux appareils munis d'un vrai pointeur ;
+au doigt, le retour vient de l'appui lui-même et s'éteint avec lui.
+
+La feuille d'un cours fige vraiment la page derrière elle. `overflow:hidden`
+ne suffit pas à iOS : la page continuait de glisser sous la feuille, et on la
+retrouvait ailleurs en la refermant.
+
 ## La séance, écran unique
 
 Pendant une séance, changer d'onglet pour régler un tempo ou vérifier une note,
