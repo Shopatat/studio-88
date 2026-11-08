@@ -64,7 +64,13 @@ Deux changements, et aucun ne retire quoi que ce soit :
 
 Chaque onglet retient aussi l'endroit où on l'a laissé. Aller vérifier un
 accord au clavier et revenir ne renvoie plus en haut d'une liste de
-quatre-vingt-quatre cours.
+quatre-vingt-quatre cours. Et l'onglet ouvert se place au milieu de la barre
+plutôt qu'à son bord : six onglets sur dix sont hors de l'écran d'un
+téléphone, autant voir ce qu'il y a de part et d'autre.
+
+La feuille d'un cours garde le chemin parcouru. Suivre un « à lire ensuite »
+fait apparaître un **‹ Retour** qui revient au cours précédent, aussi loin
+qu'on soit allé ; rouvrir un cours depuis une liste repart de zéro.
 
 ## Le doigt n'est pas une souris
 

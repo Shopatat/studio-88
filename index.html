@@ -300,6 +300,7 @@ input[type=checkbox]{accent-color:var(--brass)}
 @media(min-width:620px){.sheet{align-items:center;padding:var(--s4)}
   .sheet>.pane{border-radius:var(--r4);max-height:84vh}}
 .sheet .sx{position:absolute;top:12px;right:12px;padding:5px 11px;z-index:2}
+#sheetNav{margin-bottom:13px}
 .chead{padding-right:48px}
 .ckb{margin-top:16px}
 .cbody p{font-size:14.5px;line-height:1.68;max-width:62ch;margin-top:14px}
@@ -1290,6 +1291,9 @@ button.dot{transition:border-color .15s,background .15s}
   <div class="bd" id="sheetBd"></div>
   <div class="pane" id="sheetPane" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <button class="btn sm ghost sx" id="sheetX" aria-label="Fermer le cours">✕</button>
+    <!-- Apparaît dès qu’on a suivi un « à lire ensuite » : sans lui, la
+         chaîne de lecture est à sens unique. -->
+    <div id="sheetNav" hidden><button class="btn sm ghost" id="sheetBack">‹ Retour</button></div>
     <div id="sheetBody"></div>
   </div>
 </div>
@@ -2020,7 +2024,7 @@ function go(id){
       var on=(t[0]===id);
       b.setAttribute('aria-selected',on?'true':'false');
       b.tabIndex=on?0:-1;
-      if(on&&b.scrollIntoView)try{b.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
+      if(on&&b.scrollIntoView)try{b.scrollIntoView({block:'nearest',inline:'center'});}catch(e){}
     }
   });
   if(id==='today')renderToday();
@@ -4329,10 +4333,14 @@ function wireCoursBody(root,c,onSee){
 
 /* --- La feuille superposée ------------------------------------------------ */
 var sheetBack=null,sheetY=0;
-function openCours(id){
+/* Où l’on était avant d’avoir suivi un « à lire ensuite ». Ouvrir un cours
+   depuis une liste repart de zéro ; l’enchaîner empile. */
+var sheetStack=[],coursOuvert=null;
+function sheetShow(id){
   var c=coursById(id);if(!c)return;
+  coursOuvert=id;
   $('#sheetBody').innerHTML=coursHTML(c,false);
-  wireCoursBody('#sheetBody',c,openCours);
+  wireCoursBody('#sheetBody',c,sheetGoto);
   var sh=$('#sheet');
   if(sh.hidden){
     sheetBack=document.activeElement;
@@ -4342,8 +4350,11 @@ function openCours(id){
     document.body.classList.add('noscroll');
   }
   $('#sheetPane').scrollTop=0;
+  var n=$('#sheetNav');if(n)n.hidden=!sheetStack.length;
   var x=$('#sheetX');if(x&&x.focus)x.focus();
 }
+function sheetGoto(id){if(coursOuvert)sheetStack.push(coursOuvert);sheetShow(id);}
+function openCours(id){sheetStack.length=0;coursOuvert=null;sheetShow(id);}
 function closeCours(){
   var sh=$('#sheet');
   if(sh.hidden)return;
@@ -4352,7 +4363,7 @@ function closeCours(){
   document.body.style.top='';
   window.scrollTo(0,sheetY);
   if(sheetBack&&sheetBack.focus)try{sheetBack.focus();}catch(e){}
-  sheetBack=null;
+  sheetBack=null;sheetStack.length=0;coursOuvert=null;
 }
 function coursBtn(id,label){
   var c=coursById(id);if(!c)return '';
@@ -4407,6 +4418,7 @@ function wireCours(){
   $('#coursQ').oninput=function(){coursQ=this.value;renderCours();};
   wireCoursBtns('#pAddCard');
   $('#sheetX').onclick=closeCours;
+  $('#sheetBack').onclick=function(){var p=sheetStack.pop();if(p)sheetShow(p);};
   $('#sheetBd').onclick=closeCours;
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'&&!$('#sheet').hidden){e.preventDefault();closeCours();}

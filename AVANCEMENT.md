@@ -45,6 +45,7 @@ mémoire, et d'où tout cela vient.
 | 16 | L’iPad 12,9 en paysage : colonne à 1240 au-delà de 1200, trois cartes de front dans l’impro au-delà de 1180, clavier plus haut au-delà de 1100, et la séance en écran unique à deux colonnes avec le programme à demeure | **fait** |
 | 17 | Fluidité et ergonomie : en-tête qui s’efface en descendant (196 → 105 points), pastilles sur une ligne, place gardée par onglet, survol réservé aux pointeurs et retour d’appui au doigt, page vraiment figée sous la feuille d’un cours | **fait** |
 | 18 | Chasse aux bugs : les voix de la tourne se taisent avec elle, le verrou d’écran couvre la tourne et la consigne, la suppression d’un bloc pendant la séance ne décale plus le minuteur, et l’en-tête reste compact pendant qu’on joue | **fait** |
+| 19 | La chaîne de lecture des cours n’est plus à sens unique (bouton ‹ Retour dans la feuille), et l’onglet ouvert se place au milieu de la barre | **fait** |
 Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Décisions prises
@@ -60,10 +61,11 @@ Chaque étape finit par un commit poussé et une mise à jour de ce fichier.
 
 ## Étape en cours
 
-**Rien en cours.** Les dix-huit étapes sont faites et poussées. La
-dix-septième a rendu un dixième de l’écran du téléphone à ce qu’on y
-lit ; la dix-huitième a corrigé quatre défauts, dont un
-accompagnement qui sonnait trois secondes après son bouton d’arrêt.
+**Rien en cours.** Les dix-neuf étapes sont faites et poussées. Les
+trois dernières forment une passe complète d’ergonomie puis de
+correction : un dixième de l’écran du téléphone rendu à ce qu’on y
+lit, le survol remplacé par un vrai retour d’appui, quatre défauts
+corrigés, et la lecture des cours qui sait revenir sur ses pas.
 
 **Le chantier iPad s’arrête là, et c’est volontaire.** Ce qui est fait reste
 (les largeurs, les deux réglages de cohabitation) et ne coûte rien : les deux
@@ -86,6 +88,17 @@ ne pointe dans le vide, et les 18 leçons ont maintenant toutes un cours — la 
 « Reconnaître un intervalle », n’en avait pas.
 
 ## Décisions prises aux dernières étapes
+
+- **Étape 19.** `openCours` faisait deux choses : ouvrir un cours et en
+  enchaîner un autre. Séparé en trois — `sheetShow` rend, `sheetGoto`
+  empile, `openCours` repart de zéro. Le bouton est dans le flux, au-dessus
+  du cours, et non dans le coin : à côté de la croix il aurait mordu sur le
+  titre d’un téléphone.
+- La barre d’onglets amène l’onglet actif au centre (`inline:'center'`) et
+  non plus au plus près. Le navigateur borne de lui-même aux extrémités,
+  donc le premier et le dernier onglet ne laissent pas de vide.
+- Rien changé à la barre elle-même : elle a déjà ses ombres de bord, et la
+  replier sur deux lignes aurait repris la hauteur rendue à l’étape 17.
 
 - **Étape 18.** Quatre défauts trouvés, tous vérifiés dans le navigateur
   avant et après correction. Le reste de la revue n’a rien donné : dix
