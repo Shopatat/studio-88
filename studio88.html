@@ -353,6 +353,9 @@ details.tuck[open]>summary{margin-bottom:var(--s3)}
 /* Le cours en tiroir : pas de croix à éviter, et une hauteur bornée pour que
    le minuteur reste à l’écran au lieu d’être poussé trois pouces plus bas. */
 #toolCours .chead{padding-right:0}
+/* Pas de croix à éviter dans la page : le retrait réservé à celle de la
+   feuille n’a plus lieu d’être. */
+#lirePage .chead{padding-right:0}
 #sessCoursBody{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;padding-right:4px}
 /* Sur téléphone, le minuteur reste visible dans la barre du haut : le cours
    coule alors en entier, plutôt qu'un cadre qui défile dans une page qui
@@ -1127,6 +1130,17 @@ button.dot{transition:border-color .15s,background .15s}
         <div class="sub num" id="coursCount" style="margin-top:8px"></div>
       </div>
       <div id="coursList" class="stack"></div>
+      </div>
+      <!-- Un cours lu dans la page. La feuille superposée est faite pour
+           surgir au-dessus d’une séance qui tourne ; ici on s’installe pour
+           lire, et rien ne doit rester derrière à attendre qu’on referme. -->
+      <div class="stack" id="secLire" hidden>
+        <div class="card">
+          <div class="row tight" style="margin-bottom:12px">
+            <button class="btn sm ghost" id="lireBack">‹ Les cours</button>
+          </div>
+          <div id="lirePage"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -3455,7 +3469,7 @@ function renderLearn(){
     html+='</div></div>';
   });
   $('#learnList').innerHTML=html;
-  wireCoursBtns('#learnList');
+  wireCoursBtns('#learnList',openCoursPage);
   $$('#learnList [data-open]').forEach(function(b){b.onclick=function(){
     var id=b.dataset.open;
     openLesson=(openLesson===id)?null:id;
@@ -4346,9 +4360,42 @@ function coursBtn(id,label){
   var c=coursById(id);if(!c)return '';
   return '<button class="btn sm ghost" data-cgo="'+id+'">'+esc(label||'Comment on fait ?')+'</button>';
 }
-function wireCoursBtns(root){
+/* --- Un cours lu dans la page (onglet Apprentissage) ---------------------- */
+/* Depuis la bibliothèque et depuis une leçon du parcours, un cours ne surgit
+   plus par-dessus : il prend la place de la liste, et un retour ramène d'où
+   l'on vient. La feuille reste pour tout le reste — une consigne de séance,
+   un morceau, un exercice : là, on veut retrouver son contexte intact. */
+var lireStack=[],lireId=null,lireFrom='cours',lireY=0;
+function lireShow(id){
+  var c=coursById(id);if(!c)return;
+  lireId=id;
+  $('#lirePage').innerHTML=coursHTML(c,false);
+  wireCoursBody('#lirePage',c,lireGoto);
+  $('#lireBack').textContent=lireStack.length?'‹ Retour'
+    :(lireFrom==='parcours'?'‹ Le parcours':'‹ Les cours');
+  $('#secParcours').hidden=true;$('#secCours').hidden=true;
+  $('#secLire').hidden=false;$('#learnSeg').hidden=true;   /* on lit : la bascule attendra */
+  window.scrollTo(0,0);
+}
+function lireGoto(id){if(lireId)lireStack.push(lireId);lireShow(id);}
+function openCoursPage(id){
+  if(!coursById(id))return;
+  lireStack.length=0;lireFrom=learnSec;lireY=scrollY();   /* la place dans la liste */
+  lireShow(id);
+}
+/* Un seul bouton pour les deux retours : on remonte la chaîne de lecture tant
+   qu'il y en a une, et on retombe sur la liste d'où l'on est parti. */
+function lireBack(){
+  var p=lireStack.pop();
+  if(p)lireShow(p);
+  else{setLearnSec(lireFrom);window.scrollTo(0,lireY);}
+}
+function wireCoursBtns(root,open){
+  /* « open » décide de l'hôte : la feuille par défaut, la page dans l'onglet
+     Apprentissage. */
+  var f=open||openCours;
   $$(root+' [data-cgo]').forEach(function(b){b.onclick=function(e){
-    e.preventDefault();e.stopPropagation();openCours(b.dataset.cgo);};});
+    e.preventDefault();e.stopPropagation();f(b.dataset.cgo);};});
 }
 
 /* --- La bibliothèque, sous le parcours ----------------------------------- */
@@ -4380,11 +4427,14 @@ function renderCours(){
   el.innerHTML=html;
   var cnt=$('#coursCount');
   if(cnt)cnt.textContent=q?(found+(found>1?' cours trouvés':' cours trouvé')):(COURS.length+' cours en neuf thèmes');
-  wireCoursBtns('#coursList');
+  wireCoursBtns('#coursList',openCoursPage);
 }
 var learnSec='parcours';
 function setLearnSec(v){
   learnSec=(v==='cours')?'cours':'parcours';
+  /* Revenir à une liste, c'est fermer le cours qu'on lisait. */
+  var lu=$('#secLire');
+  if(lu&&!lu.hidden){lu.hidden=true;lireStack.length=0;lireId=null;$('#learnSeg').hidden=false;}
   $('#secParcours').hidden=(learnSec!=='parcours');
   $('#secCours').hidden=(learnSec!=='cours');
   $$('#learnSeg button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.ls===learnSec?'true':'false');});
@@ -4397,8 +4447,10 @@ function wireCours(){
   $('#sheetX').onclick=closeCours;
   $('#sheetBack').onclick=function(){var p=sheetStack.pop();if(p)sheetShow(p);};
   $('#sheetBd').onclick=closeCours;
+  $('#lireBack').onclick=lireBack;
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&!$('#sheet').hidden){e.preventDefault();closeCours();}
+    if(e.key==='Escape'&&!$('#sheet').hidden){e.preventDefault();closeCours();return;}
+    if(e.key==='Escape'&&!$('#secLire').hidden){e.preventDefault();lireBack();}
   });
   renderCours();
 }

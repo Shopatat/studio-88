@@ -18,7 +18,7 @@
 var fs=require('fs');
 var path=require('path');
 var file=path.join(__dirname,'..','studio88.html');
-var s=fs.readFileSync(file,'utf8');
+var s=fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');   /* git rend le fichier en CRLF sous Windows */
 var bad=0;
 function ko(m){console.log('✗ '+m);bad++;}
 
@@ -43,7 +43,7 @@ var HINTS=(s.match(/var COURS_HINTS=\[([\s\S]*?)\n\];/)||['',''])[1];
 console.log('→ '+COURS.length+' cours, '+TH.length+' thèmes, '+LESSONS.length+' leçons');
 
 var TABS=['aujourdhui','seance','apprentissage','exercices','metronome','clavier',
-          'theorie','repertoire','journal'];
+          'theorie','repertoire','journal','impro'];
 var KINDS=['read','keys','interval','chord','echo','keysig'];
 var ETATS=['decouverte','travail','presque','memorise','entretien'];
 

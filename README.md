@@ -13,7 +13,7 @@ le son, et tes données enregistrées sur ton appareil.
 | --- | --- |
 | **Aujourd'hui** | Ce que tu t'es laissé à revoir, série de jours, minutes contre l'objectif, prochaine leçon, morceaux à réviser, graphe sur 14 jours et jalons. |
 | **Séance** | Deux modes. **Simple** : tu choisis une durée, le minuteur tourne, rien d'autre — le temps est réservé, le bilan le compte. La durée écoulée, le minuteur ne coupe pas : il repart en avant (`+03:12`) et c'est toi qui arrêtes. **Guidée** : tu choisis le morceau au programme et la durée : les blocs, les consignes et les repères de métronome se déduisent de son état d'avancement, de sa tonalité, de ses tempos et de ses passages difficiles. Le programme se lit d'un bloc ; pendant la séance, un ruban proportionnel montre où tu en es et la consigne du moment s'affiche sous le minuteur. Séance lancée, l'écran devient le poste de travail : le minuteur passe en pleine largeur, les réglages du programme s'effacent, et tout ce dont on a besoin en jouant s'ouvre dessous. Le métronome est sous la consigne : il démarre sur le tempo du bloc, suit les blocs suivants, et s'arrête avec la séance. Sous lui, cinq outils, un tiroir à la fois : **📖 Le cours** (le cours du bloc en cours, lu sur place ; il suit quand tu passes au bloc suivant, et « Ouvrir en grand » donne la feuille complète), **🎹 Clavier** (une octave, la gamme du morceau marquée sur les touches, son armure nommée, la gamme et la cadence à l'oreille), **⏱ Mesure** (mesure, subdivision, accent, montée progressive) **✎ Note** (ce qui coince, noté sur l'instant, préfixé du bloc, qui t'attend dans le bilan) et **📋 Plan** (le programme de la séance, le bloc en cours en gras). Carillon de fin de bloc, bilan qui reporte le tempo atteint sur le morceau — et où tu écris ce qu'il faudra revoir la prochaine fois, qui t'attendra en haut de l'onglet et sur **Aujourd'hui**. |
-| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 84 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. |
+| **Apprentissage** | Deux entrées. **Parcours** : 18 leçons en 4 niveaux, un paragraphe chacune, une chose à faire, le lien vers l'exercice correspondant et ta réussite récente dessus. **Cours** : 84 pages courtes en neuf thèmes — travailler, mener un morceau, gammes et tonalités, accords et harmonie, improviser, rythme et pédale, lire et mémoriser, s'exercer, d'où ça vient — à lire dans n'importe quel ordre — et surtout à ouvrir depuis une consigne de séance, quand elle te demande quelque chose dont tu ne connais pas le principe. Ouvert d'ici — depuis la bibliothèque ou depuis une leçon — un cours se lit **dans la page**, à la place de la liste, et un bouton de retour ramène où tu en étais. |
 | **Exercices** | Lecture de notes (clés de sol, de fa, les deux), trouve la touche, intervalles, accords à l'oreille, mémoire mélodique, armures. Chacun porte un lien **À quoi sert cet exercice ?** vers son cours. |
 | **Métronome** | 30–240 bpm, tap tempo, mesures 2/4 à 7/8, subdivisions, accent sur le premier temps, indication de tempo italienne, mode progressif. |
 | **Clavier** | Clavier jouable (souris, AZERTY, ou clavier MIDI en option), explorateur de gammes avec doigtés et explorateur d'accords avec renversements. Deux réglages y vivent pour cohabiter avec une autre appli : laisser l'autre sonner, et ne pas doubler les notes reçues du clavier. |
@@ -71,6 +71,25 @@ téléphone, autant voir ce qu'il y a de part et d'autre.
 La feuille d'un cours garde le chemin parcouru. Suivre un « à lire ensuite »
 fait apparaître un **‹ Retour** qui revient au cours précédent, aussi loin
 qu'on soit allé ; rouvrir un cours depuis une liste repart de zéro.
+
+## Deux façons de lire un cours
+
+Une feuille superposée est faite pour surgir au-dessus de quelque chose qu'on
+ne veut pas perdre : une séance qui tourne, un morceau qu'on éditait, un
+exercice en cours. On la referme et on retrouve son contexte intact. Mais dans
+l'onglet **Apprentissage**, il n'y a rien derrière à préserver : on est venu
+lire. La feuille n'y apportait que ses inconvénients — une page figée, une
+croix à viser, et quatre-vingt-quatre cours qui attendent sous un voile.
+
+Un cours ouvert depuis la bibliothèque ou depuis une leçon du parcours prend
+donc la place de la liste, dans la page. Le bouton en tête remonte la chaîne de
+lecture tant qu'il y en a une (**‹ Retour**), puis ramène à la liste d'où l'on
+vient — **‹ Les cours** ou **‹ Le parcours** — exactement où on l'avait laissée,
+recherche et place dans le défilement comprises. Échap fait la même chose.
+
+C'est le même cours qu'ailleurs : `coursHTML` rend le corps, `wireCoursBody` le
+câble, et l'hôte — feuille, page, ou tiroir de séance — décide seulement de ce
+qu'un « à lire ensuite » déclenche.
 
 ## Le doigt n'est pas une souris
 
